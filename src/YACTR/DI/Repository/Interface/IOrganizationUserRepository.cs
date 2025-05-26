@@ -1,0 +1,7 @@
+using YACTR.Model.Organizations;
+
+namespace YACTR.DI.Repository.Interface;
+
+public interface IOrganizationUserRepository : IRepository<OrganizationUser>
+{
+}

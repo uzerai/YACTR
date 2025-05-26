@@ -1,0 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
+using YACTR.Model.Authorization.Permissions;
+
+namespace YACTR.DI.Authorization.Permissions;
+
+public class PlatformPermissionRequiredAttribute : AuthorizeAttribute, IAuthorizationRequirement, IAuthorizationRequirementData
+{
+    public PlatformPermissionRequiredAttribute(Permission permission)
+    {
+        Permission = permission;
+    }
+
+    public Permission Permission { get; }
+
+    public IEnumerable<IAuthorizationRequirement> GetRequirements()
+    {
+        yield return this;
+    }
+}
