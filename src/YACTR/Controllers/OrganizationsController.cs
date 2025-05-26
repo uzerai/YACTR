@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using YACTR.DI.Authorization.Permissions;
-using YACTR.DI.Repository.Interface;
-using YACTR.Model.Authorization.Permissions;
-using YACTR.Model.Organizations;
+using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.Data.Model.Organizations;
 using YACTR.DTO.RequestData.Organizations;
 using YACTR.DI.Authorization.UserContext;
+using YACTR.Data.Repository.Interface;
 namespace YACTR.Controllers;
 
 [Authorize]
@@ -14,13 +14,13 @@ namespace YACTR.Controllers;
 [ApiController]
 public class OrganizationsController : ControllerBase
 {
-    private readonly IOrganizationRepository _organizationRepository;
+    private readonly IEntityRepository<Organization> _organizationRepository;
     private readonly IRepository<OrganizationUser> _organizationUserRepository;
     private readonly ILogger<OrganizationsController> _logger;
     private readonly IUserContext _userContext;
 
     public OrganizationsController(
-        IOrganizationRepository organizationRepository,
+        IEntityRepository<Organization> organizationRepository,
         IRepository<OrganizationUser> organizationUserRepository,
         ILogger<OrganizationsController> logger,
         IUserContext userContext)

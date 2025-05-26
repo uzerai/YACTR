@@ -1,9 +1,9 @@
 
-using YACTR.Model.Location;
+using YACTR.Data.Model.Location;
 using Microsoft.EntityFrameworkCore;
-using Route = YACTR.Model.Location.Route;
+using Route = YACTR.Data.Model.Location.Route;
 
-namespace YACTR.DI.Data.ConfigurationExtension;
+namespace YACTR.Data.ConfigurationExtension;
 
 public static class RouteConfigurationExtension
 {

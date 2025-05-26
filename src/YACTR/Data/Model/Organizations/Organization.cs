@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using YACTR.Model.Authentication;
+using YACTR.Data.Model.Authentication;
 
-namespace YACTR.Model.Organizations;
+namespace YACTR.Data.Model.Organizations;
 public class Organization : BaseEntity
 {
     [Required]

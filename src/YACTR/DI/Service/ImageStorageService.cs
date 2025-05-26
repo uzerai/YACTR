@@ -1,6 +1,6 @@
-using YACTR.DI.Repository.Interface;
-using YACTR.Model;
-using YACTR.Model.Authentication;
+using YACTR.Data.Repository.Interface;
+using YACTR.Data.Model;
+using YACTR.Data.Model.Authentication;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;

@@ -1,7 +1,7 @@
-using YACTR.DI.Repository.Interface;
 using YACTR.DTO.RequestData;
-using YACTR.Model.Location;
+using YACTR.Data.Model.Location;
 using Microsoft.AspNetCore.Mvc;
+using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Controllers;
 
@@ -9,9 +9,9 @@ namespace YACTR.Controllers;
 [Route("areas")]
 public class AreaController : ControllerBase
 {
-    private readonly IAreaRepository _areaRepository;
+    private readonly IEntityRepository<Area> _areaRepository;
 
-    public AreaController(IAreaRepository areaRepository)
+    public AreaController(IEntityRepository<Area> areaRepository)
     {
         _areaRepository = areaRepository;
     }

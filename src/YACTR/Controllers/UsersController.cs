@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using YACTR.DI.Repository.Interface;
-using YACTR.Model.Authentication;
+using YACTR.Data.Model.Authentication;
 using YACTR.DI.Authorization.UserContext;
+using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Controllers;
 

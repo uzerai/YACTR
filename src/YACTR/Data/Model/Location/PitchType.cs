@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace YACTR.Model.Location;
+namespace YACTR.Data.Model.Location;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PitchType

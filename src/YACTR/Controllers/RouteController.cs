@@ -1,9 +1,9 @@
-using YACTR.DI.Repository.Interface;
 using YACTR.DTO.RequestData;
-using YACTR.Model.Location;
+using YACTR.Data.Model.Location;
 using Microsoft.AspNetCore.Mvc;
 
-using Route = YACTR.Model.Location.Route;
+using Route = YACTR.Data.Model.Location.Route;
+using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Controllers;
 

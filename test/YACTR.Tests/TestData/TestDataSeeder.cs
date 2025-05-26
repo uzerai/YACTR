@@ -1,4 +1,4 @@
-using YACTR.DI.Data;
+using YACTR.Data;
 
 namespace YACTR.Tests.TestData
 {

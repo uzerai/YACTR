@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Route = YACTR.Model.Location.Route;
+using Route = YACTR.Data.Model.Location.Route;
 
-namespace YACTR.Model.Achievement;
+namespace YACTR.Data.Model.Achievement;
 
 public class RouteAscent : BaseAscent
 {

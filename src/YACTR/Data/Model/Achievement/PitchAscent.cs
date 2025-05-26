@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using YACTR.Model.Location;
+using YACTR.Data.Model.Location;
 
-namespace YACTR.Model.Achievement;
+namespace YACTR.Data.Model.Achievement;
 
 public class PitchAscent : BaseAscent
 {

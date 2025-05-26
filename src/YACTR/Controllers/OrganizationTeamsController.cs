@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.Permissions;
-using YACTR.DI.Repository.Interface;
 using YACTR.DTO.RequestData.Organizations;
-using YACTR.Model.Authorization.Permissions;
-using YACTR.Model.Organizations;
+using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.Data.Model.Organizations;
 
 namespace YACTR.Controllers;
 

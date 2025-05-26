@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Dotnet.PlaygroundMigrations
+namespace YACTR.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AlterImageRelatedEntityNullable : Migration

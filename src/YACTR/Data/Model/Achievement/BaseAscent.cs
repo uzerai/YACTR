@@ -1,7 +1,7 @@
-using YACTR.Model.Authentication;
+using YACTR.Data.Model.Authentication;
 using NodaTime;
 
-namespace YACTR.Model.Achievement;
+namespace YACTR.Data.Model.Achievement;
 
 /// <summary>
 /// Represents a user's ascent of a route/boulder/pitch.

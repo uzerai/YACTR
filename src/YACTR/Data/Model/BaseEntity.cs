@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
-namespace YACTR.Model;
+namespace YACTR.Data.Model;
 
 [PrimaryKey(nameof(Id))]
 public abstract partial class BaseEntity

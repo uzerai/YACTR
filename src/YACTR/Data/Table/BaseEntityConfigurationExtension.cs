@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using YACTR.Model;
+using YACTR.Data.Model;
 
-namespace YACTR.DI.Data.ConfigurationExtension;
+namespace YACTR.Data.ConfigurationExtension;
 
 public static class BaseEntityConfigurationExtension
 {

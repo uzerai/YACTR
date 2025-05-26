@@ -1,6 +1,6 @@
-using YACTR.Model.Authentication;
+using YACTR.Data.Model.Authentication;
 
-namespace YACTR.DI.Data.QueryExtensions;
+namespace YACTR.Data.QueryExtensions;
 
 public static class UserQueryExtensions
 {

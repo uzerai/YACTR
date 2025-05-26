@@ -2,7 +2,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using YACTR.DTO.RequestData.Organizations;
-using YACTR.Model.Organizations;
+using YACTR.Data.Model.Organizations;
 
 namespace YACTR.IntegrationTests.Controllers;
 

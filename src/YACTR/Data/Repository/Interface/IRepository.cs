@@ -1,4 +1,4 @@
-namespace YACTR.DI.Repository.Interface;
+namespace YACTR.Data.Repository.Interface;
 
 public interface IRepository<T>
 {

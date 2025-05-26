@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NodaTime;
-using YACTR.DI.Data;
-using YACTR.DI.Repository.ConfigurationExtension;
+using YACTR.Data;
+using YACTR.Data.Repository.ConfigurationExtension;
 
 namespace YACTR.IntegrationTests;
 

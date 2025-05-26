@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using YACTR.Model.Organizations;
+using YACTR.Data.Model.Organizations;
 
-namespace YACTR.DI.Data.ConfigurationExtension;
+namespace YACTR.Data.ConfigurationExtension;
 
 public static class OrganizationConfigurationExtension
 {

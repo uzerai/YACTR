@@ -1,4 +1,4 @@
-using YACTR.Model.Authorization.Permissions;
+using YACTR.Data.Model.Authorization.Permissions;
 
 namespace YACTR.DTO.RequestData.Organizations;
 

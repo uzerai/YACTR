@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using YACTR.Model.Authentication;
-using YACTR.Model.Organizations;
+using YACTR.Data.Model.Authentication;
+using YACTR.Data.Model.Organizations;
 
-namespace YACTR.DI.Data.ConfigurationExtension;
+namespace YACTR.Data.ConfigurationExtension;
 
 public static class UserConfigurationExtension
 {

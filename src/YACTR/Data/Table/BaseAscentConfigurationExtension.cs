@@ -1,8 +1,8 @@
 
-using YACTR.Model.Achievement;
+using YACTR.Data.Model.Achievement;
 using Microsoft.EntityFrameworkCore;
 
-namespace YACTR.DI.Data.ConfigurationExtension;
+namespace YACTR.Data.ConfigurationExtension;
 
 public static class BaseAscentConfigurationExtension
 {

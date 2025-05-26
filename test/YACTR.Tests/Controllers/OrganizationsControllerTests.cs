@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using YACTR.Controllers;
-using YACTR.DI.Repository.Interface;
-using YACTR.Model.Authentication;
-using YACTR.Model.Organizations;
+using YACTR.Data.Repository.Interface;
+using YACTR.Data.Model.Authentication;
+using YACTR.Data.Model.Organizations;
 using YACTR.DTO.RequestData.Organizations;
 using YACTR.DI.Authorization.UserContext;
 
@@ -13,8 +13,8 @@ namespace YACTR.Tests.Controllers;
 
 public class OrganizationsControllerTests
 {
-    private readonly Mock<IOrganizationRepository> _mockOrganizationRepository;
-    private readonly Mock<IOrganizationUserRepository> _mockOrganizationUserRepository;
+    private readonly Mock<IEntityRepository<Organization>> _mockOrganizationRepository;
+    private readonly Mock<IRepository<OrganizationUser>> _mockOrganizationUserRepository;
     private readonly Mock<ILogger<OrganizationsController>> _mockLogger;
     private readonly Mock<IUserContext> _mockUserContext;
     private readonly OrganizationsController _controller;
@@ -23,8 +23,8 @@ public class OrganizationsControllerTests
     public OrganizationsControllerTests()
     {
         // Setup mocks
-        _mockOrganizationRepository = new Mock<IOrganizationRepository>();
-        _mockOrganizationUserRepository = new Mock<IOrganizationUserRepository>();
+        _mockOrganizationRepository = new Mock<IEntityRepository<Organization>>();
+        _mockOrganizationUserRepository = new Mock<IRepository<OrganizationUser>>();
         _mockLogger = new Mock<ILogger<OrganizationsController>>();
         _mockUserContext = new Mock<IUserContext>();
         

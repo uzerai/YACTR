@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using YACTR.DI.Data;
-using YACTR.Model.Authorization.Permissions;
+using YACTR.Data;
+using YACTR.Data.Model.Authorization.Permissions;
 
 #nullable disable
 
-namespace YACTR.Migrations
+namespace YACTR.Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     [Migration("20250312120229_AddTeamUserPermissionsColumn")]
@@ -28,7 +28,7 @@ namespace YACTR.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("YACTR.Model.Authentication.User", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Authentication.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -79,7 +79,7 @@ namespace YACTR.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Model.Authorization.Permissions.OrganizationPermission", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Authorization.Permissions.OrganizationPermission", b =>
                 {
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uuid")
@@ -99,7 +99,7 @@ namespace YACTR.Migrations
                     b.ToTable("organization_permissions", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.Organization", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.Organization", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,7 +129,7 @@ namespace YACTR.Migrations
                     b.ToTable("organizations", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.OrganizationTeam", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.OrganizationTeam", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -166,7 +166,7 @@ namespace YACTR.Migrations
                     b.ToTable("organization_teams", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.OrganizationTeamUser", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.OrganizationTeamUser", b =>
                 {
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uuid")
@@ -200,7 +200,7 @@ namespace YACTR.Migrations
                     b.ToTable("organization_team_users", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.OrganizationUser", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.OrganizationUser", b =>
                 {
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uuid")
@@ -219,9 +219,9 @@ namespace YACTR.Migrations
                     b.ToTable("organization_users", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Model.Authorization.Permissions.OrganizationPermission", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Authorization.Permissions.OrganizationPermission", b =>
                 {
-                    b.HasOne("YACTR.Model.Organizations.OrganizationUser", "OrganizationUser")
+                    b.HasOne("YACTR.Data.Model.Organizations.OrganizationUser", "OrganizationUser")
                         .WithMany("Permissions")
                         .HasForeignKey("OrganizationId", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -231,9 +231,9 @@ namespace YACTR.Migrations
                     b.Navigation("OrganizationUser");
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.OrganizationTeam", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.OrganizationTeam", b =>
                 {
-                    b.HasOne("YACTR.Model.Organizations.Organization", "Organization")
+                    b.HasOne("YACTR.Data.Model.Organizations.Organization", "Organization")
                         .WithMany("Teams")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -243,30 +243,30 @@ namespace YACTR.Migrations
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.OrganizationTeamUser", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.OrganizationTeamUser", b =>
                 {
-                    b.HasOne("YACTR.Model.Organizations.Organization", "Organization")
+                    b.HasOne("YACTR.Data.Model.Organizations.Organization", "Organization")
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_organization_team_users_organizations_organization_id");
 
-                    b.HasOne("YACTR.Model.Organizations.OrganizationTeam", "OrganizationTeam")
+                    b.HasOne("YACTR.Data.Model.Organizations.OrganizationTeam", "OrganizationTeam")
                         .WithMany("OrganizationTeamUsers")
                         .HasForeignKey("OrganizationTeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_organization_team_users_organization_teams_organization_tea");
 
-                    b.HasOne("YACTR.Model.Authentication.User", "User")
+                    b.HasOne("YACTR.Data.Model.Authentication.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_organization_team_users_users_user_id");
 
-                    b.HasOne("YACTR.Model.Organizations.OrganizationUser", "OrganizationUser")
+                    b.HasOne("YACTR.Data.Model.Organizations.OrganizationUser", "OrganizationUser")
                         .WithMany("OrganizationTeamUsers")
                         .HasForeignKey("OrganizationId", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -282,16 +282,16 @@ namespace YACTR.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.OrganizationUser", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.OrganizationUser", b =>
                 {
-                    b.HasOne("YACTR.Model.Organizations.Organization", "Organization")
+                    b.HasOne("YACTR.Data.Model.Organizations.Organization", "Organization")
                         .WithMany("OrganizationUsers")
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_organization_users_organizations_organization_id");
 
-                    b.HasOne("YACTR.Model.Authentication.User", "User")
+                    b.HasOne("YACTR.Data.Model.Authentication.User", "User")
                         .WithMany("OrganizationUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -303,24 +303,24 @@ namespace YACTR.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("YACTR.Model.Authentication.User", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Authentication.User", b =>
                 {
                     b.Navigation("OrganizationUsers");
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.Organization", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.Organization", b =>
                 {
                     b.Navigation("OrganizationUsers");
 
                     b.Navigation("Teams");
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.OrganizationTeam", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.OrganizationTeam", b =>
                 {
                     b.Navigation("OrganizationTeamUsers");
                 });
 
-            modelBuilder.Entity("YACTR.Model.Organizations.OrganizationUser", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Organizations.OrganizationUser", b =>
                 {
                     b.Navigation("OrganizationTeamUsers");
 

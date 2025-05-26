@@ -3,7 +3,7 @@ using NetTopologySuite.Geometries;
 
 #nullable disable
 
-namespace Dotnet.PlaygroundMigrations
+namespace YACTR.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddGeoSpatialDataToAreaModelAndRenameTable : Migration

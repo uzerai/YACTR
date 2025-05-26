@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using YACTR.Model.Authorization.Permissions;
-using YACTR.Model.Organizations;
+using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.Data.Model.Organizations;
 
-namespace YACTR.Model.Authentication;
+namespace YACTR.Data.Model.Authentication;
 
 [Index(nameof(Auth0UserId), IsUnique = true)]
 [Index(nameof(Email))]

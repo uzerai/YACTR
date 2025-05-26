@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using YACTR.Model.Authentication;
-using YACTR.Model.Authorization.Permissions;
+using YACTR.Data.Model.Authentication;
+using YACTR.Data.Model.Authorization.Permissions;
 
-namespace YACTR.Model.Organizations;
+namespace YACTR.Data.Model.Organizations;
 
 [PrimaryKey(nameof(OrganizationId), nameof(UserId))]
 public class OrganizationUser

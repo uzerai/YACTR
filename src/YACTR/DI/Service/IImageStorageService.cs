@@ -1,5 +1,5 @@
-using YACTR.Model;
-using YACTR.Model.Authentication;
+using YACTR.Data.Model;
+using YACTR.Data.Model.Authentication;
 
 namespace YACTR.DI.Service;
 

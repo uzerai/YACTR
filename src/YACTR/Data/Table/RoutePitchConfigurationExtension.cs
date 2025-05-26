@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using YACTR.Model.Location;
+using YACTR.Data.Model.Location;
 
-namespace YACTR.DI.Data.ConfigurationExtension;
+namespace YACTR.Data.ConfigurationExtension;
 
 public static class RoutePitchConfigurationExtension
 {
