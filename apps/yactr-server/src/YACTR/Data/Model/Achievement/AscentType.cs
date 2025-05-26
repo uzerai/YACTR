@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace YACTR.Model.Achievement;
+namespace YACTR.Data.Model.Achievement;
 
 public enum AscentType
 {

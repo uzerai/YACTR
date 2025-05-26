@@ -2,11 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
-using YACTR.Model;
-using YACTR.DI.Data;
-using YACTR.DI.Repository.Interface;
+using YACTR.Data.Model;
+using YACTR.Data;
+using YACTR.Data.Repository.Interface;
 
-namespace YACTR.DI.Repository;
+namespace YACTR.Data.Repository;
 
 public partial class EntityRepository<T> : BaseRepository<T>, IEntityRepository<T> where T : BaseEntity
 {

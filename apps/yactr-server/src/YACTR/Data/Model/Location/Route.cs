@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
 
-namespace YACTR.Model.Location;
+namespace YACTR.Data.Model.Location;
 
 /// <summary>
 /// Represents a climbing route; from top to bottom.

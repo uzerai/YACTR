@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Dotnet.PlaygroundMigrations
+namespace YACTR.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AlterImageRemoveUrlColumn : Migration

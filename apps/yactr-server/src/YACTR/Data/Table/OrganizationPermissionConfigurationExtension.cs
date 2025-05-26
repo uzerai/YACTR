@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using YACTR.Model.Authorization.Permissions;
+using YACTR.Data.Model.Authorization.Permissions;
 
-namespace YACTR.DI.Data.ConfigurationExtension;
+namespace YACTR.Data.ConfigurationExtension;
 
 public static class OrganizationPermissionConfigurationExtension
 {

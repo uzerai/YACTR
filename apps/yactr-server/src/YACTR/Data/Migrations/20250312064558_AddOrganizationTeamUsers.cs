@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace YACTR.Migrations
+namespace YACTR.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddOrganizationTeamUsers : Migration

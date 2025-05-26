@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using YACTR.Model.Organizations;
+using YACTR.Data.Model.Organizations;
 using NetTopologySuite.Geometries;
 
-namespace YACTR.Model.Location;
+namespace YACTR.Data.Model.Location;
 
 /// <summary>
 /// Represents a climing area from a colloquial perspective.

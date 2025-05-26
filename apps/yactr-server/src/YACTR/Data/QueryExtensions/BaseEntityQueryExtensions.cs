@@ -1,7 +1,7 @@
 using NodaTime;
-using YACTR.Model;
+using YACTR.Data.Model;
 
-namespace YACTR.DI.Data.QueryExtensions;
+namespace YACTR.Data.QueryExtensions;
 
 public static class BaseEntityQueryExtensions
 {

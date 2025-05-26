@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using YACTR.DI.Data.QueryExtensions;
-using YACTR.DI.Repository.Interface;
-using YACTR.Model.Authentication;
+using YACTR.Data.QueryExtensions;
+using YACTR.Data.Repository.Interface;
+using YACTR.Data.Model.Authentication;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 

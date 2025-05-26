@@ -1,7 +1,7 @@
-using YACTR.Model;
+using YACTR.Data.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace YACTR.DI.Data.ConfigurationExtension;
+namespace YACTR.Data.ConfigurationExtension;
 
 public static class ImageConfigurationExtension
 {

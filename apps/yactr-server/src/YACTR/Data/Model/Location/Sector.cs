@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using NetTopologySuite.Geometries;
 
-namespace YACTR.Model.Location;
+namespace YACTR.Data.Model.Location;
 
 /// <summary>
 /// Represents a sector of a climbing area; most commonly a single face of a wall,

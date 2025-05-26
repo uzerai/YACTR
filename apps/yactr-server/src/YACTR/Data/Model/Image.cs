@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using YACTR.Model.Authentication;
+using YACTR.Data.Model.Authentication;
 
-namespace YACTR.Model;
+namespace YACTR.Data.Model;
 
 public class Image : BaseEntity
 {

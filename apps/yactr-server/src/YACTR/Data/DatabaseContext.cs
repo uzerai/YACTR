@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using YACTR.DI.Data.ConfigurationExtension;
-using YACTR.Model;
-using YACTR.Model.Authentication;
-using YACTR.Model.Authorization.Permissions;
-using YACTR.Model.Organizations;
-using Route = YACTR.Model.Location.Route;
-using YACTR.Model.Location;
-using YACTR.Model.Achievement;
+using YACTR.Data.ConfigurationExtension;
+using YACTR.Data.Model;
+using YACTR.Data.Model.Authentication;
+using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.Data.Model.Organizations;
+using Route = YACTR.Data.Model.Location.Route;
+using YACTR.Data.Model.Location;
+using YACTR.Data.Model.Achievement;
 
-namespace YACTR.DI.Data;
+namespace YACTR.Data;
 
 public class DatabaseContext : DbContext
 {

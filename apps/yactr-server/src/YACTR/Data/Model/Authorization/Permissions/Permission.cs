@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace YACTR.Model.Authorization.Permissions;
+namespace YACTR.Data.Model.Authorization.Permissions;
 
 /// <summary>
 /// Default permissions for the platform.

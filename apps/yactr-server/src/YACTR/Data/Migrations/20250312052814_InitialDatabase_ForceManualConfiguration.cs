@@ -4,7 +4,7 @@ using NodaTime;
 
 #nullable disable
 
-namespace YACTR.Migrations
+namespace YACTR.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialDatabase_ForceManualConfiguration : Migration

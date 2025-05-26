@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using YACTR.DI.Data;
-using YACTR.DI.Repository.Interface;
+using YACTR.Data;
+using YACTR.Data.Repository.Interface;
 
-namespace YACTR.DI.Repository;
+namespace YACTR.Data.Repository;
 
 public partial class BaseRepository<T> : IRepository<T> where T : class
 {

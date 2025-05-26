@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
-using YACTR.Model.Authorization.Permissions;
+using YACTR.Data.Model.Authorization.Permissions;
 
 #nullable disable
 
-namespace Dotnet.PlaygroundMigrations
+namespace YACTR.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddAdminPermissions : Migration

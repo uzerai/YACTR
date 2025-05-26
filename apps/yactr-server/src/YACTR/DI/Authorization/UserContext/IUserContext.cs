@@ -1,4 +1,4 @@
-using YACTR.Model.Authentication;
+using YACTR.Data.Model.Authentication;
 
 namespace YACTR.DI.Authorization.UserContext;
 

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace YACTR.Model.Location;
+namespace YACTR.Data.Model.Location;
 
 /// <summary>
 /// Represents a pitch of a climbing route.

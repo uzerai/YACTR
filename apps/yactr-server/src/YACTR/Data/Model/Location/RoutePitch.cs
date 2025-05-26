@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace YACTR.Model.Location;
+namespace YACTR.Data.Model.Location;
 
 [PrimaryKey(nameof(RouteId), nameof(PitchId))]
 public class RoutePitch

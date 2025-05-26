@@ -1,9 +1,9 @@
 using YACTR.DI;
 using YACTR.DI.Service;
-using YACTR.Model;
+using YACTR.Data.Model;
 using Microsoft.AspNetCore.Mvc;
 using YACTR.DI.Authorization.UserContext;
-using YACTR.Model.Authorization.Permissions;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Controllers;

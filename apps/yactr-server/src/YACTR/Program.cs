@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Npgsql;
-using YACTR.DI.Data;
+using YACTR.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using NodaTime.Serialization.SystemTextJson;
-using YACTR.DI.Repository.ConfigurationExtension;
+using YACTR.Data.Repository.ConfigurationExtension;
 using System.Text.Json;
 using YACTR.DI.Authorization.ConfigurationExtension;
 using NetTopologySuite;

@@ -1,4 +1,4 @@
-using YACTR.Model.Location;
+using YACTR.Data.Model.Location;
 
 namespace YACTR.DTO.RequestData;
 
