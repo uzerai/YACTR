@@ -33,7 +33,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             services.AddRouting();
 
             services.Configure<DbContextOptionsBuilder>(options => {
-                options.UseNpgsql("Host=localhost;Database=playground_test;Username=playground;Password=playground;Port=5432");
+                options.UseNpgsql("Host=localhost;Database=yactr_test;Username=yactr;Password=yactr;Port=5432");
             });
             
             services.RemoveAll<AuthenticationSchemeOptions>();
@@ -56,7 +56,6 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                 
                 // Drop and recreate the database _before_ instantiation of the web application host.
                 // The web application is recreated for _EACH TEST CASE_. 
-                db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
             }
         });
