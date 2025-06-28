@@ -4,7 +4,6 @@ services:
     environment:
       POSTGRES_USER: yactr
       POSTGRES_PASSWORD: yactr
-      POSTGRES_DB: yactr
     ports:
       - "5432:5432"
     volumes:
