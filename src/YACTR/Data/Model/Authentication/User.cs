@@ -13,13 +13,13 @@ public class User : BaseEntity
 {
     [Required]
     [Column("auth0_user_id")]
-    public required string Auth0UserId { get; set; }
+    public required string Auth0UserId { get; init; }
 
     [Required]
-    public required string Email { get; set; }
+    public required string Email { get; init; }
 
     [Required]
-    public required string Username { get; set; }
+    public required string Username { get; init; }
 
     [Required]
     public Instant LastLogin { get; set; }

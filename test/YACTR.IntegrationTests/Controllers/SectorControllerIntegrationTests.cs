@@ -14,18 +14,16 @@ namespace YACTR.IntegrationTests.Controllers;
 
 public class SectorControllerIntegrationTests : IntegrationTestClassFixture
 {
-    private readonly HttpClient _client;
-    
     public SectorControllerIntegrationTests(TestWebApplicationFactory factory): base(factory)
     {
-        _client = CreateAuthorizedClient(null);
     }
 
     [Fact]
     public async Task GetAll_ReturnsSuccessStatusCode()
     {
+        var client = CreateAuthenticatedClient();
         // Act
-        var response = await _client.GetAsync("/sectors");
+        var response = await client.GetAsync("/sectors");
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -34,6 +32,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
     [Fact]
     public async Task GetById_WithValidId_ReturnsSector()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange - First create an area and sector
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
@@ -59,7 +58,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             Encoding.UTF8,
             "application/json");
             
-        var areaResponse = await _client.PostAsync("/areas", areaContent);
+        var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
         var area = JsonSerializer.Deserialize<Area>(
@@ -91,7 +90,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             Encoding.UTF8,
             "application/json");
             
-        var sectorResponse = await _client.PostAsync("/sectors", sectorContent);
+        var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
         var createdSector = JsonSerializer.Deserialize<Sector>(
@@ -100,7 +99,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
         );
         
         // Act
-        var response = await _client.GetAsync($"/sectors/{createdSector!.Id}");
+        var response = await client.GetAsync($"/sectors/{createdSector!.Id}");
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -117,11 +116,12 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
     [Fact]
     public async Task GetById_WithInvalidId_ReturnsNotFound()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange
         var invalidId = Guid.NewGuid();
         
         // Act
-        var response = await _client.GetAsync($"/sectors/{invalidId}");
+        var response = await client.GetAsync($"/sectors/{invalidId}");
         
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -130,6 +130,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
     [Fact]
     public async Task Update_WithValidData_ReturnsNoContent()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange - First create an area and sector
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
@@ -151,15 +152,16 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
         );
         
         var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest),
+            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var areaResponse = await _client.PostAsync("/areas", areaContent);
+        var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
         var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync()
+            await areaResponse.Content.ReadAsStringAsync(),
+            _jsonSerializerOptions
         );
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
@@ -182,15 +184,16 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
         );
         
         var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest),
+            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var sectorResponse = await _client.PostAsync("/sectors", sectorContent);
+        var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
         var createdSector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync()
+            await sectorResponse.Content.ReadAsStringAsync(),
+            _jsonSerializerOptions
         );
         
         // Create update request
@@ -212,12 +215,12 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
         );
         
         var updateContent = new StringContent(
-            JsonSerializer.Serialize(updateRequest),
+            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
         // Act
-        var response = await _client.PutAsync($"/sectors/{createdSector!.Id}", updateContent);
+        var response = await client.PutAsync($"/sectors/{createdSector!.Id}", updateContent);
         
         // Assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -226,6 +229,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
     [Fact]
     public async Task Update_WithInvalidId_ReturnsNotFound()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange
         var invalidId = Guid.NewGuid();
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -249,12 +253,12 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
         );
         
         var content = new StringContent(
-            JsonSerializer.Serialize(updateRequest),
+            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
         // Act
-        var response = await _client.PutAsync($"/sectors/{invalidId}", content);
+        var response = await client.PutAsync($"/sectors/{invalidId}", content);
         
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -263,6 +267,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
     [Fact]
     public async Task Delete_WithValidId_ReturnsNoContent()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange - First create an area and sector
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
@@ -284,15 +289,16 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
         );
         
         var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest),
+            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var areaResponse = await _client.PostAsync("/areas", areaContent);
+        var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
         var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync()
+            await areaResponse.Content.ReadAsStringAsync(),
+            _jsonSerializerOptions
         );
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
@@ -315,36 +321,38 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
         );
         
         var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest),
+            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var sectorResponse = await _client.PostAsync("/sectors", sectorContent);
+        var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
         var createdSector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync()
+            await sectorResponse.Content.ReadAsStringAsync(),
+            _jsonSerializerOptions
         );
         
         // Act
-        var response = await _client.DeleteAsync($"/sectors/{createdSector!.Id}");
+        var response = await client.DeleteAsync($"/sectors/{createdSector!.Id}");
         
         // Assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         
         // Verify the sector is actually deleted
-        var getResponse = await _client.GetAsync($"/sectors/{createdSector.Id}");
+        var getResponse = await client.GetAsync($"/sectors/{createdSector.Id}");
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
     
     [Fact]
     public async Task Delete_WithInvalidId_ReturnsNotFound()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange
         var invalidId = Guid.NewGuid();
         
         // Act
-        var response = await _client.DeleteAsync($"/sectors/{invalidId}");
+        var response = await client.DeleteAsync($"/sectors/{invalidId}");
         
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

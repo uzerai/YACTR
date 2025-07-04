@@ -3,23 +3,18 @@ using System.Net.Http.Headers;
 
 namespace YACTR.IntegrationTests.Controllers;
 
-public class HomeControllerIntegrationTests : IClassFixture<TestWebApplicationFactory>
+public class HomeControllerIntegrationTests : IntegrationTestClassFixture
 {
-    private readonly HttpClient _client;
-    
-    public HomeControllerIntegrationTests(TestWebApplicationFactory factory)
+    public HomeControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
     {
-        _client = factory.CreateClient();
-        
-        // Setup authentication for protected endpoints
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyTestToken==");
     }
     
     [Fact]
     public async Task Index_WithValidAuthentication_ReturnsOk()
     {
+        using var client = CreateAuthenticatedClient();
         // Act
-        var response = await _client.GetAsync("/");
+        var response = await client.GetAsync("/");
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -27,11 +22,10 @@ public class HomeControllerIntegrationTests : IClassFixture<TestWebApplicationFa
     }
     
     [Fact]
-    public async Task Index_WithoutAuthentication_ReturnsAuthorized()
+    public async Task Index_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Arrange
-        var client = _client;
-        client.DefaultRequestHeaders.Authorization = null; // Remove authentication
+        using var client = CreateAnonymousClient();
         
         // Act
         var response = await client.GetAsync("/");

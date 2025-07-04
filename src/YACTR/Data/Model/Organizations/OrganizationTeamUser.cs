@@ -10,10 +10,10 @@ namespace YACTR.Data.Model.Organizations;
 public class OrganizationTeamUser
 {
     [Required]
-    [ForeignKey("Organization")]
+    [ForeignKey("Organization OrganizationUser")]
     public Guid OrganizationId { get; set; }
     [Required]
-    [ForeignKey("User")]
+    [ForeignKey("User OrganizationUser")]
     public Guid UserId { get; set; }
     [Required]
     [ForeignKey("OrganizationTeam")]

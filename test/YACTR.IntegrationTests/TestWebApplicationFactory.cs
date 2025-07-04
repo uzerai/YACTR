@@ -45,19 +45,6 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
                 options => {});
 
             RegisterServices(services);
-            
-            // Build the service provider to initialize the database
-            var sp = services.BuildServiceProvider();
-            
-            using (var scope = sp.CreateScope())
-            {
-                var scopedServices = scope.ServiceProvider;
-                var db = scopedServices.GetRequiredService<DatabaseContext>();
-                
-                // Drop and recreate the database _before_ instantiation of the web application host.
-                // The web application is recreated for _EACH TEST CASE_. 
-                db.Database.EnsureCreated();
-            }
         });
     }
 

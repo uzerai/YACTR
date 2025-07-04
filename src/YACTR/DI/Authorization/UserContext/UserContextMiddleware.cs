@@ -63,7 +63,7 @@ public class UserContextMiddleware
                     else
                     {
                         user.LastLogin = clock.GetCurrentInstant();
-                        user = await userRepository.UpdateAsync(user);
+                        await userRepository.SaveAsync();
                     }
 
                     context.Items["CurrentUser"] = user;

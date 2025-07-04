@@ -23,7 +23,7 @@ public class UsersControllerIntegrationTests : IntegrationTestClassFixture
             Email = $"{userName}@test.dev"
         };
 
-        var client = CreateAuthorizedClient(expectedUser);
+        var client = CreateAuthenticatedClient(expectedUser);
         // Act
         var response = await client.GetAsync("/users/me");
 

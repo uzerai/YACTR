@@ -31,7 +31,7 @@ public class IntegrationTestClassFixture : IClassFixture<TestWebApplicationFacto
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
-    protected HttpClient CreateAuthorizedClient(User? user)
+    protected HttpClient CreateAuthenticatedClient(User? user = null)
     {
         HttpClient client = _factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
