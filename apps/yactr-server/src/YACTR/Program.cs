@@ -15,6 +15,7 @@ using Minio;
 using YACTR.DI.Service;
 using YACTR.DI.Authorization.UserContext;
 using FileSignatures;
+using FastEndpoints;
 
 // ############################################################
 // ##########  APP BUILDING  ##################################
@@ -96,13 +97,14 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
 /// Json setup specifically for the support of NodaTime serialization.
 /// Also sets the property naming policy to snake_case, because it's the nicer json format.
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-    options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-    
-    options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
-});
+// builder.Services.AddControllers().AddJsonOptions(options =>
+// {
+//     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+//     options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+
+//     options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
+// });
+builder.Services.AddFastEndpoints();
 
 /// ############################################################
 /// ##########  CUSTOM SERVICES SETUP  #########################
@@ -136,19 +138,21 @@ else
     app.UseHttpsRedirection();
 }
 
-// HTTPs redirection by default.
-// App library & overarching middleware registration.
-app.UseRouting();
+app.UseFastEndpoints();
 
-// Authentication middleware.
+// // HTTPs redirection by default.
+// // App library & overarching middleware registration.
+// app.UseRouting();
+
+// // Authentication middleware.
 app.UseAuthentication();
 
-// Add user context middleware
+// // Add user context middleware
 app.UseUserContext();
 
-// Authorization middleware.
+// // Authorization middleware.
 app.UseAuthorization();
-app.MapControllers();
+// app.MapControllers();
 
 app.Run();
 
