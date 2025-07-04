@@ -18,8 +18,10 @@ public static class RepositoryServicesConfigurationExtensions
     {
         services.AddTransient<IEntityRepository<User>, EntityRepository<User>>();
         services.AddTransient<IEntityRepository<Organization>, EntityRepository<Organization>>();
+        // IRepository as it's a pivot table, and doesn't need created/updated/deleted at.
         services.AddTransient<IRepository<OrganizationUser>, BaseRepository<OrganizationUser>>();
         services.AddTransient<IEntityRepository<OrganizationTeam>, EntityRepository<OrganizationTeam>>();
+        services.AddTransient<IRepository<OrganizationTeamUser>, BaseRepository<OrganizationTeamUser>>();
         services.AddTransient<IEntityRepository<Area>, EntityRepository<Area>>();
         services.AddTransient<IEntityRepository<Sector>, EntityRepository<Sector>>();
         services.AddTransient<IEntityRepository<Pitch>, EntityRepository<Pitch>>();

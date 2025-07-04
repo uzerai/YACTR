@@ -11,7 +11,6 @@ using System.Text.Json;
 using YACTR.DI.Authorization.ConfigurationExtension;
 using NetTopologySuite;
 using NetTopologySuite.IO.Converters;
-using YACTR.DI.Swagger;
 using Minio;
 using YACTR.DI.Service;
 using YACTR.DI.Authorization.UserContext;
@@ -29,9 +28,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => {
-    options.SimplifyNetTopologySuiteTypes();
-});
+// builder.Services.AddSwaggerGen(options => {
+//     options.SimplifyNetTopologySuiteTypes();
+// });
 
 /// Authentication extraction through JWT Bearer tokens.
 /// Intended to be used with the corresponding Auth0 tenant; but 
@@ -129,8 +128,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // app.UseSwagger();
+    // app.UseSwaggerUI();
 }
 else
 {

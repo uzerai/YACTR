@@ -6,6 +6,8 @@ using YACTR.DI.Authorization.Permissions;
 using YACTR.DTO.RequestData.Organizations;
 using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Organizations;
+using System.Net;
+using NetTopologySuite.Operation.Buffer;
 
 namespace YACTR.Controllers;
 
@@ -15,10 +17,13 @@ namespace YACTR.Controllers;
 public class OrganizationTeamUsersController : ControllerBase
 {
     private readonly IRepository<OrganizationTeamUser> _organizationTeamUserRepository;
+    private readonly IEntityRepository<OrganizationTeam> _organizationTeamRepository;
 
-    public OrganizationTeamUsersController(IRepository<OrganizationTeamUser> organizationTeamUserRepository)
+    public OrganizationTeamUsersController(IRepository<OrganizationTeamUser> organizationTeamUserRepository,
+        IEntityRepository<OrganizationTeam> organizationTeamRepository)
     {
         _organizationTeamUserRepository = organizationTeamUserRepository;
+        _organizationTeamRepository = organizationTeamRepository;
     }
 
     [HttpPost]
@@ -35,6 +40,11 @@ public class OrganizationTeamUsersController : ControllerBase
             UserId = requestData.UserId,
             Permissions = requestData.Permissions,
         };
+
+        if (await _organizationTeamRepository.GetByIdAsync(teamId) is null)
+        {
+            return ValidationProblem("Team does not exist", teamId.ToString(), (int)HttpStatusCode.FailedDependency, "error");
+        }
 
         await _organizationTeamUserRepository.CreateAsync(organizationTeamUser);
 

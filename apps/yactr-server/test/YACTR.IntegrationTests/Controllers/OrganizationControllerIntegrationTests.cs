@@ -4,27 +4,22 @@ using System.Text.Json;
 using YACTR.DTO.RequestData.Organizations;
 using YACTR.Data.Model.Organizations;
 using System.Net;
+using YACTR.Data.Model.Authentication;
 
 namespace YACTR.IntegrationTests.Controllers;
 
-public class OrganizationsControllerIntegrationTests : IClassFixture<TestWebApplicationFactory>
+public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixture
 {
-    private readonly HttpClient _client;
-    
-    public OrganizationsControllerIntegrationTests(TestWebApplicationFactory factory)
+    public OrganizationsControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
     {
-        _client = factory.CreateClient();
-        
-        // We would normally setup authentication here
-        // This is a placeholder for actual authentication setup
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyTestToken==");
     }
     
     [Fact]
     public async Task GetAll_ReturnsSuccessStatusCode()
     {
+        using var client = CreateAuthenticatedClient();
         // Act
-        var response = await _client.GetAsync("/organizations");
+        var response = await client.GetAsync("/organizations");
                 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -34,20 +29,20 @@ public class OrganizationsControllerIntegrationTests : IClassFixture<TestWebAppl
     public async Task GetAll_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Arrange
-        var client = _client;
-        client.DefaultRequestHeaders.Authorization = null; // Remove authentication
+        using var client = CreateAnonymousClient();
         
         // Act
         var response = await client.GetAsync("/organizations");
         
         // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
     
     [Fact]
     public async Task Create_WithValidData_ReturnsCreatedOrganization()
     {
         // Arrange
+        using var client = CreateAuthenticatedClient();
         var createRequest = new CreateOrganizationRequestData("Integration Test Org");
         
         var content = new StringContent(
@@ -56,7 +51,7 @@ public class OrganizationsControllerIntegrationTests : IClassFixture<TestWebAppl
             "application/json");
             
         // Act
-        var response = await _client.PostAsync("/organizations", content);
+        var response = await client.PostAsync("/organizations", content);
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -76,15 +71,16 @@ public class OrganizationsControllerIntegrationTests : IClassFixture<TestWebAppl
     public async Task Create_WithEmptyName_IsAllowed()
     {
         // Arrange
+        using var client = CreateAuthenticatedClient();
         var createRequest = new CreateOrganizationRequestData("");
         
         var content = new StringContent(
-            JsonSerializer.Serialize(createRequest),
+            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
         // Act
-        var response = await _client.PostAsync("/organizations", content);
+        var response = await client.PostAsync("/organizations", content);
         
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -94,13 +90,12 @@ public class OrganizationsControllerIntegrationTests : IClassFixture<TestWebAppl
     public async Task Create_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Arrange
-        var client = _client;
-        client.DefaultRequestHeaders.Authorization = null; // Remove authentication
+        using var client = CreateAnonymousClient();
         
         var createRequest = new CreateOrganizationRequestData("Test Org");
         
         var content = new StringContent(
-            JsonSerializer.Serialize(createRequest),
+            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
@@ -115,23 +110,24 @@ public class OrganizationsControllerIntegrationTests : IClassFixture<TestWebAppl
     public async Task Get_WithValidId_ReturnsOrganization()
     {
         // Arrange - First create an organization
+        using var client = CreateAuthenticatedClient();
         var createRequest = new CreateOrganizationRequestData("Test Organization for Get");
         
         var createContent = new StringContent(
-            JsonSerializer.Serialize(createRequest),
+            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var createResponse = await _client.PostAsync("/organizations", createContent);
+        var createResponse = await client.PostAsync("/organizations", createContent);
         createResponse.EnsureSuccessStatusCode();
         
         var createdOrg = JsonSerializer.Deserialize<Organization>(
             await createResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         // Act
-        var response = await _client.GetAsync($"/organizations/{createdOrg!.Id}");
+        var response = await client.GetAsync($"/organizations/{createdOrg!.Id}");
         
         // Assert
         response.EnsureSuccessStatusCode();
@@ -146,24 +142,24 @@ public class OrganizationsControllerIntegrationTests : IClassFixture<TestWebAppl
     }
     
     [Fact]
-    public async Task Get_WithInvalidId_ReturnsNotFound()
+    public async Task Get_WithInvalidId_ReturnsForbidden()
     {
         // Arrange
         var invalidId = Guid.NewGuid();
+        using var client = CreateAuthenticatedClient();
         
         // Act
-        var response = await _client.GetAsync($"/organizations/{invalidId}");
+        var response = await client.GetAsync($"/organizations/{invalidId}");
         
         // Assert
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
     
     [Fact]
     public async Task Get_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Arrange
-        var client = _client;
-        client.DefaultRequestHeaders.Authorization = null; // Remove authentication
+        using var client = CreateAnonymousClient();
         
         var invalidId = Guid.NewGuid();
         

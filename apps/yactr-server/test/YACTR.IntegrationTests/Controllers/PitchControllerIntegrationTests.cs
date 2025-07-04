@@ -9,23 +9,18 @@ using System.Net;
 
 namespace YACTR.IntegrationTests.Controllers;
 
-public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationFactory>
+public class PitchControllerIntegrationTests : IntegrationTestClassFixture
 {
-    private readonly HttpClient _client;
-    
-    public PitchControllerIntegrationTests(TestWebApplicationFactory factory)
+    public PitchControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
     {
-        _client = factory.CreateClient();
-        
-        // Setup authentication for protected endpoints
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyTestToken==");
     }
     
     [Fact]
     public async Task GetAll_ReturnsSuccessStatusCode()
     {
+        var client = CreateAuthenticatedClient();
         // Act
-        var response = await _client.GetAsync("/pitches");
+        var response = await client.GetAsync("/pitches");
                 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -34,6 +29,7 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
     [Fact]
     public async Task Create_WithValidData_ReturnsCreatedPitch()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange - First create an area and sector
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
@@ -55,16 +51,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest),
+            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var areaResponse = await _client.PostAsync("/areas", areaContent);
+        var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
         var area = JsonSerializer.Deserialize<Area>(
             await areaResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
@@ -87,16 +83,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest),
+            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var sectorResponse = await _client.PostAsync("/sectors", sectorContent);
+        var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
         var sector = JsonSerializer.Deserialize<Sector>(
             await sectorResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         // Create pitch request
@@ -109,24 +105,20 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var content = new StringContent(
-            JsonSerializer.Serialize(createRequest),
+            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
         // Act
-        var response = await _client.PostAsync("/pitches", content);
+        var response = await client.PostAsync("/pitches", content);
         
         // Assert
         response.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         
         var responseString = await response.Content.ReadAsStringAsync();
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
         
-        var pitch = JsonSerializer.Deserialize<Pitch>(responseString, options);
+        var pitch = JsonSerializer.Deserialize<Pitch>(responseString, _jsonSerializerOptions);
         Assert.NotNull(pitch);
         Assert.Equal("Test Pitch", pitch.Name);
         Assert.Equal(PitchType.Sport, pitch.Type);
@@ -137,6 +129,7 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
     [Fact]
     public async Task Create_WithDifferentPitchTypes_ReturnsCreatedPitch()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange - First create an area and sector
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
@@ -158,16 +151,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest),
+            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var areaResponse = await _client.PostAsync("/areas", areaContent);
+        var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
         var area = JsonSerializer.Deserialize<Area>(
             await areaResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
@@ -190,16 +183,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest),
+            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var sectorResponse = await _client.PostAsync("/sectors", sectorContent);
+        var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
         var sector = JsonSerializer.Deserialize<Sector>(
             await sectorResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         // Test different pitch types
@@ -216,24 +209,20 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
             );
             
             var content = new StringContent(
-                JsonSerializer.Serialize(createRequest),
+                JsonSerializer.Serialize(createRequest, _jsonSerializerOptions  ),
                 Encoding.UTF8,
                 "application/json");
                 
             // Act
-            var response = await _client.PostAsync("/pitches", content);
+            var response = await client.PostAsync("/pitches", content);
             
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             
             var responseString = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
             
-            var pitch = JsonSerializer.Deserialize<Pitch>(responseString, options);
+            var pitch = JsonSerializer.Deserialize<Pitch>(responseString, _jsonSerializerOptions);
             Assert.NotNull(pitch);
             Assert.Equal(pitchType, pitch.Type);
         }
@@ -242,6 +231,7 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
     [Fact]
     public async Task GetById_WithValidId_ReturnsPitch()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange - First create an area, sector, and pitch
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
@@ -263,16 +253,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest),
+            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var areaResponse = await _client.PostAsync("/areas", areaContent);
+        var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
         var area = JsonSerializer.Deserialize<Area>(
             await areaResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
@@ -295,16 +285,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest),
+            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var sectorResponse = await _client.PostAsync("/sectors", sectorContent);
+        var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
         var sector = JsonSerializer.Deserialize<Sector>(
             await sectorResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         var pitchRequest = new PitchRequestData(
@@ -316,27 +306,27 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var pitchContent = new StringContent(
-            JsonSerializer.Serialize(pitchRequest),
+            JsonSerializer.Serialize(pitchRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var pitchResponse = await _client.PostAsync("/pitches", pitchContent);
+        var pitchResponse = await client.PostAsync("/pitches", pitchContent);
         pitchResponse.EnsureSuccessStatusCode();
         
         var createdPitch = JsonSerializer.Deserialize<Pitch>(
             await pitchResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         // Act
-        var response = await _client.GetAsync($"/pitches/{createdPitch!.Id}");
+        var response = await client.GetAsync($"/pitches/{createdPitch!.Id}");
         
         // Assert
         response.EnsureSuccessStatusCode();
         
         var pitch = JsonSerializer.Deserialize<Pitch>(
             await response.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         Assert.NotNull(pitch);
         Assert.Equal(createdPitch.Id, pitch.Id);
@@ -346,11 +336,12 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
     [Fact]
     public async Task GetById_WithInvalidId_ReturnsNotFound()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange
         var invalidId = Guid.NewGuid();
         
         // Act
-        var response = await _client.GetAsync($"/pitches/{invalidId}");
+        var response = await client.GetAsync($"/pitches/{invalidId}");
         
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -359,6 +350,7 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
     [Fact]
     public async Task Update_WithValidData_ReturnsNoContent()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange - First create an area, sector, and pitch
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
@@ -380,16 +372,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest),
+            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var areaResponse = await _client.PostAsync("/areas", areaContent);
+        var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
         var area = JsonSerializer.Deserialize<Area>(
             await areaResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
@@ -412,16 +404,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest),
+            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions  ),
             Encoding.UTF8,
             "application/json");
             
-        var sectorResponse = await _client.PostAsync("/sectors", sectorContent);
+        var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
         var sector = JsonSerializer.Deserialize<Sector>(
             await sectorResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         var pitchRequest = new PitchRequestData(
@@ -433,16 +425,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var pitchContent = new StringContent(
-            JsonSerializer.Serialize(pitchRequest),
+            JsonSerializer.Serialize(pitchRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var pitchResponse = await _client.PostAsync("/pitches", pitchContent);
+        var pitchResponse = await client.PostAsync("/pitches", pitchContent);
         pitchResponse.EnsureSuccessStatusCode();
         
         var createdPitch = JsonSerializer.Deserialize<Pitch>(
             await pitchResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         // Create update request
@@ -455,12 +447,12 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var updateContent = new StringContent(
-            JsonSerializer.Serialize(updateRequest),
+            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
         // Act
-        var response = await _client.PutAsync($"/pitches/{createdPitch!.Id}", updateContent);
+        var response = await client.PutAsync($"/pitches/{createdPitch!.Id}", updateContent);
         
         // Assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -469,6 +461,7 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
     [Fact]
     public async Task Update_WithInvalidId_ReturnsNotFound()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange
         var invalidId = Guid.NewGuid();
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -500,12 +493,12 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var content = new StringContent(
-            JsonSerializer.Serialize(updateRequest),
+            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
         // Act
-        var response = await _client.PutAsync($"/pitches/{invalidId}", content);
+        var response = await client.PutAsync($"/pitches/{invalidId}", content);
         
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -514,6 +507,7 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
     [Fact]
     public async Task Delete_WithValidId_ReturnsNoContent()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange - First create an area, sector, and pitch
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
@@ -535,16 +529,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest),
+            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var areaResponse = await _client.PostAsync("/areas", areaContent);
+        var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
         var area = JsonSerializer.Deserialize<Area>(
             await areaResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
@@ -567,16 +561,16 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest),
+            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var sectorResponse = await _client.PostAsync("/sectors", sectorContent);
+        var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
         var sector = JsonSerializer.Deserialize<Sector>(
             await sectorResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         var pitchRequest = new PitchRequestData(
@@ -588,37 +582,38 @@ public class PitchControllerIntegrationTests : IClassFixture<TestWebApplicationF
         );
         
         var pitchContent = new StringContent(
-            JsonSerializer.Serialize(pitchRequest),
+            JsonSerializer.Serialize(pitchRequest, _jsonSerializerOptions),
             Encoding.UTF8,
             "application/json");
             
-        var pitchResponse = await _client.PostAsync("/pitches", pitchContent);
+        var pitchResponse = await client.PostAsync("/pitches", pitchContent);
         pitchResponse.EnsureSuccessStatusCode();
         
         var createdPitch = JsonSerializer.Deserialize<Pitch>(
             await pitchResponse.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            _jsonSerializerOptions
         );
         
         // Act
-        var response = await _client.DeleteAsync($"/pitches/{createdPitch!.Id}");
+        var response = await client.DeleteAsync($"/pitches/{createdPitch!.Id}");
         
         // Assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         
         // Verify the pitch is actually deleted
-        var getResponse = await _client.GetAsync($"/pitches/{createdPitch.Id}");
+        var getResponse = await client.GetAsync($"/pitches/{createdPitch.Id}");
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
     
     [Fact]
     public async Task Delete_WithInvalidId_ReturnsNotFound()
     {
+        var client = CreateAuthenticatedClient();
         // Arrange
         var invalidId = Guid.NewGuid();
         
         // Act
-        var response = await _client.DeleteAsync($"/pitches/{invalidId}");
+        var response = await client.DeleteAsync($"/pitches/{invalidId}");
         
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

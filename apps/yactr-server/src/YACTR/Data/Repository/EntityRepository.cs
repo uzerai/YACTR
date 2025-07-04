@@ -5,6 +5,7 @@ using NodaTime;
 using YACTR.Data.Model;
 using YACTR.Data;
 using YACTR.Data.Repository.Interface;
+using YACTR.Data.QueryExtensions;
 
 namespace YACTR.Data.Repository;
 
@@ -51,6 +52,7 @@ public partial class EntityRepository<T> : BaseRepository<T>, IEntityRepository<
     {
         return await _context.Set<T>()
             .AsNoTracking()
+            .WhereAvailable()
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
