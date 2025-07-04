@@ -45,10 +45,7 @@ public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixtu
         using var client = CreateAuthenticatedClient();
         var createRequest = new CreateOrganizationRequestData("Integration Test Org");
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync("/organizations", content);
@@ -56,13 +53,7 @@ public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixtu
         // Assert
         response.EnsureSuccessStatusCode();
         
-        var responseString = await response.Content.ReadAsStringAsync();
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-        
-        var organization = JsonSerializer.Deserialize<Organization>(responseString, options);
+        var organization = await DeserializeEntityFromResponse<Organization>(response);
         Assert.NotNull(organization);
         Assert.Equal("Integration Test Org", organization.Name);
     }
@@ -74,10 +65,7 @@ public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixtu
         using var client = CreateAuthenticatedClient();
         var createRequest = new CreateOrganizationRequestData("");
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync("/organizations", content);
@@ -94,10 +82,7 @@ public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixtu
         
         var createRequest = new CreateOrganizationRequestData("Test Org");
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync("/organizations", content);
@@ -113,18 +98,12 @@ public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixtu
         using var client = CreateAuthenticatedClient();
         var createRequest = new CreateOrganizationRequestData("Test Organization for Get");
         
-        var createContent = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var createContent = SerializeJsonFromRequestData(createRequest);
             
         var createResponse = await client.PostAsync("/organizations", createContent);
         createResponse.EnsureSuccessStatusCode();
         
-        var createdOrg = JsonSerializer.Deserialize<Organization>(
-            await createResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdOrg = await DeserializeEntityFromResponse<Organization>(createResponse);
         
         // Act
         var response = await client.GetAsync($"/organizations/{createdOrg!.Id}");
@@ -132,10 +111,7 @@ public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixtu
         // Assert
         response.EnsureSuccessStatusCode();
         
-        var organization = JsonSerializer.Deserialize<Organization>(
-            await response.Content.ReadAsStringAsync(),
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-        );
+        var organization = await DeserializeEntityFromResponse<Organization>(response);
         Assert.NotNull(organization);
         Assert.Equal(createdOrg.Id, organization.Id);
         Assert.Equal("Test Organization for Get", organization.Name);

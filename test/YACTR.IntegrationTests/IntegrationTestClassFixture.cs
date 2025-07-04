@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NetTopologySuite.IO.Converters;
@@ -44,5 +45,16 @@ public class IntegrationTestClassFixture : IClassFixture<TestWebApplicationFacto
     protected HttpClient CreateAnonymousClient()
     {
         return _factory.CreateClient();
+    }
+
+    protected async Task<T?> DeserializeEntityFromResponse<T>(HttpResponseMessage httpResponseMessage)
+    {
+        return JsonSerializer.Deserialize<T>(await httpResponseMessage.Content.ReadAsStringAsync(), _jsonSerializerOptions);
+    }
+
+    protected StringContent SerializeJsonFromRequestData<T>(T requestData)
+    {
+        return new StringContent(JsonSerializer.Serialize<T>(requestData, _jsonSerializerOptions),
+            Encoding.UTF8, "application/json"); ;
     }
 }

@@ -19,19 +19,13 @@ public class OrganizationTeamsControllerIntegrationTests :  IntegrationTestClass
         var client = CreateAuthenticatedClient();
         // Arrange - First create an organization
         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Teams");
-        
-        var orgContent = new StringContent(
-            JsonSerializer.Serialize(createOrgRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+
+        var orgContent = SerializeJsonFromRequestData(createOrgRequest);
 
         var orgResponse = await client.PostAsync("/organizations", orgContent);
         orgResponse.EnsureSuccessStatusCode();
         
-        var organization = JsonSerializer.Deserialize<Organization>(
-            await orgResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
         // Act
         var response = await client.GetAsync($"/organizations/{organization!.Id}/teams");
@@ -68,26 +62,17 @@ public class OrganizationTeamsControllerIntegrationTests :  IntegrationTestClass
         // Arrange - First create an organization
         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Team Creation");
         
-        var orgContent = new StringContent(
-            JsonSerializer.Serialize(createOrgRequest),
-            Encoding.UTF8,
-            "application/json");
+        var orgContent = SerializeJsonFromRequestData(createOrgRequest);
             
         var orgResponse = await client.PostAsync("/organizations", orgContent);
         orgResponse.EnsureSuccessStatusCode();
-        
-        var organization = JsonSerializer.Deserialize<Organization>(
-            await orgResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+
+        var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
         // Create team request
         var createRequest = new CreateOrganizationTeamRequestData("Test Team");
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync($"/organizations/{organization!.Id}/teams", content);
@@ -95,9 +80,7 @@ public class OrganizationTeamsControllerIntegrationTests :  IntegrationTestClass
         // Assert
         response.EnsureSuccessStatusCode();
         
-        var responseString = await response.Content.ReadAsStringAsync();
-        
-        var team = JsonSerializer.Deserialize<OrganizationTeam>(responseString, _jsonSerializerOptions);
+        var team = await DeserializeEntityFromResponse<OrganizationTeam>(response);
         Assert.NotNull(team);
         Assert.Equal("Test Team", team.Name);
         Assert.Equal(organization.Id, team.OrganizationId);
@@ -111,10 +94,7 @@ public class OrganizationTeamsControllerIntegrationTests :  IntegrationTestClass
         var invalidOrgId = Guid.NewGuid();
         var createRequest = new CreateOrganizationTeamRequestData("Test Team");
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync($"/organizations/{invalidOrgId}/teams", content);
@@ -130,25 +110,16 @@ public class OrganizationTeamsControllerIntegrationTests :  IntegrationTestClass
         // Arrange - First create an organization
         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Empty Team");
         
-        var orgContent = new StringContent(
-            JsonSerializer.Serialize(createOrgRequest),
-            Encoding.UTF8,
-            "application/json");
+        var orgContent = SerializeJsonFromRequestData(createOrgRequest);
             
         var orgResponse = await client.PostAsync("/organizations", orgContent);
         orgResponse.EnsureSuccessStatusCode();
         
-        var organization = JsonSerializer.Deserialize<Organization>(
-            await orgResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
         var createRequest = new CreateOrganizationTeamRequestData("");
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync($"/organizations/{organization!.Id}/teams", content);
