@@ -50,18 +50,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             areaBoundary
         );
         
-        var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var areaContent = SerializeJsonFromRequestData(areaRequest);
             
         var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
-        var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var area = await DeserializeEntityFromResponse<Area>(areaResponse);
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
             new Coordinate(-122.419, 37.774),
@@ -82,18 +76,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             area!.Id
         );
         
-        var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var sectorContent = SerializeJsonFromRequestData(sectorRequest);
             
         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
-        var sector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var sector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
         
         // Create pitch request
         var createRequest = new PitchRequestData(
@@ -104,10 +92,7 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             "5.10a"
         );
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync("/pitches", content);
@@ -116,9 +101,7 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
         response.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         
-        var responseString = await response.Content.ReadAsStringAsync();
-        
-        var pitch = JsonSerializer.Deserialize<Pitch>(responseString, _jsonSerializerOptions);
+        var pitch = await DeserializeEntityFromResponse<Pitch>(response);
         Assert.NotNull(pitch);
         Assert.Equal("Test Pitch", pitch.Name);
         Assert.Equal(PitchType.Sport, pitch.Type);
@@ -150,18 +133,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             areaBoundary
         );
         
-        var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var areaContent = SerializeJsonFromRequestData(areaRequest);
             
         var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
-        var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var area = await DeserializeEntityFromResponse<Area>(areaResponse);
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
             new Coordinate(-122.419, 37.774),
@@ -182,18 +159,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             area!.Id
         );
         
-        var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var sectorContent = SerializeJsonFromRequestData(sectorRequest);
             
         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
-        var sector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var sector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
         
         // Test different pitch types
         var pitchTypes = new[] { PitchType.Traditional, PitchType.Mixed, PitchType.Aid };
@@ -208,10 +179,7 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
                 "5.8"
             );
             
-            var content = new StringContent(
-                JsonSerializer.Serialize(createRequest, _jsonSerializerOptions  ),
-                Encoding.UTF8,
-                "application/json");
+            var content = SerializeJsonFromRequestData(createRequest);
                 
             // Act
             var response = await client.PostAsync("/pitches", content);
@@ -220,9 +188,7 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             
-            var responseString = await response.Content.ReadAsStringAsync();
-            
-            var pitch = JsonSerializer.Deserialize<Pitch>(responseString, _jsonSerializerOptions);
+            var pitch = await DeserializeEntityFromResponse<Pitch>(response);
             Assert.NotNull(pitch);
             Assert.Equal(pitchType, pitch.Type);
         }
@@ -252,18 +218,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             areaBoundary
         );
         
-        var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var areaContent = SerializeJsonFromRequestData(areaRequest);
             
         var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
-        var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var area = await DeserializeEntityFromResponse<Area>(areaResponse);
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
             new Coordinate(-122.419, 37.774),
@@ -284,18 +244,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             area!.Id
         );
         
-        var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var sectorContent = SerializeJsonFromRequestData(sectorRequest);
             
         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
-        var sector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var sector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
         
         var pitchRequest = new PitchRequestData(
             sector!.Id,
@@ -305,18 +259,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             "5.9"
         );
         
-        var pitchContent = new StringContent(
-            JsonSerializer.Serialize(pitchRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var pitchContent = SerializeJsonFromRequestData(pitchRequest);
             
         var pitchResponse = await client.PostAsync("/pitches", pitchContent);
         pitchResponse.EnsureSuccessStatusCode();
         
-        var createdPitch = JsonSerializer.Deserialize<Pitch>(
-            await pitchResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdPitch = await DeserializeEntityFromResponse<Pitch>(pitchResponse);
         
         // Act
         var response = await client.GetAsync($"/pitches/{createdPitch!.Id}");
@@ -324,10 +272,7 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
         // Assert
         response.EnsureSuccessStatusCode();
         
-        var pitch = JsonSerializer.Deserialize<Pitch>(
-            await response.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var pitch = await DeserializeEntityFromResponse<Pitch>(response);
         Assert.NotNull(pitch);
         Assert.Equal(createdPitch.Id, pitch.Id);
         Assert.Equal("Test Pitch for GetById", pitch.Name);
@@ -371,18 +316,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             areaBoundary
         );
         
-        var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var areaContent = SerializeJsonFromRequestData(areaRequest);
             
         var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
-        var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var area = await DeserializeEntityFromResponse<Area>(areaResponse);
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
             new Coordinate(-122.419, 37.774),
@@ -403,18 +342,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             area!.Id
         );
         
-        var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions  ),
-            Encoding.UTF8,
-            "application/json");
+        var sectorContent = SerializeJsonFromRequestData(sectorRequest);
             
         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
-        var sector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var sector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
         
         var pitchRequest = new PitchRequestData(
             sector!.Id,
@@ -424,18 +357,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             "5.8"
         );
         
-        var pitchContent = new StringContent(
-            JsonSerializer.Serialize(pitchRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var pitchContent = SerializeJsonFromRequestData(pitchRequest);
             
         var pitchResponse = await client.PostAsync("/pitches", pitchContent);
         pitchResponse.EnsureSuccessStatusCode();
         
-        var createdPitch = JsonSerializer.Deserialize<Pitch>(
-            await pitchResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdPitch = await DeserializeEntityFromResponse<Pitch>(pitchResponse);
         
         // Create update request
         var updateRequest = new PitchRequestData(
@@ -446,10 +373,7 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             "5.10a"
         );
         
-        var updateContent = new StringContent(
-            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var updateContent = SerializeJsonFromRequestData(updateRequest);
             
         // Act
         var response = await client.PutAsync($"/pitches/{createdPitch!.Id}", updateContent);
@@ -492,10 +416,7 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             "5.10a"
         );
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(updateRequest);
             
         // Act
         var response = await client.PutAsync($"/pitches/{invalidId}", content);
@@ -528,18 +449,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             areaBoundary
         );
         
-        var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var areaContent = SerializeJsonFromRequestData(areaRequest);
             
         var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
-        var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var area = await DeserializeEntityFromResponse<Area>(areaResponse);
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
             new Coordinate(-122.419, 37.774),
@@ -560,18 +475,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             area!.Id
         );
         
-        var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var sectorContent = SerializeJsonFromRequestData(sectorRequest);
             
         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
-        var sector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var sector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
         
         var pitchRequest = new PitchRequestData(
             sector!.Id,
@@ -581,18 +490,12 @@ public class PitchControllerIntegrationTests : IntegrationTestClassFixture
             "5.8"
         );
         
-        var pitchContent = new StringContent(
-            JsonSerializer.Serialize(pitchRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var pitchContent = SerializeJsonFromRequestData(pitchRequest);
             
         var pitchResponse = await client.PostAsync("/pitches", pitchContent);
         pitchResponse.EnsureSuccessStatusCode();
         
-        var createdPitch = JsonSerializer.Deserialize<Pitch>(
-            await pitchResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdPitch = await DeserializeEntityFromResponse<Pitch>(pitchResponse);
         
         // Act
         var response = await client.DeleteAsync($"/pitches/{createdPitch!.Id}");

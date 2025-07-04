@@ -30,9 +30,7 @@ public class UsersControllerIntegrationTests : IntegrationTestClassFixture
         // Assert
         response.EnsureSuccessStatusCode();
 
-        var responseString = await response.Content.ReadAsStringAsync();
-
-        var responseUser = JsonSerializer.Deserialize<User>(responseString, _jsonSerializerOptions);
+        var responseUser = await DeserializeEntityFromResponse<User>(response);
         Assert.NotNull(responseUser);
         Assert.Equal(responseUser.Auth0UserId, expectedUser.Auth0UserId);
         Assert.Equal(responseUser.Username, expectedUser.Username);

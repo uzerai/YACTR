@@ -23,34 +23,22 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         // Arrange - First create an organization
         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Team Users");
         
-        var orgContent = new StringContent(
-            JsonSerializer.Serialize(createOrgRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var orgContent = SerializeJsonFromRequestData(createOrgRequest);
             
         var orgResponse = await client.PostAsync("/organizations", orgContent);
         orgResponse.EnsureSuccessStatusCode();
         
-        var organization = JsonSerializer.Deserialize<Organization>(
-            await orgResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
         // Create a team
         var createTeamRequest = new CreateOrganizationTeamRequestData("Test Team for Users");
         
-        var teamContent = new StringContent(
-            JsonSerializer.Serialize(createTeamRequest),
-            Encoding.UTF8,
-            "application/json");
+        var teamContent = SerializeJsonFromRequestData(createTeamRequest);
             
         var teamResponse = await client.PostAsync($"/organizations/{organization!.Id}/teams", teamContent);
         teamResponse.EnsureSuccessStatusCode();
         
-        var team = JsonSerializer.Deserialize<OrganizationTeam>(
-            await teamResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var team = await DeserializeEntityFromResponse<OrganizationTeam>(teamResponse);
 
         var user = await _databaseContext.Set<User>().AsNoTracking().Where(user => user.Username == TestAuthenticationHandler.DEFAULT_TEST_USER.Username).FirstOrDefaultAsync();
         
@@ -61,10 +49,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
             Permissions = new List<Permission> { Permission.TeamsRead, Permission.TeamsWrite }
         };
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync($"/organizations/{organization.Id}/teams/{team!.Id}/users", content);
@@ -72,9 +57,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         // Assert
         response.EnsureSuccessStatusCode();
         
-        var responseString = await response.Content.ReadAsStringAsync();
-        
-        var teamUser = JsonSerializer.Deserialize<OrganizationTeamUser>(responseString, _jsonSerializerOptions);
+        var teamUser = await DeserializeEntityFromResponse<OrganizationTeamUser>(response);
         Assert.NotNull(teamUser);
         Assert.Equal(createRequest.UserId, teamUser.UserId);
         Assert.Equal(team.Id, teamUser.OrganizationTeamId);
@@ -99,10 +82,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
             Permissions = new List<Permission> { Permission.TeamsRead }
         };
 
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
 
         // Act
         var response = await client.PostAsync($"/organizations/{invalidOrgId}/teams/{teamId}/users", content);
@@ -118,18 +98,12 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         // Arrange - First create an organization
         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Invalid Team");
         
-        var orgContent = new StringContent(
-            JsonSerializer.Serialize(createOrgRequest),
-            Encoding.UTF8,
-            "application/json");
+        var orgContent = SerializeJsonFromRequestData(createOrgRequest);
             
         var orgResponse = await client.PostAsync("/organizations", orgContent);
         orgResponse.EnsureSuccessStatusCode();
         
-        var organization = JsonSerializer.Deserialize<Organization>(
-            await orgResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
         var invalidTeamId = Guid.NewGuid();
         var createRequest = new CreateOrganizationTeamUserRequestData
@@ -138,10 +112,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
             Permissions = new List<Permission> { Permission.TeamsRead }
         };
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync($"/organizations/{organization!.Id}/teams/{invalidTeamId}/users", content);
@@ -157,33 +128,21 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         // Arrange - First create an organization and team
         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Empty Permissions");
         
-        var orgContent = new StringContent(
-            JsonSerializer.Serialize(createOrgRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var orgContent = SerializeJsonFromRequestData(createOrgRequest);
             
         var orgResponse = await client.PostAsync("/organizations", orgContent);
         orgResponse.EnsureSuccessStatusCode();
         
-        var organization = JsonSerializer.Deserialize<Organization>(
-            await orgResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
         var createTeamRequest = new CreateOrganizationTeamRequestData("Test Team for Empty Permissions");
         
-        var teamContent = new StringContent(
-            JsonSerializer.Serialize(createTeamRequest, _jsonSerializerOptions  ),
-            Encoding.UTF8,
-            "application/json");
+        var teamContent = SerializeJsonFromRequestData(createTeamRequest);
             
         var teamResponse = await client.PostAsync($"/organizations/{organization!.Id}/teams", teamContent);
         teamResponse.EnsureSuccessStatusCode();
         
-        var team = JsonSerializer.Deserialize<OrganizationTeam>(
-            await teamResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var team = await DeserializeEntityFromResponse<OrganizationTeam>(teamResponse);
         
         var user = await _databaseContext.Set<User>().AsNoTracking().Where(user => user.Username == TestAuthenticationHandler.DEFAULT_TEST_USER.Username).FirstOrDefaultAsync();
         var createRequest = new CreateOrganizationTeamUserRequestData
@@ -192,10 +151,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
             Permissions = new List<Permission>()
         };
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync($"/organizations/{organization.Id}/teams/{team!.Id}/users", content);

@@ -52,10 +52,7 @@ public class AreaControllerIntegrationTests : IntegrationTestClassFixture
             boundary
         );
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(createRequest);
             
         // Act
         var response = await client.PostAsync("/areas", content);
@@ -64,8 +61,7 @@ public class AreaControllerIntegrationTests : IntegrationTestClassFixture
         response.EnsureSuccessStatusCode();
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         
-        var responseString = await response.Content.ReadAsStringAsync();
-        var area = JsonSerializer.Deserialize<Area>(responseString, _jsonSerializerOptions);
+        var area = await DeserializeEntityFromResponse<Area>(response);
         Assert.NotNull(area);
         Assert.Equal("Test Climbing Area", area.Name);
         Assert.Equal("A beautiful climbing area for testing", area.Description);
@@ -95,18 +91,12 @@ public class AreaControllerIntegrationTests : IntegrationTestClassFixture
             boundary
         );
         
-        var createContent = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var createContent = SerializeJsonFromRequestData(createRequest);
             
         var createResponse = await client.PostAsync("/areas", createContent);
         createResponse.EnsureSuccessStatusCode();
         
-        var createdArea = JsonSerializer.Deserialize<Area>(
-            await createResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdArea = await DeserializeEntityFromResponse<Area>(createResponse);
         
         // Act
         var response = await client.GetAsync($"/areas/{createdArea!.Id}");
@@ -114,10 +104,7 @@ public class AreaControllerIntegrationTests : IntegrationTestClassFixture
         // Assert
         response.EnsureSuccessStatusCode();
         
-        var area = JsonSerializer.Deserialize<Area>(
-            await response.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var area = await DeserializeEntityFromResponse<Area>(response);
         Assert.NotNull(area);
         Assert.Equal(createdArea.Id, area.Id);
         Assert.Equal("Test Area for GetById", area.Name);
@@ -160,18 +147,12 @@ public class AreaControllerIntegrationTests : IntegrationTestClassFixture
             boundary
         );
         
-        var createContent = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var createContent = SerializeJsonFromRequestData(createRequest);
             
         var createResponse = await client.PostAsync("/areas", createContent);
         createResponse.EnsureSuccessStatusCode();
         
-        var createdArea = JsonSerializer.Deserialize<Area>(
-            await createResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdArea = await DeserializeEntityFromResponse<Area>(createResponse);
         
         // Create update request
         var updateRequest = new AreaRequestData(
@@ -181,10 +162,7 @@ public class AreaControllerIntegrationTests : IntegrationTestClassFixture
             boundary
         );
         
-        var updateContent = new StringContent(
-            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var updateContent = SerializeJsonFromRequestData(updateRequest);
             
         // Act
         var response = await client.PutAsync($"/areas/{createdArea!.Id}", updateContent);
@@ -218,10 +196,7 @@ public class AreaControllerIntegrationTests : IntegrationTestClassFixture
             boundary
         );
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(updateRequest);
             
         // Act
         var response = await client.PutAsync($"/areas/{invalidId}", content);
@@ -254,18 +229,12 @@ public class AreaControllerIntegrationTests : IntegrationTestClassFixture
             boundary
         );
         
-        var createContent = new StringContent(
-            JsonSerializer.Serialize(createRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var createContent = SerializeJsonFromRequestData(createRequest);
             
         var createResponse = await client.PostAsync("/areas", createContent);
         createResponse.EnsureSuccessStatusCode();
         
-        var createdArea = JsonSerializer.Deserialize<Area>(
-            await createResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdArea = await DeserializeEntityFromResponse<Area>(createResponse);
         
         // Act
         var response = await client.DeleteAsync($"/areas/{createdArea!.Id}");

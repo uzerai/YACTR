@@ -53,18 +53,12 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             areaBoundary
         );
         
-        var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var areaContent = SerializeJsonFromRequestData(areaRequest);
             
         var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
-        var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var area = await DeserializeEntityFromResponse<Area>(areaResponse);
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
             new Coordinate(-122.419, 37.774),
@@ -85,18 +79,12 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             area!.Id
         );
         
-        var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var sectorContent = SerializeJsonFromRequestData(sectorRequest);
             
         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
-        var createdSector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdSector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
         
         // Act
         var response = await client.GetAsync($"/sectors/{createdSector!.Id}");
@@ -104,10 +92,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
         // Assert
         response.EnsureSuccessStatusCode();
         
-        var sector = JsonSerializer.Deserialize<Sector>(
-            await response.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var sector = await DeserializeEntityFromResponse<Sector>(response);
         Assert.NotNull(sector);
         Assert.Equal(createdSector.Id, sector.Id);
         Assert.Equal("Test Sector for GetById", sector.Name);
@@ -151,18 +136,12 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             areaBoundary
         );
         
-        var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var areaContent = SerializeJsonFromRequestData(areaRequest);
             
         var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
-        var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var area = await DeserializeEntityFromResponse<Area>(areaResponse);
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
             new Coordinate(-122.419, 37.774),
@@ -183,18 +162,12 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             area!.Id
         );
         
-        var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var sectorContent = SerializeJsonFromRequestData(sectorRequest);
             
         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
-        var createdSector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdSector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
         
         // Create update request
         var updatedSectorArea = geometryFactory.CreatePolygon(new[] {
@@ -214,10 +187,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             area.Id
         );
         
-        var updateContent = new StringContent(
-            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var updateContent = SerializeJsonFromRequestData(updateRequest);
             
         // Act
         var response = await client.PutAsync($"/sectors/{createdSector!.Id}", updateContent);
@@ -252,10 +222,7 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             Guid.NewGuid()
         );
         
-        var content = new StringContent(
-            JsonSerializer.Serialize(updateRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var content = SerializeJsonFromRequestData(updateRequest);
             
         // Act
         var response = await client.PutAsync($"/sectors/{invalidId}", content);
@@ -288,18 +255,12 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             areaBoundary
         );
         
-        var areaContent = new StringContent(
-            JsonSerializer.Serialize(areaRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var areaContent = SerializeJsonFromRequestData(areaRequest);
             
         var areaResponse = await client.PostAsync("/areas", areaContent);
         areaResponse.EnsureSuccessStatusCode();
         
-        var area = JsonSerializer.Deserialize<Area>(
-            await areaResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var area = await DeserializeEntityFromResponse<Area>(areaResponse);
         
         var sectorArea = geometryFactory.CreatePolygon(new[] {
             new Coordinate(-122.419, 37.774),
@@ -320,18 +281,12 @@ public class SectorControllerIntegrationTests : IntegrationTestClassFixture
             area!.Id
         );
         
-        var sectorContent = new StringContent(
-            JsonSerializer.Serialize(sectorRequest, _jsonSerializerOptions),
-            Encoding.UTF8,
-            "application/json");
+        var sectorContent = SerializeJsonFromRequestData(sectorRequest);
             
         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
         sectorResponse.EnsureSuccessStatusCode();
         
-        var createdSector = JsonSerializer.Deserialize<Sector>(
-            await sectorResponse.Content.ReadAsStringAsync(),
-            _jsonSerializerOptions
-        );
+        var createdSector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
         
         // Act
         var response = await client.DeleteAsync($"/sectors/{createdSector!.Id}");
