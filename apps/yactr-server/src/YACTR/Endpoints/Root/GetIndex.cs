@@ -8,11 +8,10 @@ public class GetIndex : Endpoint<EmptyRequest, EmptyResponse>
   public override void Configure()
   {
     Get("/");
-    AllowAnonymous();
   }
 
   public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
   {
-    await SendAsync(new(), (int)HttpStatusCode.OK, ct);
+    await SendAsync(new(), (int)HttpStatusCode.NoContent, ct);
   }
 }

@@ -31,11 +31,20 @@ public class UploadImage : Endpoint<EmptyRequest, Image>
         await HttpContext.Request.Body.CopyToAsync(memoryStream, ct);
         memoryStream.Position = 0;
 
-        var uploadedImage = await _imageStorageService.UploadImage(
+        try
+        {
+            var uploadedImage = await _imageStorageService.UploadImage(
             memoryStream,
             _userContext.CurrentUser!,
             Guid.Empty);
 
-        await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, uploadedImage, cancellation: ct);
+            await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, uploadedImage, cancellation: ct);
+        }
+        catch
+        {
+            await SendErrorsAsync(cancellation: ct);
+            return;
+        }
+        
     }
 } 

@@ -7,9 +7,9 @@ using YACTR.Endpoints;
 namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
-public class SectorControllerIntegrationTests : IntegrationTestClassFixture
+public class SectorEntityEndpointsIntegrationTests : IntegrationTestClassFixture
 {
-    public SectorControllerIntegrationTests(TestWebApplicationFactory factory): base(factory)
+    public SectorEntityEndpointsIntegrationTests(TestWebApplicationFactory factory): base(factory)
     {
     }
 
