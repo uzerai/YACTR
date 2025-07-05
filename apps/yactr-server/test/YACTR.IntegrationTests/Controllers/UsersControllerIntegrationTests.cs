@@ -1,9 +1,9 @@
 using System.Net;
-using System.Text.Json;
 using YACTR.Data.Model.Authentication;
 
 namespace YACTR.IntegrationTests.Controllers;
 
+[Collection("IntegrationTests")]
 public class UsersControllerIntegrationTests : IntegrationTestClassFixture
 {
     public UsersControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)

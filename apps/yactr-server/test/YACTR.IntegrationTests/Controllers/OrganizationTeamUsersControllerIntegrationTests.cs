@@ -1,6 +1,3 @@
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 using YACTR.DTO.RequestData.Organizations;
 using YACTR.Data.Model.Organizations;
 using YACTR.Data.Model.Authorization.Permissions;
@@ -10,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace YACTR.IntegrationTests.Controllers;
 
+[Collection("IntegrationTests")]
 public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestClassFixture
 {
     public OrganizationTeamUsersControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)

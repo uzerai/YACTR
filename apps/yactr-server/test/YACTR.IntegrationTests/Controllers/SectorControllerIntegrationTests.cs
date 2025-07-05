@@ -1,17 +1,12 @@
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 using YACTR.DTO.RequestData;
 using YACTR.Data.Model.Location;
 using NetTopologySuite.Geometries;
 using NetTopologySuite;
 using System.Net;
-using System.Text.Json.Serialization;
-using NetTopologySuite.IO.Converters;
-using System.Reflection;
 
 namespace YACTR.IntegrationTests.Controllers;
 
+[Collection("IntegrationTests")]
 public class SectorControllerIntegrationTests : IntegrationTestClassFixture
 {
     public SectorControllerIntegrationTests(TestWebApplicationFactory factory): base(factory)

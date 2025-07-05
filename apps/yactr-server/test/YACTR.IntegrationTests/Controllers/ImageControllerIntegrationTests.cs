@@ -1,10 +1,9 @@
-using System.Net.Http.Headers;
-using System.Text.Json;
 using YACTR.Data.Model;
 using System.Net;
 
 namespace YACTR.IntegrationTests.Controllers;
 
+[Collection("IntegrationTests")]
 public class ImageControllerIntegrationTests : IntegrationTestClassFixture
 {
     public ImageControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)

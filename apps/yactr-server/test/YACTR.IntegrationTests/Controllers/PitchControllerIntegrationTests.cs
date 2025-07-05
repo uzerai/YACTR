@@ -1,6 +1,3 @@
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 using YACTR.DTO.RequestData;
 using YACTR.Data.Model.Location;
 using NetTopologySuite.Geometries;
@@ -9,6 +6,7 @@ using System.Net;
 
 namespace YACTR.IntegrationTests.Controllers;
 
+[Collection("IntegrationTests")]
 public class PitchControllerIntegrationTests : IntegrationTestClassFixture
 {
     public PitchControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
