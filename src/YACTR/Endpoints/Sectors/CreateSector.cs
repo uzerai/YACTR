@@ -1,7 +1,6 @@
 using FastEndpoints;
 using YACTR.Data.Model.Location;
 using YACTR.Data.Repository.Interface;
-using YACTR.DTO.RequestData;
 
 namespace YACTR.Endpoints;
 

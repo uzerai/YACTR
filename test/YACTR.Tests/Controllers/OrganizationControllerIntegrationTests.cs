@@ -1,6 +1,6 @@
-using YACTR.DTO.RequestData.Organizations;
 using YACTR.Data.Model.Organizations;
 using System.Net;
+using YACTR.Endpoints.Organizations;
 
 namespace YACTR.Tests.Controllers;
 

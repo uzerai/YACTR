@@ -1,8 +1,8 @@
-using YACTR.DTO.RequestData;
 using YACTR.Data.Model.Location;
 using NetTopologySuite.Geometries;
 using NetTopologySuite;
 using System.Net;
+using YACTR.Endpoints;
 
 namespace YACTR.Tests.Controllers;
 
