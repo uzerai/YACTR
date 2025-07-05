@@ -34,7 +34,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             services.Configure<DbContextOptionsBuilder>(options =>
             {
                 options.UseNpgsql("Host=localhost;Database=yactr_test;Username=yactr;Password=yactr;Port=5432");
-                options.EnableDetailedErrors();
+                // options.EnableDetailedErrors();
             });
 
             services.RemoveAll<AuthenticationSchemeOptions>();
