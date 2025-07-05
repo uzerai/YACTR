@@ -6,6 +6,7 @@ appsettings.Development.json
 
 # dotenv files
 .env
+.coverage/
 
 # User-specific files
 *.rsuser
