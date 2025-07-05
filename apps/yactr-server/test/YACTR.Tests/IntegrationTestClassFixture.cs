@@ -66,9 +66,10 @@ public class IntegrationTestClassFixture : IClassFixture<TestWebApplicationFacto
         return _factory.CreateClient();
     }
 
-    protected async Task<T?> DeserializeEntityFromResponse<T>(HttpResponseMessage httpResponseMessage)
-    {
-        return JsonSerializer.Deserialize<T>(await httpResponseMessage.Content.ReadAsStringAsync(), _jsonSerializerOptions);
+    protected async Task<T> DeserializeEntityFromResponse<T>(HttpResponseMessage httpResponseMessage)
+    {   
+        var response = await httpResponseMessage.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<T>(response, _jsonSerializerOptions) ?? throw new Exception($"Failed to deserialize response: {response}");
     }
 
     protected StringContent SerializeJsonFromRequestData<T>(T requestData)
