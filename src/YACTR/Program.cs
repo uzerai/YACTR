@@ -16,6 +16,7 @@ using YACTR.DI.Service;
 using YACTR.DI.Authorization.UserContext;
 using FileSignatures;
 using FastEndpoints;
+using FastEndpoints.Swagger;
 
 // ############################################################
 // ##########  APP BUILDING  ##################################
@@ -26,17 +27,11 @@ using FastEndpoints;
 /// injected services that are internally developed as part of the API in the section below this one.
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddSwaggerGen(options => {
-//     options.SimplifyNetTopologySuiteTypes();
-// });
-
 /// Authentication extraction through JWT Bearer tokens.
 /// Intended to be used with the corresponding Auth0 tenant; but 
 /// technically be used with any Oauth2.0 compliant identity provider.
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.Authority = builder.Configuration["Auth0:Domain"];
@@ -52,6 +47,27 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Auth0:Issuer"],
             ValidAudience = builder.Configuration["Auth0:Audience"],
         };
+    });
+builder.Services.AddAuthorization();
+
+builder.Services
+    .AddFastEndpoints()
+    // This configures the JSON serialization in the generated schema.
+    .SwaggerDocument(document =>
+    {
+        document.SerializerSettings = serializerSettings =>
+        {
+            serializerSettings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+            serializerSettings.Converters.Add(new GeoJsonConverterFactory());
+            serializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+        };
+    })
+    // This configures the serialization between Entity <-> JSON.
+    .ConfigureHttpJsonOptions(options =>
+    {
+        options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+        options.SerializerOptions.Converters.Add(new GeoJsonConverterFactory());
+        options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
     });
 
 // Add NodaTime clock service so we can use it in the database context for timestamping BaseEntity objects.
@@ -95,12 +111,6 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
     .UseSnakeCaseNamingConvention();
 });
 
-builder.Services.AddFastEndpoints().ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-    options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-    options.SerializerOptions.Converters.Add(new GeoJsonConverterFactory());
-});
 
 /// ############################################################
 /// ##########  CUSTOM SERVICES SETUP  #########################
@@ -123,32 +133,19 @@ builder.Services.AddApplicationServices();
 // ############################################################
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    // app.UseSwagger();
-    // app.UseSwaggerUI();
-}
-else
+// If we're not in dev, just use https.
+if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
-app.UseFastEndpoints();
-
-// // HTTPs redirection by default.
-// // App library & overarching middleware registration.
-// app.UseRouting();
-
-// // Authentication middleware.
-app.UseAuthentication();
-
-// // Add user context middleware
-app.UseUserContext();
-
-// // Authorization middleware.
-app.UseAuthorization();
-// app.MapControllers();
+app.UseAuthentication()
+    // This middleware _must_ be squashed between the authentication and authorization middlewares.
+    // Otherwise the context it adds gets lost somewhere in the handling of the UseAuthorization middleware.
+    .UseUserContext()
+    .UseAuthorization()
+    .UseFastEndpoints()
+    .UseSwaggerGen();
 
 app.Run();
 
