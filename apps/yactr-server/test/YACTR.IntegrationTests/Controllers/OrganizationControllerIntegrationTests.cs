@@ -1,10 +1,6 @@
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 using YACTR.DTO.RequestData.Organizations;
 using YACTR.Data.Model.Organizations;
 using System.Net;
-using YACTR.Data.Model.Authentication;
 
 namespace YACTR.IntegrationTests.Controllers;
 
@@ -71,7 +67,7 @@ public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixtu
         var response = await client.PostAsync("/organizations", content);
         
         // Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
     
     [Fact]
