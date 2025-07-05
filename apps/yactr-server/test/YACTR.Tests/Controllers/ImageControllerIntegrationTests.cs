@@ -1,7 +1,7 @@
 using YACTR.Data.Model;
 using System.Net;
 
-namespace YACTR.IntegrationTests.Controllers;
+namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
 public class ImageControllerIntegrationTests : IntegrationTestClassFixture

@@ -2,7 +2,7 @@ using YACTR.DTO.RequestData.Organizations;
 using YACTR.Data.Model.Organizations;
 using System.Net;
 
-namespace YACTR.IntegrationTests.Controllers;
+namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
 public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixture

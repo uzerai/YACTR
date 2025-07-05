@@ -4,7 +4,7 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite;
 using System.Net;
 
-namespace YACTR.IntegrationTests.Controllers;
+namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
 public class SectorControllerIntegrationTests : IntegrationTestClassFixture
