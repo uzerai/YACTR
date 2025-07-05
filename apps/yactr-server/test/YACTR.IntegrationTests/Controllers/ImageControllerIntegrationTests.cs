@@ -1,0 +1,66 @@
+using YACTR.Data.Model;
+using System.Net;
+
+namespace YACTR.IntegrationTests.Controllers;
+
+[Collection("IntegrationTests")]
+public class ImageControllerIntegrationTests : IntegrationTestClassFixture
+{
+    public ImageControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
+    {
+    }
+    
+    [Fact]
+    public async Task UploadImage_WithValidImageData_ReturnsCreatedImage()
+    {
+        // Arrange
+        var client = CreateAuthenticatedClient();
+        var imageBytes = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01 }; // Minimal JPEG header
+        var content = new ByteArrayContent(imageBytes);
+        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+        
+        // Act
+        var response = await client.PostAsync("/images", content);
+        
+        // Assert
+        response.EnsureSuccessStatusCode();
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        
+        var image = await DeserializeEntityFromResponse<Image>(response);
+        Assert.NotNull(image);
+        Assert.NotEqual(Guid.Empty, image.Id);
+    }
+    
+    [Fact]
+    public async Task UploadImage_WithEmptyData_ReturnsBadRequest()
+    {
+        // Arrange
+        var client = CreateAuthenticatedClient();
+        var emptyBytes = new byte[0];
+        var content = new ByteArrayContent(emptyBytes);
+        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+        
+        // Act
+        var response = await client.PostAsync("/images", content);
+        
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+    
+    [Fact]
+    public async Task UploadImage_WithoutAuthentication_ReturnsUnauthorized()
+    {
+        // Arrange
+        var client = CreateAnonymousClient();
+        
+        var imageBytes = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01 };
+        var content = new ByteArrayContent(imageBytes);
+        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+        
+        // Act
+        var response = await client.PostAsync("/images", content);
+        
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+} 

@@ -32,33 +32,22 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             services.AddControllers();
             services.AddRouting();
 
-            services.Configure<DbContextOptionsBuilder>(options => {
-                options.UseNpgsql("Host=localhost;Database=playground_test;Username=playground;Password=playground;Port=5432");
+            services.Configure<DbContextOptionsBuilder>(options =>
+            {
+                options.UseNpgsql("Host=localhost;Database=yactr_test;Username=yactr;Password=yactr;Port=5432");
+                options.EnableDetailedErrors();
             });
-            
+
             services.RemoveAll<AuthenticationSchemeOptions>();
-            services.AddAuthentication(options => {
+            services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = TestAuthenticationHandler.AuthenticationScheme;
                 options.DefaultChallengeScheme = TestAuthenticationHandler.AuthenticationScheme;
             }).AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(
                 TestAuthenticationHandler.AuthenticationScheme,
-                options => {});
+                options => { });
 
             RegisterServices(services);
-            
-            // Build the service provider to initialize the database
-            var sp = services.BuildServiceProvider();
-            
-            using (var scope = sp.CreateScope())
-            {
-                var scopedServices = scope.ServiceProvider;
-                var db = scopedServices.GetRequiredService<DatabaseContext>();
-                
-                // Drop and recreate the database _before_ instantiation of the web application host.
-                // The web application is recreated for _EACH TEST CASE_. 
-                db.Database.EnsureDeleted();
-                db.Database.EnsureCreated();
-            }
         });
     }
 

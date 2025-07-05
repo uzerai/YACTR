@@ -46,7 +46,8 @@ public class OrganizationPermissionsAuthorizationHandler : AuthorizationHandler<
         var user = _userContext.CurrentUser;
         if (user == null)
         {
-            _logger.LogError("No authenticated user found; aborting authorization check.");
+            // We should ideally never see this stage of execution.
+            _logger.LogError("No authenticated user found; aborting authorization check in OrganizationPermissionAuth stage.");
             context.Fail();
             return Task.CompletedTask;
         }

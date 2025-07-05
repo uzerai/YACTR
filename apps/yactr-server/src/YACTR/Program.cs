@@ -11,11 +11,11 @@ using System.Text.Json;
 using YACTR.DI.Authorization.ConfigurationExtension;
 using NetTopologySuite;
 using NetTopologySuite.IO.Converters;
-using YACTR.DI.Swagger;
 using Minio;
 using YACTR.DI.Service;
 using YACTR.DI.Authorization.UserContext;
 using FileSignatures;
+using FastEndpoints;
 
 // ############################################################
 // ##########  APP BUILDING  ##################################
@@ -29,9 +29,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => {
-    options.SimplifyNetTopologySuiteTypes();
-});
+// builder.Services.AddSwaggerGen(options => {
+//     options.SimplifyNetTopologySuiteTypes();
+// });
 
 /// Authentication extraction through JWT Bearer tokens.
 /// Intended to be used with the corresponding Auth0 tenant; but 
@@ -95,14 +95,11 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
     .UseSnakeCaseNamingConvention();
 });
 
-/// Json setup specifically for the support of NodaTime serialization.
-/// Also sets the property naming policy to snake_case, because it's the nicer json format.
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddFastEndpoints().ConfigureHttpJsonOptions(options =>
 {
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-    options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-    
-    options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+    options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    options.SerializerOptions.Converters.Add(new GeoJsonConverterFactory());
 });
 
 /// ############################################################
@@ -129,27 +126,29 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // app.UseSwagger();
+    // app.UseSwaggerUI();
 }
 else
 {
     app.UseHttpsRedirection();
 }
 
-// HTTPs redirection by default.
-// App library & overarching middleware registration.
-app.UseRouting();
+app.UseFastEndpoints();
 
-// Authentication middleware.
+// // HTTPs redirection by default.
+// // App library & overarching middleware registration.
+// app.UseRouting();
+
+// // Authentication middleware.
 app.UseAuthentication();
 
-// Add user context middleware
+// // Add user context middleware
 app.UseUserContext();
 
-// Authorization middleware.
+// // Authorization middleware.
 app.UseAuthorization();
-app.MapControllers();
+// app.MapControllers();
 
 app.Run();
 
