@@ -31,11 +31,11 @@ public class OrganizationsController : ControllerBase
         _userContext = userContext;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {   
-        return Ok(await _organizationRepository.GetAllAsync());
-    }
+    // [HttpGet]
+    // public async Task<IActionResult> GetAll()
+    // {   
+    //     return Ok(await _organizationRepository.GetAllAsync());
+    // }
 
     [HttpGet("{organizationId}")]
     [OrganizationPermissionRequired(Permission.OrganizationsRead)]
