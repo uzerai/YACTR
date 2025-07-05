@@ -32,17 +32,20 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             services.AddControllers();
             services.AddRouting();
 
-            services.Configure<DbContextOptionsBuilder>(options => {
+            services.Configure<DbContextOptionsBuilder>(options =>
+            {
                 options.UseNpgsql("Host=localhost;Database=yactr_test;Username=yactr;Password=yactr;Port=5432");
+                options.EnableDetailedErrors();
             });
-            
+
             services.RemoveAll<AuthenticationSchemeOptions>();
-            services.AddAuthentication(options => {
+            services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = TestAuthenticationHandler.AuthenticationScheme;
                 options.DefaultChallengeScheme = TestAuthenticationHandler.AuthenticationScheme;
             }).AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(
                 TestAuthenticationHandler.AuthenticationScheme,
-                options => {});
+                options => { });
 
             RegisterServices(services);
         });
