@@ -4,9 +4,9 @@ using YACTR.Data.Model.Authentication;
 namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
-public class UsersControllerIntegrationTests : IntegrationTestClassFixture
+public class UserEntityEndpointsIntegrationTests : IntegrationTestClassFixture
 {
-    public UsersControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
+    public UserEntityEndpointsIntegrationTests(TestWebApplicationFactory factory) : base(factory)
     {
     }
 

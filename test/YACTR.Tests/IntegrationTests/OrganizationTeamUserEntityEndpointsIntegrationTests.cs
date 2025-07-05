@@ -9,9 +9,9 @@ using YACTR.Endpoints.Organizations;
 namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
-public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestClassFixture
+public class OrganizationTeamUserEntityEndpointsIntegrationTests : IntegrationTestClassFixture
 {
-    public OrganizationTeamUsersControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
+    public OrganizationTeamUserEntityEndpointsIntegrationTests(TestWebApplicationFactory factory) : base(factory)
     {        
     }
     

@@ -28,7 +28,7 @@ public class OrganizationPermissionsAuthorizationHandler : AuthorizationHandler<
             return Task.CompletedTask;
         }
 
-        var organizationIdFromRoute = httpContext.GetRouteValue("organizationId") as string;
+        var organizationIdFromRoute = httpContext.GetRouteValue("OrganizationId") as string;
         if (organizationIdFromRoute == null)
         {
             _logger.LogError("OrganizationPermissionRequiredAttribute assigned on organization-less endpoint; aborting authorization check.");

@@ -6,7 +6,7 @@ using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Organizations;
 
-public record GetOrganizationByIdRequest(Guid Id);
+public record GetOrganizationByIdRequest(Guid OrganizationId);
 
 public class GetOrganizationById : Endpoint<GetOrganizationByIdRequest, Organization>
 {
@@ -20,14 +20,14 @@ public class GetOrganizationById : Endpoint<GetOrganizationByIdRequest, Organiza
 
   public override void Configure()
   {
-    Get("/{Id}");
+    Get("/{OrganizationId}");
     Group<OrganizationsEndpointGroup>();
     Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.OrganizationsRead)));
   }
 
   public override async Task HandleAsync(GetOrganizationByIdRequest req, CancellationToken ct)
   {
-    var organization = await _organizationRepository.GetByIdAsync(req.Id);
+    var organization = await _organizationRepository.GetByIdAsync(req.OrganizationId);
 
     if (organization is not null)
     {

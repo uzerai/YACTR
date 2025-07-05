@@ -47,7 +47,7 @@ public class IntegrationTestClassFixture : IClassFixture<TestWebApplicationFacto
     }
 
     /// <summary>
-    /// Creates a test http client which automatically authenticates as the provided user when 
+    /// Creates a test http client which is authenticated against the provided user.
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
@@ -104,7 +104,7 @@ public class IntegrationTestClassFixture : IClassFixture<TestWebApplicationFacto
                 SET session_replication_role = DEFAULT;
                 
                 RAISE NOTICE 'All tables in public schema have been truncated successfully.';
-            END $$;
+            END $$
         """, cancellationToken);
     }
 }

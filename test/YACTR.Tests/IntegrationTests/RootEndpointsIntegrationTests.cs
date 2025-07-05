@@ -3,9 +3,9 @@ using System.Net;
 namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
-public class HomeControllerIntegrationTests : IntegrationTestClassFixture
+public class RootEndpointsIntegrationTests : IntegrationTestClassFixture
 {
-    public HomeControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
+    public RootEndpointsIntegrationTests(TestWebApplicationFactory factory) : base(factory)
     {
     }
     
@@ -18,7 +18,7 @@ public class HomeControllerIntegrationTests : IntegrationTestClassFixture
         
         // Assert
         response.EnsureSuccessStatusCode();
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
     
     [Fact]

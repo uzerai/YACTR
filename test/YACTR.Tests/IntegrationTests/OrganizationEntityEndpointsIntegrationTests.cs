@@ -5,9 +5,9 @@ using YACTR.Endpoints.Organizations;
 namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
-public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixture
+public class OrganizationEntityEndpointsIntegrationTests : IntegrationTestClassFixture
 {
-    public OrganizationsControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
+    public OrganizationEntityEndpointsIntegrationTests(TestWebApplicationFactory factory) : base(factory)
     {
     }
     
@@ -89,7 +89,7 @@ public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixtu
     }
     
     [Fact]
-    public async Task Get_WithValidId_ReturnsOrganization()
+    public async Task GetById_WithValidId_ReturnsOrganization()
     {
         // Arrange - First create an organization
         using var client = CreateAuthenticatedClient();
@@ -103,7 +103,7 @@ public class OrganizationsControllerIntegrationTests : IntegrationTestClassFixtu
         var createdOrg = await DeserializeEntityFromResponse<Organization>(createResponse);
         
         // Act
-        var response = await client.GetAsync($"/organizations/{createdOrg!.Id}");
+        var response = await client.GetAsync($"/organizations/{createdOrg.Id}");
         
         // Assert
         response.EnsureSuccessStatusCode();

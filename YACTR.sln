@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YACTR.Tests", "test\YACTR.Tests\YACTR.Tests.csproj", "{9A565B42-E81E-4524-9835-B1EA4294EFA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YACTR.IntegrationTests", "test\YACTR.IntegrationTests\YACTR.IntegrationTests.csproj", "{B4EFE66C-2DCF-4269-8CC2-D2F4A4F34713}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
