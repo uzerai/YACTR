@@ -20,8 +20,8 @@ jobs:
     - name: Run docker compose
       uses: hoverkraft-tech/compose-action@v2.0.1
       with:
-          compose-file: "./docker-compose.yaml"
-          up-flags: "--profile development"
+        compose-file: "./docker-compose.yaml"
+        compose-flags: "--profile test"
 
     - name: Restore Dependencies
       run: dotnet restore YACTR.sln

@@ -14,6 +14,7 @@ services:
       context: ./container/local-db
       dockerfile: Dockerfile.postgres
     profiles:
+      - test
       - development
       - development-full
   file-bucket:
@@ -28,6 +29,7 @@ services:
     volumes:
       - file-bucket-data:/data
     profiles:
+      - test
       - development
       - development-full
 
