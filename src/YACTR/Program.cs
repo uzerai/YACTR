@@ -95,16 +95,12 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
     .UseSnakeCaseNamingConvention();
 });
 
-/// Json setup specifically for the support of NodaTime serialization.
-/// Also sets the property naming policy to snake_case, because it's the nicer json format.
-// builder.Services.AddControllers().AddJsonOptions(options =>
-// {
-//     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-//     options.JsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-
-//     options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
-// });
-builder.Services.AddFastEndpoints();
+builder.Services.AddFastEndpoints().ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+    options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    options.SerializerOptions.Converters.Add(new GeoJsonConverterFactory());
+});
 
 /// ############################################################
 /// ##########  CUSTOM SERVICES SETUP  #########################

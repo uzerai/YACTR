@@ -16,26 +16,23 @@ public class OrganizationsController : ControllerBase
 {
     private readonly IEntityRepository<Organization> _organizationRepository;
     private readonly IRepository<OrganizationUser> _organizationUserRepository;
-    private readonly ILogger<OrganizationsController> _logger;
     private readonly IUserContext _userContext;
 
     public OrganizationsController(
         IEntityRepository<Organization> organizationRepository,
         IRepository<OrganizationUser> organizationUserRepository,
-        ILogger<OrganizationsController> logger,
         IUserContext userContext)
     {
         _organizationRepository = organizationRepository;
         _organizationUserRepository = organizationUserRepository;
-        _logger = logger;
         _userContext = userContext;
     }
 
-    // [HttpGet]
-    // public async Task<IActionResult> GetAll()
-    // {   
-    //     return Ok(await _organizationRepository.GetAllAsync());
-    // }
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {   
+        return Ok(await _organizationRepository.GetAllAsync());
+    }
 
     [HttpGet("{organizationId}")]
     [OrganizationPermissionRequired(Permission.OrganizationsRead)]
