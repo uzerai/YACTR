@@ -4,6 +4,7 @@ using System.Net;
 
 namespace YACTR.IntegrationTests.Controllers;
 
+[Collection("IntegrationTests")]
 public class OrganizationTeamsControllerIntegrationTests :  IntegrationTestClassFixture
 {
     public OrganizationTeamsControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)

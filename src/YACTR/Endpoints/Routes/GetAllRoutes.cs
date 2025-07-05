@@ -1,0 +1,28 @@
+using FastEndpoints;
+using YACTR.Data.Model.Location;
+using YACTR.Data.Repository.Interface;
+using Route = YACTR.Data.Model.Location.Route;
+
+namespace YACTR.Endpoints;
+
+public class GetAllRoutes : Endpoint<EmptyRequest, List<Route>>
+{
+    private readonly IEntityRepository<Route> _routeRepository;
+
+    public GetAllRoutes(IEntityRepository<Route> routeRepository)
+    {
+        _routeRepository = routeRepository;
+    }
+
+    public override void Configure()
+    {
+        Get("/");
+        Group<RoutesEndpointGroup>();
+    }
+
+    public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
+    {
+        var routes = await _routeRepository.GetAllAsync(ct);
+        await SendAsync([.. routes], cancellation: ct);
+    }
+} 

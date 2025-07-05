@@ -1,8 +1,8 @@
 using System.Net;
-using System.Net.Http.Headers;
 
 namespace YACTR.IntegrationTests.Controllers;
 
+[Collection("IntegrationTests")]
 public class HomeControllerIntegrationTests : IntegrationTestClassFixture
 {
     public HomeControllerIntegrationTests(TestWebApplicationFactory factory) : base(factory)
