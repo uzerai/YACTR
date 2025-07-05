@@ -1,6 +1,22 @@
 using FastEndpoints;
+using YACTR.Data.Model.Location;
 
 namespace YACTR.Endpoints;
+
+/// <summary>
+/// Request data for creating and updating the <see cref="Pitch"/> entity.
+/// </summary>
+/// <param name="SectorId">The ID of the sector.</param>
+/// <param name="Name">The name of the pitch.</param>
+/// <param name="Type">The type of the pitch.</param>
+/// <param name="Description">The description of the pitch.</param>
+/// <param name="Grade">The grade of the pitch.</param>
+public record PitchRequestData(
+    Guid SectorId,
+    string Name,
+    PitchType Type,
+    string? Description,
+    string? Grade);
 
 public class PitchesEndpointGroup : Group
 {

@@ -1,6 +1,7 @@
-using YACTR.DTO.RequestData.Organizations;
 using YACTR.Data.Model.Organizations;
 using System.Net;
+using YACTR.Endpoints.Organizations;
+using YACTR.Endpoints.Organizations.Teams;
 
 namespace YACTR.Tests.Controllers;
 
@@ -68,7 +69,7 @@ public class OrganizationTeamsControllerIntegrationTests :  IntegrationTestClass
         var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
         // Create team request
-        var createRequest = new CreateOrganizationTeamRequestData("Test Team");
+        var createRequest = new CreateOrganizationTeamRequest(organization.Id, "Test Team");
         
         var content = SerializeJsonFromRequestData(createRequest);
             
@@ -90,7 +91,7 @@ public class OrganizationTeamsControllerIntegrationTests :  IntegrationTestClass
         var client = CreateAuthenticatedClient();
         // Arrange
         var invalidOrgId = Guid.NewGuid();
-        var createRequest = new CreateOrganizationTeamRequestData("Test Team");
+        var createRequest = new CreateOrganizationTeamRequest(invalidOrgId, "Test Team");
         
         var content = SerializeJsonFromRequestData(createRequest);
             
@@ -115,7 +116,7 @@ public class OrganizationTeamsControllerIntegrationTests :  IntegrationTestClass
         
         var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
-        var createRequest = new CreateOrganizationTeamRequestData("");
+        var createRequest = new CreateOrganizationTeamRequest(organization.Id, "");
         
         var content = SerializeJsonFromRequestData(createRequest);
             

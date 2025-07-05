@@ -1,9 +1,10 @@
-using YACTR.DTO.RequestData.Organizations;
 using YACTR.Data.Model.Organizations;
 using YACTR.Data.Model.Authorization.Permissions;
 using System.Net;
 using YACTR.Data.Model.Authentication;
 using Microsoft.EntityFrameworkCore;
+using YACTR.Endpoints.Organizations.Teams;
+using YACTR.Endpoints.Organizations;
 
 namespace YACTR.Tests.Controllers;
 
@@ -29,7 +30,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
         // Create a team
-        var createTeamRequest = new CreateOrganizationTeamRequestData("Test Team for Users");
+        var createTeamRequest = new CreateOrganizationTeamRequest(organization.Id, "Test Team for Users");
         
         var teamContent = SerializeJsonFromRequestData(createTeamRequest);
             
@@ -41,11 +42,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         var user = await _databaseContext.Set<User>().AsNoTracking().Where(user => user.Username == TestAuthenticationHandler.DEFAULT_TEST_USER.Username).FirstOrDefaultAsync();
         
         // Create team user request
-        var createRequest = new CreateOrganizationTeamUserRequestData
-        {
-            UserId = user!.Id,
-            Permissions = new List<Permission> { Permission.TeamsRead, Permission.TeamsWrite }
-        };
+        var createRequest = new CreateOrganizationTeamUserRequest(organization.Id, team.Id, user!.Id, [Permission.TeamsRead, Permission.TeamsWrite]);
         
         var content = SerializeJsonFromRequestData(createRequest);
             
@@ -74,11 +71,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         // Arrange
         var invalidOrgId = Guid.NewGuid();
         var teamId = Guid.NewGuid();
-        var createRequest = new CreateOrganizationTeamUserRequestData
-        {
-            UserId = Guid.NewGuid(),
-            Permissions = new List<Permission> { Permission.TeamsRead }
-        };
+        var createRequest = new CreateOrganizationTeamUserRequest(invalidOrgId, teamId, Guid.NewGuid(), [Permission.TeamsRead]);
 
         var content = SerializeJsonFromRequestData(createRequest);
 
@@ -104,11 +97,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
         var invalidTeamId = Guid.NewGuid();
-        var createRequest = new CreateOrganizationTeamUserRequestData
-        {
-            UserId = Guid.NewGuid(),
-            Permissions = new List<Permission> { Permission.TeamsRead }
-        };
+        var createRequest = new CreateOrganizationTeamUserRequest(organization.Id, invalidTeamId, Guid.NewGuid(), [Permission.TeamsRead]);
         
         var content = SerializeJsonFromRequestData(createRequest);
             
@@ -133,7 +122,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         
         var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
         
-        var createTeamRequest = new CreateOrganizationTeamRequestData("Test Team for Empty Permissions");
+        var createTeamRequest = new CreateOrganizationTeamRequest(organization.Id, "Test Team for Empty Permissions");
         
         var teamContent = SerializeJsonFromRequestData(createTeamRequest);
             
@@ -143,11 +132,7 @@ public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestCl
         var team = await DeserializeEntityFromResponse<OrganizationTeam>(teamResponse);
         
         var user = await _databaseContext.Set<User>().AsNoTracking().Where(user => user.Username == TestAuthenticationHandler.DEFAULT_TEST_USER.Username).FirstOrDefaultAsync();
-        var createRequest = new CreateOrganizationTeamUserRequestData
-        {
-            UserId = user!.Id,
-            Permissions = new List<Permission>()
-        };
+        var createRequest = new CreateOrganizationTeamUserRequest(organization.Id, team.Id, user!.Id, []);
         
         var content = SerializeJsonFromRequestData(createRequest);
             
