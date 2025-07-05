@@ -6,7 +6,6 @@ public static class UserContextExtensions
     {
         services.AddHttpContextAccessor();
         services.AddScoped<IUserContext, UserContext>();
-        services.AddSingleton(sp => sp.GetRequiredService<IServiceScopeFactory>());
         return services;
     }
 
