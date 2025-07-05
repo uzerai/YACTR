@@ -24,16 +24,16 @@ public partial class EntityRepository<T> : BaseRepository<T>, IEntityRepository<
         _clock = clock;
     }
 
-    public override async Task<T> CreateAsync(T entity)
+    public override async Task<T> CreateAsync(T entity, CancellationToken ct = default)
     {
         await _context.Set<T>()
             .AddAsync(entity);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(ct);
 
         return entity;
     }
 
-    public override async Task<bool> DeleteAsync(T entity)
+    public override async Task<bool> DeleteAsync(T entity, CancellationToken ct = default)
     {
         var entityToDelete = await GetByIdTrackingAsync(entity.Id);
 
@@ -43,23 +43,23 @@ public partial class EntityRepository<T> : BaseRepository<T>, IEntityRepository<
         }
 
         entityToDelete.DeletedAt = _clock.GetCurrentInstant();
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(ct);
 
         return true;
     }
 
-    public virtual async Task<T?> GetByIdAsync(Guid id)
+    public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         return await _context.Set<T>()
             .AsNoTracking()
             .WhereAvailable()
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 
-    public virtual async Task<T?> GetByIdTrackingAsync(Guid id)
+    public virtual async Task<T?> GetByIdTrackingAsync(Guid id, CancellationToken ct = default)
     {
         return await _context.Set<T>()
             .AsTracking()
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 }

@@ -27,37 +27,37 @@ public partial class BaseRepository<T> : IRepository<T> where T : class
             .AsQueryable();
     }
 
-    public virtual async Task<T> CreateAsync(T entity)
+    public virtual async Task<T> CreateAsync(T entity, CancellationToken ct = default)
     {
         _context.Set<T>().Add(entity);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(ct);
 
         return entity;
     }
 
-    public virtual async Task<bool> DeleteAsync(T entity)
+    public virtual async Task<bool> DeleteAsync(T entity, CancellationToken ct = default)
     {
         _context.Set<T>().Remove(entity);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(ct);
 
         return true;
     }
 
-    public virtual async Task<IEnumerable<T>> GetAllAsync()
+    public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default)
     {
         return await BuildReadonlyQuery()
-            .ToListAsync();
+            .ToListAsync(ct);
     }
 
-    public virtual async Task<bool> SaveAsync()
+    public virtual async Task<bool> SaveAsync(CancellationToken ct = default)
     {
-        return await _context.SaveChangesAsync() > 0;
+        return await _context.SaveChangesAsync(ct) > 0;
     }
 
-    public virtual async Task<T> UpdateAsync(T entity)
+    public virtual async Task<T> UpdateAsync(T entity, CancellationToken ct = default)
     {
         _context.Set<T>().Update(entity);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(ct);
 
         return entity;
     }
