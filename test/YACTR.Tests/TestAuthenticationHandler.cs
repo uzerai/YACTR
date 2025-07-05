@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using YACTR.Data.Model.Authentication;
 
-namespace YACTR.IntegrationTests;
+namespace YACTR.Tests;
 
 /// <summary>
 /// Authenticates test users through the use of the <see cref="AuthenticationScheme"/>.

@@ -1,7 +1,7 @@
 using System.Net;
 using YACTR.Data.Model.Authentication;
 
-namespace YACTR.IntegrationTests.Controllers;
+namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
 public class UsersControllerIntegrationTests : IntegrationTestClassFixture

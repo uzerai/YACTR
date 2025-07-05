@@ -5,7 +5,7 @@ using System.Net;
 using YACTR.Data.Model.Authentication;
 using Microsoft.EntityFrameworkCore;
 
-namespace YACTR.IntegrationTests.Controllers;
+namespace YACTR.Tests.Controllers;
 
 [Collection("IntegrationTests")]
 public class OrganizationTeamUsersControllerIntegrationTests : IntegrationTestClassFixture

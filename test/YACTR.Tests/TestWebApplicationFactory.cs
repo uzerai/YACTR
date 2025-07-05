@@ -5,10 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NodaTime;
-using YACTR.Data;
 using YACTR.Data.Repository.ConfigurationExtension;
 
-namespace YACTR.IntegrationTests;
+namespace YACTR.Tests;
 
 /// <summary>
 /// A test factory for creating a test application context.

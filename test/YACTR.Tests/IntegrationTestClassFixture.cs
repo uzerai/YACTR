@@ -9,7 +9,7 @@ using NodaTime.Serialization.SystemTextJson;
 using YACTR.Data;
 using YACTR.Data.Model.Authentication;
 
-namespace YACTR.IntegrationTests;
+namespace YACTR.Tests;
 
 public class IntegrationTestClassFixture : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {
