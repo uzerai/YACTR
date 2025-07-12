@@ -1,6 +1,5 @@
 services:
   database:
-    image: postgres:17.4
     environment:
       POSTGRES_USER: yactr
       POSTGRES_PASSWORD: yactr
@@ -11,8 +10,9 @@ services:
       - ./container/local-db/init-scripts/01-init-extensions.sql:/docker-entrypoint-initdb.d/01-init-extensions.sql
     # Add build context to install extensions
     build:
-      context: ./container/local-db
-      dockerfile: Dockerfile.postgres
+      context: .
+      dockerfile: container/local-db/Dockerfile
+      target: runner
     profiles:
       - test
       - development
