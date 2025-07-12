@@ -14,9 +14,12 @@ using NetTopologySuite.IO.Converters;
 using Minio;
 using YACTR.DI.Service;
 using YACTR.DI.Authorization.UserContext;
+using YACTR.Swagger;
 using FileSignatures;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using NJsonSchema;
+using NetTopologySuite.Geometries;
 
 // ############################################################
 // ##########  APP BUILDING  ##################################
@@ -53,13 +56,21 @@ builder.Services.AddAuthorization();
 builder.Services
     .AddFastEndpoints()
     // This configures the JSON serialization in the generated schema.
-    .SwaggerDocument(document =>
+    .SwaggerDocument(swaggerSettings =>
     {
-        document.SerializerSettings = serializerSettings =>
+        swaggerSettings.SerializerSettings = serializerSettings =>
         {
             serializerSettings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-            serializerSettings.Converters.Add(new GeoJsonConverterFactory());
             serializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+            serializerSettings.Converters.Add(new GeoJsonConverterFactory());
+        };
+
+        swaggerSettings.DocumentSettings = docSettings =>
+        {
+            /**
+            * <see cref="NSwagNtsGeoJsonSchemaMappers"/>
+            */
+            docSettings.SchemaSettings.AddNtsGeoJsonSchemas();
         };
     })
     // This configures the serialization between Entity <-> JSON.
