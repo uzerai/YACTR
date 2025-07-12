@@ -1,6 +1,5 @@
+FROM postgres:17.4 AS builder
 MAINTAINER uzerai
-
-FROM postgres:17.4 AS pg_uuidv7_builder
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -8,6 +7,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     tar \
     postgresql-server-dev-17 \
+    postgresql-17-postgis-3 \
+    postgis \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir "/tmp/pg_uuidv7"
@@ -19,14 +20,9 @@ RUN curl -LO "https://github.com/fboulnois/pg_uuidv7/releases/download/v1.6.0/{p
 RUN cp "$PG_MAJOR/pg_uuidv7.so" "$(pg_config --pkglibdir)" && \
     cp pg_uuidv7--1.6.sql pg_uuidv7.control "$(pg_config --sharedir)/extension"
 
-RUN rm -rf /tmp/pg_uuidv7 
+RUN rm -rf /tmp
 
+FROM builder AS runner
 
-FROM pg_uuidv7_builder AS postgis_builder
-RUN apt-get update \
-    && apt-get install -y \
-    postgresql-17-postgis-3 \
-    postgis
-
-
-FROM postgis_builder AS runner
+EXPOSE 5432
+CMD ["postgres"]
