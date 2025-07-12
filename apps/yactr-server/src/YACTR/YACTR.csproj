@@ -16,7 +16,6 @@
     <PackageReference Include="FastEndpoints.Security" Version="6.2.0" />
     <PackageReference Include="FastEndpoints.Swagger" Version="6.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
     <PackageReference Include="Nodatime" Version="3.2.1" />
     <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.3.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="9.0.4" />
@@ -34,7 +33,6 @@
 
     <!-- NetTopologySuite, for geolocation support in EF -->
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="9.0.4" />
-    <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
     <PackageReference Include="NetTopologySuite.IO.GeoJSON4STJ" Version="4.0.0" />
 
     <!-- Min io -->

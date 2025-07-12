@@ -47,10 +47,9 @@ public class AreaEntityEndpointsIntegrationTests : IntegrationTestClassFixture
             location,
             boundary
         );
-        
+
         var content = SerializeJsonFromRequestData(createRequest);
-        var json = await content.ReadAsStringAsync();
-            
+
         // Act
         var response = await client.PostAsync("/areas", content);
         
