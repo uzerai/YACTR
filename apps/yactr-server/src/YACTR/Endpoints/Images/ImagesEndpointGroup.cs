@@ -5,6 +5,7 @@ namespace YACTR.Endpoints;
 public class ImageUploadRequest
 {
     public required IFormFile? Image { get; init; }
+    public Guid? RelatedEntityId { get; init; }
 };
 
 public class ImagesEndpointGroup : Group
