@@ -36,10 +36,10 @@ public class UploadImage : Endpoint<ImageUploadRequest, Image>
 
         try
         {
-            var uploadedImage = await _imageStorageService.UploadImage(
+            var uploadedImage = await _imageStorageService.UploadImageAsync(
                 req.Image.OpenReadStream(),
                 _userContext.CurrentUser!,
-                Guid.Empty);
+                Guid.Empty, ct);
 
             await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, uploadedImage, cancellation: ct);
         }

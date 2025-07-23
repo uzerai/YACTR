@@ -37,7 +37,7 @@ public class ImageStorageService : IImageStorageService
       return _uploadedFileFormat is FileSignatures.Formats.Image;
     }
 
-    public async Task<Image> UploadImage(Stream image, User user, Guid? relatedEntityId)
+    public async Task<Image> UploadImageAsync(Stream image, User user, Guid? relatedEntityId, CancellationToken ct = default)
     {
         if (!IsImageFile(image))
         {
@@ -46,6 +46,11 @@ public class ImageStorageService : IImageStorageService
 
         try
         {
+            if (!await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(BUCKET_NAME), ct))
+            {
+                await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(BUCKET_NAME));
+            }
+
             var objectName = Guid.NewGuid().ToString();
             var args = new PutObjectArgs()
                 .WithBucket(BUCKET_NAME)
@@ -54,7 +59,16 @@ public class ImageStorageService : IImageStorageService
                 .WithStreamData(image)
                 .WithObjectSize(image.Length);
 
-            var uploadedObject = await _minioClient.PutObjectAsync(args);
+            var uploadedObject = await _minioClient.PutObjectAsync(args, cancellationToken: ct);
+
+            if (uploadedObject.ResponseStatusCode == System.Net.HttpStatusCode.Forbidden)
+            {
+                throw new MinioException("Minio upload forbidden");
+            }
+            else if (uploadedObject.ResponseStatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new MinioException("Unclassified error when uploading to minio");
+            }
 
             Image imageEntity = await _imageRepository.CreateAsync(new()
             {
@@ -62,7 +76,7 @@ public class ImageStorageService : IImageStorageService
                 Bucket = BUCKET_NAME,
                 UploaderId = user.Id,
                 RelatedEntityId = relatedEntityId,
-            });
+            }, ct);
 
             return imageEntity;
         }
@@ -73,14 +87,14 @@ public class ImageStorageService : IImageStorageService
         }
     }
 
-    public async Task<Image> RemoveImage(Guid imageId)
+    public async Task<Image> RemoveImage(Guid imageId, CancellationToken ct)
     {
-        var image = await _imageRepository.GetByIdAsync(imageId)
+        var image = await _imageRepository.GetByIdAsync(imageId, ct)
           ?? throw new Exception($"Image with ID {imageId} not found");
 
         await _minioClient.RemoveObjectAsync(new RemoveObjectArgs()
             .WithBucket(image.Bucket)
-            .WithObject(image.Key));
+            .WithObject(image.Key), ct);
 
         return image; 
     }
