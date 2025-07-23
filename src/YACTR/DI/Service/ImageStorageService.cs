@@ -90,7 +90,7 @@ public class ImageStorageService : IImageStorageService
     public async Task<Image> RemoveImage(Guid imageId, CancellationToken ct)
     {
         var image = await _imageRepository.GetByIdAsync(imageId, ct)
-          ?? throw new Exception($"Image with ID {imageId} not found");
+          ?? throw new ObjectNotFoundException($"Image with ID {imageId} not found");
 
         await _minioClient.RemoveObjectAsync(new RemoveObjectArgs()
             .WithBucket(image.Bucket)
