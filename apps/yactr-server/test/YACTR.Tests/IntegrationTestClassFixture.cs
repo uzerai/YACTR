@@ -1,39 +1,38 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using FastEndpoints.Testing;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NetTopologySuite.IO.Converters;
 using NodaTime;
-using NodaTime.Serialization.SystemTextJson;
 using YACTR.Data;
 using YACTR.Data.Model.Authentication;
+using YACTR.Data.Repository.ConfigurationExtension;
 
 namespace YACTR.Tests;
 
-public class IntegrationTestClassFixture : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
+public class IntegrationTestClassFixture : AppFixture<Program>
 {
-    public TestWebApplicationFactory _factory { get; }
     public DatabaseContext _databaseContext;
+    public HttpClient AnonymousClient { get; private set; }
     protected JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
         Converters = { new GeoJsonConverterFactory() }
     };
 
-    public IntegrationTestClassFixture(TestWebApplicationFactory factory)
-    {
-        _factory = factory;
-        _databaseContext = factory.Services.GetService<DatabaseContext>()!;
-        _jsonSerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
-    }
-
     /// <summary>
     /// Ensures that the database is created before the test suite is run.
     /// </summary>
     /// <returns></returns>
-    public async Task InitializeAsync()
+    protected override async ValueTask SetupAsync()
     {
+        AnonymousClient = CreateClient();
+        _databaseContext = Services.GetService<DatabaseContext>()!;
         await _databaseContext.Database.EnsureCreatedAsync();
     }
 
@@ -41,41 +40,61 @@ public class IntegrationTestClassFixture : IClassFixture<TestWebApplicationFacto
     /// Truncates the database after the test suite is run.
     /// </summary>
     /// <returns></returns>
-    public async Task DisposeAsync()
+    protected override async ValueTask TearDownAsync()
     {
         await TruncateTestDatabaseAsync();
     }
+
+    protected override void ConfigureApp(IWebHostBuilder builder)
+    {
+        base.ConfigureApp(builder);
+        
+        builder.UseEnvironment("Test");
+    }
+
+    protected override void ConfigureServices(IServiceCollection services)
+    {
+        base.ConfigureServices(services);
+
+        services.AddControllers();
+        services.AddRouting();
+
+        services.Configure<DbContextOptionsBuilder>(options =>
+        {
+            options.UseNpgsql("Host=localhost;Database=yactr_test;Username=yactr;Password=yactr;Port=5432");
+            // options.EnableDetailedErrors();
+        });
+
+        // Remove the main authentication scheme from main application;
+        // replace with the TestAuthenticationHandler which receives a magic string as Bearer token
+        // and authorizes as the user references in the magic string.
+        services.RemoveAll<AuthenticationSchemeOptions>();
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = TestAuthenticationHandler.AuthenticationScheme;
+            options.DefaultChallengeScheme = TestAuthenticationHandler.AuthenticationScheme;
+        }).AddScheme<AuthenticationSchemeOptions, TestAuthenticationHandler>(
+            TestAuthenticationHandler.AuthenticationScheme,
+            options => { });
+
+        services.AddRepositories();
+        services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);
+
+  }
 
     /// <summary>
     /// Creates a test http client which is authenticated against the provided user.
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
-    protected HttpClient CreateAuthenticatedClient(User? user = null)
+    public HttpClient CreateAuthenticatedClient(User? user = null)
     {
-        HttpClient client = _factory.CreateClient();
+        HttpClient client = CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             TestAuthenticationHandler.AuthenticationScheme,
             TestAuthenticationHandler.GenerateAuthenticationToken(user ?? TestAuthenticationHandler.DEFAULT_TEST_USER));
 
         return client;
-    }
-
-    protected HttpClient CreateAnonymousClient()
-    {
-        return _factory.CreateClient();
-    }
-
-    protected async Task<T> DeserializeEntityFromResponse<T>(HttpResponseMessage httpResponseMessage)
-    {   
-        var response = await httpResponseMessage.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<T>(response, _jsonSerializerOptions) ?? throw new Exception($"Failed to deserialize response: {response}");
-    }
-
-    protected StringContent SerializeJsonFromRequestData<T>(T requestData)
-    {
-        return new StringContent(JsonSerializer.Serialize<T>(requestData, _jsonSerializerOptions),
-            Encoding.UTF8, "application/json"); ;
     }
 
     /// <summary>

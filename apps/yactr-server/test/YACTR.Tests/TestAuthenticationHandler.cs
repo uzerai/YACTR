@@ -29,6 +29,13 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
         Username = "test_user",
     };
 
+    /// <summary>
+    /// Generates a token for use in the test version of the application.
+    /// 
+    /// Has format of "auth0Id::username::email"
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
     public static string GenerateAuthenticationToken(User user)
     {
         return string.Join(TokenSplitChars, new[] { user.Auth0UserId, user.Username, user.Email });
