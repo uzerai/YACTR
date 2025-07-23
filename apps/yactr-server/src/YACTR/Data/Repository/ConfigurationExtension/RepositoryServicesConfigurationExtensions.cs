@@ -3,6 +3,7 @@ using YACTR.Data.Model;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Location;
 using YACTR.Data.Model.Organizations;
+using YACTR.Data.Model.Achievement;
 using Route = YACTR.Data.Model.Location.Route;
 
 namespace YACTR.Data.Repository.ConfigurationExtension;
@@ -27,6 +28,10 @@ public static class RepositoryServicesConfigurationExtensions
         services.AddTransient<IEntityRepository<Pitch>, EntityRepository<Pitch>>();
         services.AddTransient<IEntityRepository<Route>, EntityRepository<Route>>();
         services.AddTransient<IEntityRepository<Image>, EntityRepository<Image>>();
+        
+        // Ascent repositories - using IRepository since BaseAscent doesn't inherit from BaseEntity
+        services.AddTransient<IRepository<RouteAscent>, BaseRepository<RouteAscent>>();
+        services.AddTransient<IRepository<PitchAscent>, BaseRepository<PitchAscent>>();
         
         return services;
     }
