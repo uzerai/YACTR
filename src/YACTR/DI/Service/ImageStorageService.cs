@@ -16,7 +16,7 @@ public class ImageStorageService : IImageStorageService
     private readonly IEntityRepository<Image> _imageRepository;
     private readonly ILogger<ImageStorageService> _logger;
 
-    private FileSignatures.FileFormat? _uploadedFileFormat;
+    private FileFormat? _uploadedFileFormat;
 
     public ImageStorageService(
         IMinioClient minioClient,
@@ -50,7 +50,7 @@ public class ImageStorageService : IImageStorageService
             var args = new PutObjectArgs()
                 .WithBucket(BUCKET_NAME)
                 .WithObject(objectName)
-                .WithContentType(_uploadedFileFormat!.MediaType) // We guarantee it's an image and thus has a media type.
+                .WithContentType(_uploadedFileFormat!.MediaType) // We guarantee it's an image above and thus has a media type.
                 .WithStreamData(image)
                 .WithObjectSize(image.Length);
 

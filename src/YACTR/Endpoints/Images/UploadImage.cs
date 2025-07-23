@@ -7,7 +7,7 @@ using YACTR.Data.Model.Authorization.Permissions;
 
 namespace YACTR.Endpoints;
 
-public class UploadImage : Endpoint<EmptyRequest, Image>
+public class UploadImage : Endpoint<ImageUploadRequest, Image>
 {
     private readonly IImageStorageService _imageStorageService;
     private readonly IUserContext _userContext;
@@ -21,12 +21,19 @@ public class UploadImage : Endpoint<EmptyRequest, Image>
     public override void Configure()
     {
         Post("/");
+        AllowFileUploads();
         Group<ImagesEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.ImagesWrite)));
     }
 
-    public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
+    public override async Task HandleAsync(ImageUploadRequest req, CancellationToken ct)
     {
+        if (req.Image is null)
+        {
+            await SendErrorsAsync(cancellation: ct);
+            return;
+        }
+
         using var memoryStream = new MemoryStream();
         await HttpContext.Request.Body.CopyToAsync(memoryStream, ct);
         memoryStream.Position = 0;
@@ -34,15 +41,15 @@ public class UploadImage : Endpoint<EmptyRequest, Image>
         try
         {
             var uploadedImage = await _imageStorageService.UploadImage(
-            memoryStream,
-            _userContext.CurrentUser!,
-            Guid.Empty);
+                memoryStream,
+                _userContext.CurrentUser!,
+                Guid.Empty);
 
             await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, uploadedImage, cancellation: ct);
         }
         catch
         {
-            await SendErrorsAsync(cancellation: ct);
+            await SendErrorsAsync(422, cancellation: ct);
             return;
         }
         
