@@ -9,16 +9,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NetTopologySuite.IO.Converters;
 using NodaTime;
+using Xunit.v3;
 using YACTR.Data;
+using YACTR.Data.Model;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Repository.ConfigurationExtension;
+using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Tests;
 
 public class IntegrationTestClassFixture : AppFixture<Program>
 {
-    public DatabaseContext _databaseContext;
-    public HttpClient AnonymousClient { get; private set; }
+    public DatabaseContext DatabaseContext { get; private set; } = null!;
+    public HttpClient AnonymousClient { get; private set; } = null!;
     protected JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
@@ -32,8 +35,8 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     protected override async ValueTask SetupAsync()
     {
         AnonymousClient = CreateClient();
-        _databaseContext = Services.GetService<DatabaseContext>()!;
-        await _databaseContext.Database.EnsureCreatedAsync();
+        DatabaseContext = Services.GetRequiredService<DatabaseContext>();
+        await DatabaseContext.Database.EnsureCreatedAsync();
     }
 
     /// <summary>
@@ -79,7 +82,6 @@ public class IntegrationTestClassFixture : AppFixture<Program>
 
         services.AddRepositories();
         services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);
-
   }
 
     /// <summary>
@@ -97,6 +99,11 @@ public class IntegrationTestClassFixture : AppFixture<Program>
         return client;
     }
 
+    public IEntityRepository<T> GetEntityRepository<T>() where T : BaseEntity
+    {
+        return Services.GetRequiredService<IEntityRepository<T>>();
+    }
+
     /// <summary>
     /// Currently the test suite is ran against a single database which is on the host computer.
     /// This method truncates the database of the current database context to ensure that the test suite
@@ -106,7 +113,7 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     /// <returns></returns>
     private async Task TruncateTestDatabaseAsync(CancellationToken cancellationToken = default)
     {
-        await _databaseContext.Database.ExecuteSqlRawAsync("""
+        await DatabaseContext.Database.ExecuteSqlRawAsync("""
             DO $$
             DECLARE
                 r RECORD;

@@ -1,145 +1,123 @@
-// using YACTR.Data.Model.Organizations;
-// using YACTR.Data.Model.Authorization.Permissions;
-// using System.Net;
-// using YACTR.Data.Model.Authentication;
-// using Microsoft.EntityFrameworkCore;
-// using YACTR.Endpoints.Organizations.Teams;
-// using YACTR.Endpoints.Organizations;
+using System.Net;
+using FastEndpoints;
+using FastEndpoints.Testing;
+using Shouldly;
+using Microsoft.EntityFrameworkCore;
+using YACTR.Data.Model.Organizations;
+using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.Data.Model.Authentication;
+using YACTR.Endpoints.Organizations;
+using YACTR.Endpoints.Organizations.Teams;
 
-// namespace YACTR.Tests.Controllers;
+namespace YACTR.Tests.Endpoints;
 
-// [Collection("IntegrationTests")]
-// public class OrganizationTeamUserEntityEndpointsIntegrationTests : IntegrationTestClassFixture
-// {
-//     public OrganizationTeamUserEntityEndpointsIntegrationTests(TestWebApplicationFactory factory) : base(factory)
-//     {        
-//     }
+[Collection("IntegrationTests")]
+public class OrganizationTeamUserEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
+{
+    [Fact]
+    public async Task Create_WithValidData_ReturnsCreatedTeamUser()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        
+        // Arrange - First create an organization
+        var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Team Users");
+        var (orgResponse, organization) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createOrgRequest);
+        orgResponse.IsSuccessStatusCode.ShouldBeTrue();
+        
+        // Create a team
+        var createTeamRequest = new CreateOrganizationTeamRequest(organization.Id, "Test Team for Users");
+        var (teamResponse, team) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createTeamRequest);
+        teamResponse.IsSuccessStatusCode.ShouldBeTrue();
+
+        var user = await fixture.GetEntityRepository<User>()
+          .BuildReadonlyQuery()
+          .Where(user => user.Username == TestAuthenticationHandler.DEFAULT_TEST_USER.Username)
+          .FirstOrDefaultAsync(cancellationToken: TestContext.Current.CancellationToken);
+        
+        // Create team user request
+        var createRequest = new CreateOrganizationTeamUserRequest(organization.Id, team.Id, user!.Id, [Permission.TeamsRead, Permission.TeamsWrite]);
+            
+        // Act
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeamUser, CreateOrganizationTeamUserRequest, OrganizationTeamUser>(createRequest);
+        
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.UserId.ShouldBe(createRequest.UserId);
+        result.OrganizationTeamId.ShouldBe(team.Id);
+        result.OrganizationId.ShouldBe(organization.Id);
+        result.Permissions.ShouldNotBeNull();
+        result.Permissions.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    // This is Forbidden because the user CANNOT have permissions 
+    // to add team users on a non-existent organization.
+    // (because the organization does not exist)
+    public async Task Create_WithInvalidOrganizationId_ReturnsForbidden()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        
+        // Arrange
+        var invalidOrgId = Guid.NewGuid();
+        var teamId = Guid.NewGuid();
+        var createRequest = new CreateOrganizationTeamUserRequest(invalidOrgId, teamId, Guid.NewGuid(), [Permission.TeamsRead]);
+
+        // Act
+        var (response, _) = await client.POSTAsync<CreateOrganizationTeamUser, CreateOrganizationTeamUserRequest, OrganizationTeamUser>(createRequest);
+
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
     
-//     [Fact]
-//     public async Task Create_WithValidData_ReturnsCreatedTeamUser()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange - First create an organization
-//         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Team Users");
+    [Fact]
+    public async Task Create_WithInvalidTeamId_ReturnsFailedDepedency()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
         
-//         var orgContent = SerializeJsonFromRequestData(createOrgRequest);
+        // Arrange - First create an organization
+        var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Invalid Team");
+        var (orgResponse, organization) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createOrgRequest);
+        orgResponse.IsSuccessStatusCode.ShouldBeTrue();
+        
+        var invalidTeamId = Guid.NewGuid();
+        var createRequest = new CreateOrganizationTeamUserRequest(organization.Id, invalidTeamId, Guid.NewGuid(), [Permission.TeamsRead]);
             
-//         var orgResponse = await client.PostAsync("/organizations", orgContent);
-//         orgResponse.EnsureSuccessStatusCode();
+        // Act
+        var (response, _) = await client.POSTAsync<CreateOrganizationTeamUser, CreateOrganizationTeamUserRequest, OrganizationTeamUser>(createRequest);
         
-//         var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
-        
-//         // Create a team
-//         var createTeamRequest = new CreateOrganizationTeamRequest(organization.Id, "Test Team for Users");
-        
-//         var teamContent = SerializeJsonFromRequestData(createTeamRequest);
-            
-//         var teamResponse = await client.PostAsync($"/organizations/{organization!.Id}/teams", teamContent);
-//         teamResponse.EnsureSuccessStatusCode();
-        
-//         var team = await DeserializeEntityFromResponse<OrganizationTeam>(teamResponse);
-
-//         var user = await _databaseContext.Set<User>().AsNoTracking().Where(user => user.Username == TestAuthenticationHandler.DEFAULT_TEST_USER.Username).FirstOrDefaultAsync();
-        
-//         // Create team user request
-//         var createRequest = new CreateOrganizationTeamUserRequest(organization.Id, team.Id, user!.Id, [Permission.TeamsRead, Permission.TeamsWrite]);
-        
-//         var content = SerializeJsonFromRequestData(createRequest);
-            
-//         // Act
-//         var response = await client.PostAsync($"/organizations/{organization.Id}/teams/{team!.Id}/users", content);
-        
-//         // Assert
-//         response.EnsureSuccessStatusCode();
-        
-//         var teamUser = await DeserializeEntityFromResponse<OrganizationTeamUser>(response);
-//         Assert.NotNull(teamUser);
-//         Assert.Equal(createRequest.UserId, teamUser.UserId);
-//         Assert.Equal(team.Id, teamUser.OrganizationTeamId);
-//         Assert.Equal(organization.Id, teamUser.OrganizationId);
-//         Assert.NotNull(teamUser.Permissions);
-//         Assert.Equal(2, teamUser.Permissions.Count);
-//     }
-
-//     [Fact]
-//     // This is Forbidden because the user CANNOT have permissions 
-//     // to add team users on a non-existent organization.
-//     // (because the organization does not exist)
-//     public async Task Create_WithInvalidOrganizationId_ReturnsForbidden()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange
-//         var invalidOrgId = Guid.NewGuid();
-//         var teamId = Guid.NewGuid();
-//         var createRequest = new CreateOrganizationTeamUserRequest(invalidOrgId, teamId, Guid.NewGuid(), [Permission.TeamsRead]);
-
-//         var content = SerializeJsonFromRequestData(createRequest);
-
-//         // Act
-//         var response = await client.PostAsync($"/organizations/{invalidOrgId}/teams/{teamId}/users", content);
-
-//         // Assert
-//         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-//     }
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.FailedDependency);
+    }
     
-//     [Fact]
-//     public async Task Create_WithInvalidTeamId_ReturnsFailedDepedency()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange - First create an organization
-//         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Invalid Team");
+    [Fact]
+    public async Task Create_WithEmptyPermissions_ReturnsOK()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
         
-//         var orgContent = SerializeJsonFromRequestData(createOrgRequest);
+        // Arrange - First create an organization and team
+        var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Empty Permissions");
+        var (orgResponse, organization) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createOrgRequest);
+        orgResponse.IsSuccessStatusCode.ShouldBeTrue();
+        
+        var createTeamRequest = new CreateOrganizationTeamRequest(organization.Id, "Test Team for Empty Permissions");
+        var (teamResponse, team) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createTeamRequest);
+        teamResponse.IsSuccessStatusCode.ShouldBeTrue();
+        
+        var user = await fixture.GetEntityRepository<User>()
+          .BuildReadonlyQuery()
+          .Where(user => user.Username == TestAuthenticationHandler.DEFAULT_TEST_USER.Username)
+          .FirstOrDefaultAsync(cancellationToken: TestContext.Current.CancellationToken);
+        
+        var createRequest = new CreateOrganizationTeamUserRequest(organization.Id, team.Id, user!.Id, []);
             
-//         var orgResponse = await client.PostAsync("/organizations", orgContent);
-//         orgResponse.EnsureSuccessStatusCode();
+        // Act
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeamUser, CreateOrganizationTeamUserRequest, OrganizationTeamUser>(createRequest);
         
-//         var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
-        
-//         var invalidTeamId = Guid.NewGuid();
-//         var createRequest = new CreateOrganizationTeamUserRequest(organization.Id, invalidTeamId, Guid.NewGuid(), [Permission.TeamsRead]);
-        
-//         var content = SerializeJsonFromRequestData(createRequest);
-            
-//         // Act
-//         var response = await client.PostAsync($"/organizations/{organization!.Id}/teams/{invalidTeamId}/users", content);
-        
-//         // Assert
-//         Assert.Equal(HttpStatusCode.FailedDependency, response.StatusCode);
-//     }
-    
-//     [Fact]
-//     public async Task Create_WithEmptyPermissions_ReturnsOK()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange - First create an organization and team
-//         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Empty Permissions");
-        
-//         var orgContent = SerializeJsonFromRequestData(createOrgRequest);
-            
-//         var orgResponse = await client.PostAsync("/organizations", orgContent);
-//         orgResponse.EnsureSuccessStatusCode();
-        
-//         var organization = await DeserializeEntityFromResponse<Organization>(orgResponse);
-        
-//         var createTeamRequest = new CreateOrganizationTeamRequest(organization.Id, "Test Team for Empty Permissions");
-        
-//         var teamContent = SerializeJsonFromRequestData(createTeamRequest);
-            
-//         var teamResponse = await client.PostAsync($"/organizations/{organization!.Id}/teams", teamContent);
-//         teamResponse.EnsureSuccessStatusCode();
-        
-//         var team = await DeserializeEntityFromResponse<OrganizationTeam>(teamResponse);
-        
-//         var user = await _databaseContext.Set<User>().AsNoTracking().Where(user => user.Username == TestAuthenticationHandler.DEFAULT_TEST_USER.Username).FirstOrDefaultAsync();
-//         var createRequest = new CreateOrganizationTeamUserRequest(organization.Id, team.Id, user!.Id, []);
-        
-//         var content = SerializeJsonFromRequestData(createRequest);
-            
-//         // Act
-//         var response = await client.PostAsync($"/organizations/{organization.Id}/teams/{team!.Id}/users", content);
-        
-//         // Assert
-//         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-//     }
-// } 
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        result.ShouldNotBeNull();
+    }
+} 

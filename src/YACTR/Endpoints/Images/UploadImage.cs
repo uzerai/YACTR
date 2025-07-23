@@ -21,8 +21,8 @@ public class UploadImage : Endpoint<ImageUploadRequest, Image>
     public override void Configure()
     {
         Post("/");
-        AllowFileUploads();
         Group<ImagesEndpointGroup>();
+        AllowFileUploads();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.ImagesWrite)));
     }
 
@@ -34,14 +34,10 @@ public class UploadImage : Endpoint<ImageUploadRequest, Image>
             return;
         }
 
-        using var memoryStream = new MemoryStream();
-        await HttpContext.Request.Body.CopyToAsync(memoryStream, ct);
-        memoryStream.Position = 0;
-
         try
         {
             var uploadedImage = await _imageStorageService.UploadImage(
-                memoryStream,
+                req.Image.OpenReadStream(),
                 _userContext.CurrentUser!,
                 Guid.Empty);
 
