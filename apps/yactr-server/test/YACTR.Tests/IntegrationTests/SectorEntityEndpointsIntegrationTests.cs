@@ -1,310 +1,254 @@
-// using YACTR.Data.Model.Location;
-// using NetTopologySuite.Geometries;
-// using NetTopologySuite;
-// using System.Net;
-// using YACTR.Endpoints;
+using System.Net;
+using FastEndpoints;
+using FastEndpoints.Testing;
+using Shouldly;
+using YACTR.Data.Model.Location;
+using NetTopologySuite.Geometries;
+using NetTopologySuite;
+using YACTR.Endpoints;
 
-// namespace YACTR.Tests.Controllers;
+namespace YACTR.Tests.Endpoints;
 
-// [Collection("IntegrationTests")]
-// public class SectorEntityEndpointsIntegrationTests : IntegrationTestClassFixture
-// {
-//     public SectorEntityEndpointsIntegrationTests(TestWebApplicationFactory factory): base(factory)
-//     {
-//     }
+[Collection("IntegrationTests")]
+public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
+{
+    [Fact]
+    public async Task GetAll_ReturnsSuccessStatusCode()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        
+        // Act
+        var (response, result) = await client.GETAsync<GetAllSectors, EmptyRequest, List<Sector>>(new());
 
-//     [Fact]
-//     public async Task GetAll_ReturnsSuccessStatusCode()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Act
-//         var response = await client.GetAsync("/sectors");
-
-//         // Assert
-//         response.EnsureSuccessStatusCode();
-//     }
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+    }
     
-//     [Fact]
-//     public async Task GetById_WithValidId_ReturnsSector()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange - First create an area and sector
-//         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-//         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-//         var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
-//             geometryFactory.CreatePolygon(new[] {
-//                 new Coordinate(-122.42, 37.77),
-//                 new Coordinate(-122.42, 37.78),
-//                 new Coordinate(-122.41, 37.78),
-//                 new Coordinate(-122.41, 37.77),
-//                 new Coordinate(-122.42, 37.77)
-//             })
-//         });
+    [Fact]
+    public async Task GetById_WithValidId_ReturnsSector()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
         
-//         var areaRequest = new AreaRequestData(
-//             "Test Area for GetById",
-//             "Test area description",
-//             areaLocation,
-//             areaBoundary
-//         );
+        // Arrange - First create an area and sector
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
+        var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
+            geometryFactory.CreatePolygon(new[] {
+                new Coordinate(-122.42, 37.77),
+                new Coordinate(-122.42, 37.78),
+                new Coordinate(-122.41, 37.78),
+                new Coordinate(-122.41, 37.77),
+                new Coordinate(-122.42, 37.77)
+            })
+        });
         
-//         var areaContent = SerializeJsonFromRequestData(areaRequest);
-            
-//         var areaResponse = await client.PostAsync("/areas", areaContent);
-//         areaResponse.EnsureSuccessStatusCode();
+        var areaRequest = new AreaRequestData(
+            "Test Area for GetById",
+            "Test area description",
+            areaLocation,
+            areaBoundary
+        );
         
-//         var area = await DeserializeEntityFromResponse<Area>(areaResponse);
+        var (areaResponse, area) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(areaRequest);
+        areaResponse.IsSuccessStatusCode.ShouldBeTrue();
         
-//         var sectorArea = geometryFactory.CreatePolygon(new[] {
-//             new Coordinate(-122.419, 37.774),
-//             new Coordinate(-122.419, 37.775),
-//             new Coordinate(-122.418, 37.775),
-//             new Coordinate(-122.418, 37.774),
-//             new Coordinate(-122.419, 37.774)
-//         });
+        var sectorArea = geometryFactory.CreatePolygon(new[] {
+            new Coordinate(-122.419, 37.774),
+            new Coordinate(-122.419, 37.775),
+            new Coordinate(-122.418, 37.775),
+            new Coordinate(-122.418, 37.774),
+            new Coordinate(-122.419, 37.774)
+        });
         
-//         var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
+        var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
         
-//         var sectorRequest = new SectorRequestData(
-//             "Test Sector for GetById",
-//             sectorArea,
-//             entryPoint,
-//             null,
-//             null,
-//             area!.Id
-//         );
+        var sectorRequest = new SectorRequestData(
+            "Test Sector for GetById",
+            sectorArea,
+            entryPoint,
+            null,
+            null,
+            area.Id
+        );
         
-//         var sectorContent = SerializeJsonFromRequestData(sectorRequest);
-            
-//         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
-//         sectorResponse.EnsureSuccessStatusCode();
+        var (sectorResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, Sector>(sectorRequest);
+        sectorResponse.IsSuccessStatusCode.ShouldBeTrue();
         
-//         var createdSector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
+        // Act
+        var getRequest = new GetSectorByIdRequest(createdSector.Id);
+        var (response, result) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, Sector>(getRequest);
         
-//         // Act
-//         var response = await client.GetAsync($"/sectors/{createdSector!.Id}");
-        
-//         // Assert
-//         response.EnsureSuccessStatusCode();
-        
-//         var sector = await DeserializeEntityFromResponse<Sector>(response);
-//         Assert.NotNull(sector);
-//         Assert.Equal(createdSector.Id, sector.Id);
-//         Assert.Equal("Test Sector for GetById", sector.Name);
-//     }
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe(createdSector.Id);
+        result.Name.ShouldBe("Test Sector for GetById");
+    }
     
-//     [Fact]
-//     public async Task GetById_WithInvalidId_ReturnsNotFound()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange
-//         var invalidId = Guid.NewGuid();
+    [Fact]
+    public async Task GetById_WithInvalidId_ReturnsNotFound()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var invalidId = Guid.NewGuid();
         
-//         // Act
-//         var response = await client.GetAsync($"/sectors/{invalidId}");
+        // Act
+        var getRequest = new GetSectorByIdRequest(invalidId);
+        var (response, _) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, Sector>(getRequest);
         
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-//     }
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
     
-//     [Fact]
-//     public async Task Update_WithValidData_ReturnsNoContent()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange - First create an area and sector
-//         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-//         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-//         var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
-//             geometryFactory.CreatePolygon(new[] {
-//                 new Coordinate(-122.42, 37.77),
-//                 new Coordinate(-122.42, 37.78),
-//                 new Coordinate(-122.41, 37.78),
-//                 new Coordinate(-122.41, 37.77),
-//                 new Coordinate(-122.42, 37.77)
-//             })
-//         });
+    [Fact]
+    public async Task Update_WithValidData_ReturnsNoContent()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
         
-//         var areaRequest = new AreaRequestData(
-//             "Test Area for Update",
-//             "Test area description",
-//             areaLocation,
-//             areaBoundary
-//         );
+        // Arrange - First create an area and sector
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
+        var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
+            geometryFactory.CreatePolygon(new[] {
+                new Coordinate(-122.42, 37.77),
+                new Coordinate(-122.42, 37.78),
+                new Coordinate(-122.41, 37.78),
+                new Coordinate(-122.41, 37.77),
+                new Coordinate(-122.42, 37.77)
+            })
+        });
         
-//         var areaContent = SerializeJsonFromRequestData(areaRequest);
-            
-//         var areaResponse = await client.PostAsync("/areas", areaContent);
-//         areaResponse.EnsureSuccessStatusCode();
+        var areaRequest = new AreaRequestData(
+            "Test Area for Update",
+            "Test area description",
+            areaLocation,
+            areaBoundary
+        );
         
-//         var area = await DeserializeEntityFromResponse<Area>(areaResponse);
+        var (areaResponse, area) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(areaRequest);
+        areaResponse.IsSuccessStatusCode.ShouldBeTrue();
         
-//         var sectorArea = geometryFactory.CreatePolygon(new[] {
-//             new Coordinate(-122.419, 37.774),
-//             new Coordinate(-122.419, 37.775),
-//             new Coordinate(-122.418, 37.775),
-//             new Coordinate(-122.418, 37.774),
-//             new Coordinate(-122.419, 37.774)
-//         });
+        var sectorArea = geometryFactory.CreatePolygon(new[] {
+            new Coordinate(-122.419, 37.774),
+            new Coordinate(-122.419, 37.775),
+            new Coordinate(-122.418, 37.775),
+            new Coordinate(-122.418, 37.774),
+            new Coordinate(-122.419, 37.774)
+        });
         
-//         var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
+        var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
         
-//         var sectorRequest = new SectorRequestData(
-//             "Test Sector for Update",
-//             sectorArea,
-//             entryPoint,
-//             null,
-//             null,
-//             area!.Id
-//         );
+        var sectorRequest = new SectorRequestData(
+            "Test Sector for Update",
+            sectorArea,
+            entryPoint,
+            null,
+            null,
+            area.Id
+        );
         
-//         var sectorContent = SerializeJsonFromRequestData(sectorRequest);
-            
-//         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
-//         sectorResponse.EnsureSuccessStatusCode();
+        var (sectorResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, Sector>(sectorRequest);
+        sectorResponse.IsSuccessStatusCode.ShouldBeTrue();
         
-//         var createdSector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
+        // Act
+        var updateRequest = new UpdateSectorRequest(createdSector.Id);
+        var (response, _) = await client.PUTAsync<UpdateSector, UpdateSectorRequest, EmptyResponse>(updateRequest);
         
-//         // Create update request
-//         var updatedSectorArea = geometryFactory.CreatePolygon(new[] {
-//             new Coordinate(-122.419, 37.774),
-//             new Coordinate(-122.419, 37.776),
-//             new Coordinate(-122.417, 37.776),
-//             new Coordinate(-122.417, 37.774),
-//             new Coordinate(-122.419, 37.774)
-//         });
-        
-//         var updateRequest = new SectorRequestData(
-//             "Updated Sector Name",
-//             updatedSectorArea,
-//             entryPoint,
-//             null,
-//             null,
-//             area.Id
-//         );
-        
-//         var updateContent = SerializeJsonFromRequestData(updateRequest);
-            
-//         // Act
-//         var response = await client.PutAsync($"/sectors/{createdSector!.Id}", updateContent);
-        
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-//     }
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+    }
     
-//     [Fact]
-//     public async Task Update_WithInvalidId_ReturnsNotFound()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange
-//         var invalidId = Guid.NewGuid();
-//         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-//         var sectorArea = geometryFactory.CreatePolygon(new[] {
-//             new Coordinate(-122.419, 37.774),
-//             new Coordinate(-122.419, 37.775),
-//             new Coordinate(-122.418, 37.775),
-//             new Coordinate(-122.418, 37.774),
-//             new Coordinate(-122.419, 37.774)
-//         });
-        
-//         var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
-        
-//         var updateRequest = new SectorRequestData(
-//             "Updated Name",
-//             sectorArea,
-//             entryPoint,
-//             null,
-//             null,
-//             Guid.NewGuid()
-//         );
-        
-//         var content = SerializeJsonFromRequestData(updateRequest);
+    [Fact]
+    public async Task Update_WithInvalidId_ReturnsNotFound()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var invalidId = Guid.NewGuid();
             
-//         // Act
-//         var response = await client.PutAsync($"/sectors/{invalidId}", content);
+        // Act
+        var updateRequest = new UpdateSectorRequest(invalidId);
+        var (response, _) = await client.PUTAsync<UpdateSector, UpdateSectorRequest, EmptyResponse>(updateRequest);
         
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-//     }
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
     
-//     [Fact]
-//     public async Task Delete_WithValidId_ReturnsNoContent()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange - First create an area and sector
-//         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-//         var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-//         var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
-//             geometryFactory.CreatePolygon(new[] {
-//                 new Coordinate(-122.42, 37.77),
-//                 new Coordinate(-122.42, 37.78),
-//                 new Coordinate(-122.41, 37.78),
-//                 new Coordinate(-122.41, 37.77),
-//                 new Coordinate(-122.42, 37.77)
-//             })
-//         });
+    [Fact]
+    public async Task Delete_WithValidId_ReturnsNoContent()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
         
-//         var areaRequest = new AreaRequestData(
-//             "Test Area for Delete",
-//             "Test area description",
-//             areaLocation,
-//             areaBoundary
-//         );
+        // Arrange - First create an area and sector
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
+        var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
+            geometryFactory.CreatePolygon(new[] {
+                new Coordinate(-122.42, 37.77),
+                new Coordinate(-122.42, 37.78),
+                new Coordinate(-122.41, 37.78),
+                new Coordinate(-122.41, 37.77),
+                new Coordinate(-122.42, 37.77)
+            })
+        });
         
-//         var areaContent = SerializeJsonFromRequestData(areaRequest);
-            
-//         var areaResponse = await client.PostAsync("/areas", areaContent);
-//         areaResponse.EnsureSuccessStatusCode();
+        var areaRequest = new AreaRequestData(
+            "Test Area for Delete",
+            "Test area description",
+            areaLocation,
+            areaBoundary
+        );
         
-//         var area = await DeserializeEntityFromResponse<Area>(areaResponse);
+        var (areaResponse, area) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(areaRequest);
+        areaResponse.IsSuccessStatusCode.ShouldBeTrue();
         
-//         var sectorArea = geometryFactory.CreatePolygon(new[] {
-//             new Coordinate(-122.419, 37.774),
-//             new Coordinate(-122.419, 37.775),
-//             new Coordinate(-122.418, 37.775),
-//             new Coordinate(-122.418, 37.774),
-//             new Coordinate(-122.419, 37.774)
-//         });
+        var sectorArea = geometryFactory.CreatePolygon(new[] {
+            new Coordinate(-122.419, 37.774),
+            new Coordinate(-122.419, 37.775),
+            new Coordinate(-122.418, 37.775),
+            new Coordinate(-122.418, 37.774),
+            new Coordinate(-122.419, 37.774)
+        });
         
-//         var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
+        var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
         
-//         var sectorRequest = new SectorRequestData(
-//             "Test Sector for Delete",
-//             sectorArea,
-//             entryPoint,
-//             null,
-//             null,
-//             area!.Id
-//         );
+        var sectorRequest = new SectorRequestData(
+            "Test Sector for Delete",
+            sectorArea,
+            entryPoint,
+            null,
+            null,
+            area.Id
+        );
         
-//         var sectorContent = SerializeJsonFromRequestData(sectorRequest);
-            
-//         var sectorResponse = await client.PostAsync("/sectors", sectorContent);
-//         sectorResponse.EnsureSuccessStatusCode();
+        var (sectorResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, Sector>(sectorRequest);
+        sectorResponse.IsSuccessStatusCode.ShouldBeTrue();
         
-//         var createdSector = await DeserializeEntityFromResponse<Sector>(sectorResponse);
+        // Act
+        var deleteRequest = new DeleteSectorRequest(createdSector.Id);
+        var (response, _) = await client.DELETEAsync<DeleteSector, DeleteSectorRequest, EmptyResponse>(deleteRequest);
         
-//         // Act
-//         var response = await client.DeleteAsync($"/sectors/{createdSector!.Id}");
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        
-//         // Verify the sector is actually deleted
-//         var getResponse = await client.GetAsync($"/sectors/{createdSector.Id}");
-//         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
-//     }
+        // Verify the sector is actually deleted
+        var getRequest = new GetSectorByIdRequest(createdSector.Id);
+        var (getResponse, _) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, Sector>(getRequest);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
     
-//     [Fact]
-//     public async Task Delete_WithInvalidId_ReturnsNotFound()
-//     {
-//         var client = CreateAuthenticatedClient();
-//         // Arrange
-//         var invalidId = Guid.NewGuid();
+    [Fact]
+    public async Task Delete_WithInvalidId_ReturnsNotFound()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var invalidId = Guid.NewGuid();
         
-//         // Act
-//         var response = await client.DeleteAsync($"/sectors/{invalidId}");
+        // Act
+        var deleteRequest = new DeleteSectorRequest(invalidId);
+        var (response, _) = await client.DELETEAsync<DeleteSector, DeleteSectorRequest, EmptyResponse>(deleteRequest);
         
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-//     }
-// } 
+        // Assert  
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+} 

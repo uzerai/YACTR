@@ -1,258 +1,224 @@
-// using YACTR.Data.Model.Location;
-// using NetTopologySuite.Geometries;
-// using NetTopologySuite;
-// using System.Net;
-// using YACTR.Endpoints;
+using System.Net;
+using FastEndpoints;
+using FastEndpoints.Testing;
+using Shouldly;
+using YACTR.Data.Model.Location;
+using NetTopologySuite.Geometries;
+using NetTopologySuite;
+using YACTR.Endpoints;
 
-// namespace YACTR.Tests.Controllers;
+namespace YACTR.Tests.Endpoints;
 
-// [Collection("IntegrationTests")]
-// public class AreaEntityEndpointsIntegrationTests : IntegrationTestClassFixture
-// {    
-//     public AreaEntityEndpointsIntegrationTests(TestWebApplicationFactory factory) : base(factory)
-//     {
-//     }
-    
-//     [Fact]
-//     public async Task GetAll_ReturnsSuccessStatusCode()
-//     {
-//         using var client = CreateAuthenticatedClient();
-//         // Act
-//         var response = await client.GetAsync("/areas");
+[Collection("IntegrationTests")]
+public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
+{    
+    [Fact]
+    public async Task GetAll_ReturnsSuccessStatusCode()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        
+        // Act
+        var (response, result) = await client.GETAsync<GetAllAreas, EmptyRequest, List<Area>>(new());
                 
-//         // Assert
-//         response.EnsureSuccessStatusCode();
-//     }
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+    }
     
-//     [Fact]
-//     public async Task Create_WithValidData_ReturnsCreatedArea()
-//     {
-//         using var client = CreateAuthenticatedClient();
-//         // Arrange
-//         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-//         var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-//         var boundary = geometryFactory.CreateMultiPolygon(new[] {
-//             geometryFactory.CreatePolygon(new[] {
-//                 new Coordinate(-122.42, 37.77),
-//                 new Coordinate(-122.42, 37.78),
-//                 new Coordinate(-122.41, 37.78),
-//                 new Coordinate(-122.41, 37.77),
-//                 new Coordinate(-122.42, 37.77)
-//             })
-//         });
+    [Fact]
+    public async Task Create_WithValidData_ReturnsCreatedArea()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
         
-//         var createRequest = new AreaRequestData(
-//             "Test Climbing Area",
-//             "A beautiful climbing area for testing",
-//             location,
-//             boundary
-//         );
+        // Arrange
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
+        var boundary = geometryFactory.CreateMultiPolygon(new[] {
+            geometryFactory.CreatePolygon(new[] {
+                new Coordinate(-122.42, 37.77),
+                new Coordinate(-122.42, 37.78),
+                new Coordinate(-122.41, 37.78),
+                new Coordinate(-122.41, 37.77),
+                new Coordinate(-122.42, 37.77)
+            })
+        });
+        
+        var createRequest = new AreaRequestData(
+            "Test Climbing Area",
+            "A beautiful climbing area for testing",
+            location,
+            boundary
+        );
 
-//         var content = SerializeJsonFromRequestData(createRequest);
-
-//         // Act
-//         var response = await client.PostAsync("/areas", content);
+        // Act
+        var (response, result) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
         
-//         // Assert
-//         response.EnsureSuccessStatusCode();
-//         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        
-//         var area = await DeserializeEntityFromResponse<Area>(response);
-//         Assert.NotNull(area);
-//         Assert.Equal("Test Climbing Area", area.Name);
-//         Assert.Equal("A beautiful climbing area for testing", area.Description);
-//     }
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        result.ShouldNotBeNull();
+        result.Name.ShouldBe("Test Climbing Area");
+        result.Description.ShouldBe("A beautiful climbing area for testing");
+    }
     
-//     [Fact]
-//     public async Task GetById_WithValidId_ReturnsArea()
-//     {
-//         using var client = CreateAuthenticatedClient();
-//         // Arrange - First create an area
-//         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-//         var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-//         var boundary = geometryFactory.CreateMultiPolygon(new[] {
-//             geometryFactory.CreatePolygon(new[] {
-//                 new Coordinate(-122.42, 37.77),
-//                 new Coordinate(-122.42, 37.78),
-//                 new Coordinate(-122.41, 37.78),
-//                 new Coordinate(-122.41, 37.77),
-//                 new Coordinate(-122.42, 37.77)
-//             })
-//         });
+    [Fact]
+    public async Task GetById_WithValidId_ReturnsArea()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
         
-//         var createRequest = new AreaRequestData(
-//             "Test Area for GetById",
-//             "Test description",
-//             location,
-//             boundary
-//         );
+        // Arrange - First create an area
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
+        var boundary = geometryFactory.CreateMultiPolygon(new[] {
+            geometryFactory.CreatePolygon(new[] {
+                new Coordinate(-122.42, 37.77),
+                new Coordinate(-122.42, 37.78),
+                new Coordinate(-122.41, 37.78),
+                new Coordinate(-122.41, 37.77),
+                new Coordinate(-122.42, 37.77)
+            })
+        });
         
-//         var createContent = SerializeJsonFromRequestData(createRequest);
+        var createRequest = new AreaRequestData(
+            "Test Area for GetById",
+            "Test description",
+            location,
+            boundary
+        );
+        
+        var (createResponse, createdArea) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        createResponse.IsSuccessStatusCode.ShouldBeTrue();
+        
+        // Act
+        var getRequest = new GetAreaByIdRequest(createdArea.Id);
+        var (response, result) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, Area>(getRequest);
+        
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe(createdArea.Id);
+        result.Name.ShouldBe("Test Area for GetById");
+    }
+    
+    [Fact]
+    public async Task GetById_WithInvalidId_ReturnsNotFound()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var invalidId = Guid.NewGuid();
+        
+        // Act
+        var getRequest = new GetAreaByIdRequest(invalidId);
+        var (response, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, Area>(getRequest);
+        
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+    
+    [Fact]
+    public async Task Update_WithValidData_ReturnsNoContent()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        
+        // Arrange - First create an area
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
+        var boundary = geometryFactory.CreateMultiPolygon(new[] {
+            geometryFactory.CreatePolygon(new[] {
+                new Coordinate(-122.42, 37.77),
+                new Coordinate(-122.42, 37.78),
+                new Coordinate(-122.41, 37.78),
+                new Coordinate(-122.41, 37.77),
+                new Coordinate(-122.42, 37.77)
+            })
+        });
+        
+        var createRequest = new AreaRequestData(
+            "Test Area for Update",
+            "Original description",
+            location,
+            boundary
+        );
+        
+        var (createResponse, createdArea) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        createResponse.IsSuccessStatusCode.ShouldBeTrue();
+        
+        // Act
+        var updateRequest = new UpdateAreaRequest(createdArea.Id);
+        var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);
+        
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+    }
+    
+    [Fact]
+    public async Task Update_WithInvalidId_ReturnsNotFound()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var invalidId = Guid.NewGuid();
             
-//         var createResponse = await client.PostAsync("/areas", createContent);
-//         createResponse.EnsureSuccessStatusCode();
+        // Act
+        var updateRequest = new UpdateAreaRequest(invalidId);
+        var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);
         
-//         var createdArea = await DeserializeEntityFromResponse<Area>(createResponse);
-        
-//         // Act
-//         var response = await client.GetAsync($"/areas/{createdArea!.Id}");
-        
-//         // Assert
-//         response.EnsureSuccessStatusCode();
-        
-//         var area = await DeserializeEntityFromResponse<Area>(response);
-//         Assert.NotNull(area);
-//         Assert.Equal(createdArea.Id, area.Id);
-//         Assert.Equal("Test Area for GetById", area.Name);
-//     }
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
     
-//     [Fact]
-//     public async Task GetById_WithInvalidId_ReturnsNotFound()
-//     {
-//         // Arrange
-//         var invalidId = Guid.NewGuid();
-//         using var client = CreateAuthenticatedClient();
-//         // Act
-//         var response = await client.GetAsync($"/areas/{invalidId}");
+    [Fact]
+    public async Task Delete_WithValidId_ReturnsNoContent()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
         
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-//     }
+        // Arrange - First create an area
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
+        var boundary = geometryFactory.CreateMultiPolygon(new[] {
+            geometryFactory.CreatePolygon(new[] {
+                new Coordinate(-122.42, 37.77),
+                new Coordinate(-122.42, 37.78),
+                new Coordinate(-122.41, 37.78),
+                new Coordinate(-122.41, 37.77),
+                new Coordinate(-122.42, 37.77)
+            })
+        });
+        
+        var createRequest = new AreaRequestData(
+            "Test Area for Delete",
+            "Test description",
+            location,
+            boundary
+        );
+        
+        var (createResponse, createdArea) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        createResponse.IsSuccessStatusCode.ShouldBeTrue();
+        
+        // Act
+        var deleteRequest = new DeleteAreaRequest(createdArea.Id);
+        var (response, _) = await client.DELETEAsync<DeleteArea, DeleteAreaRequest, EmptyResponse>(deleteRequest);
+        
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        
+        // Verify the area is actually deleted
+        var getRequest = new GetAreaByIdRequest(createdArea.Id);
+        var (getResponse, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, Area>(getRequest);
+        getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
     
-//     [Fact]
-//     public async Task Update_WithValidData_ReturnsNoContent()
-//     {
-//         using var client = CreateAuthenticatedClient();
-//         // Arrange - First create an area
-//         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-//         var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-//         var boundary = geometryFactory.CreateMultiPolygon(new[] {
-//             geometryFactory.CreatePolygon(new[] {
-//                 new Coordinate(-122.42, 37.77),
-//                 new Coordinate(-122.42, 37.78),
-//                 new Coordinate(-122.41, 37.78),
-//                 new Coordinate(-122.41, 37.77),
-//                 new Coordinate(-122.42, 37.77)
-//             })
-//         });
+    [Fact]
+    public async Task Delete_WithInvalidId_ReturnsNotFound()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var invalidId = Guid.NewGuid();
         
-//         var createRequest = new AreaRequestData(
-//             "Test Area for Update",
-//             "Original description",
-//             location,
-//             boundary
-//         );
+        // Act
+        var deleteRequest = new DeleteAreaRequest(invalidId);
+        var (response, _) = await client.DELETEAsync<DeleteArea, DeleteAreaRequest, EmptyResponse>(deleteRequest);
         
-//         var createContent = SerializeJsonFromRequestData(createRequest);
-            
-//         var createResponse = await client.PostAsync("/areas", createContent);
-//         createResponse.EnsureSuccessStatusCode();
-        
-//         var createdArea = await DeserializeEntityFromResponse<Area>(createResponse);
-        
-//         // Create update request
-//         var updateRequest = new AreaRequestData(
-//             "Updated Area Name",
-//             "Updated description",
-//             location,
-//             boundary
-//         );
-        
-//         var updateContent = SerializeJsonFromRequestData(updateRequest);
-            
-//         // Act
-//         var response = await client.PutAsync($"/areas/{createdArea!.Id}", updateContent);
-        
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-//     }
-    
-//     [Fact]
-//     public async Task Update_WithInvalidId_ReturnsNotFound()
-//     {
-//         using var client = CreateAuthenticatedClient();
-//         // Arrange
-//         var invalidId = Guid.NewGuid();
-//         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-//         var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-//         var boundary = geometryFactory.CreateMultiPolygon(new[] {
-//             geometryFactory.CreatePolygon(new[] {
-//                 new Coordinate(-122.42, 37.77),
-//                 new Coordinate(-122.42, 37.78),
-//                 new Coordinate(-122.41, 37.78),
-//                 new Coordinate(-122.41, 37.77),
-//                 new Coordinate(-122.42, 37.77)
-//             })
-//         });
-        
-//         var updateRequest = new AreaRequestData(
-//             "Updated Name",
-//             "Updated description",
-//             location,
-//             boundary
-//         );
-        
-//         var content = SerializeJsonFromRequestData(updateRequest);
-            
-//         // Act
-//         var response = await client.PutAsync($"/areas/{invalidId}", content);
-        
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-//     }
-    
-//     [Fact]
-//     public async Task Delete_WithValidId_ReturnsNoContent()
-//     {
-//         using var client = CreateAuthenticatedClient();
-//         // Arrange - First create an area
-//         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-//         var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-//         var boundary = geometryFactory.CreateMultiPolygon(new[] {
-//             geometryFactory.CreatePolygon(new[] {
-//                 new Coordinate(-122.42, 37.77),
-//                 new Coordinate(-122.42, 37.78),
-//                 new Coordinate(-122.41, 37.78),
-//                 new Coordinate(-122.41, 37.77),
-//                 new Coordinate(-122.42, 37.77)
-//             })
-//         });
-        
-//         var createRequest = new AreaRequestData(
-//             "Test Area for Delete",
-//             "Test description",
-//             location,
-//             boundary
-//         );
-        
-//         var createContent = SerializeJsonFromRequestData(createRequest);
-            
-//         var createResponse = await client.PostAsync("/areas", createContent);
-//         createResponse.EnsureSuccessStatusCode();
-        
-//         var createdArea = await DeserializeEntityFromResponse<Area>(createResponse);
-        
-//         // Act
-//         var response = await client.DeleteAsync($"/areas/{createdArea!.Id}");
-        
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        
-//         // Verify the area is actually deleted
-//         var getResponse = await client.GetAsync($"/areas/{createdArea.Id}");
-//         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
-//     }
-    
-//     [Fact]
-//     public async Task Delete_WithInvalidId_ReturnsNotFound()
-//     {
-//         // Arrange
-//         var invalidId = Guid.NewGuid();
-//         using var client = CreateAuthenticatedClient();
-//         // Act
-//         var response = await client.DeleteAsync($"/areas/{invalidId}");
-        
-//         // Assert
-//         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-//     }
-// }
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+}
