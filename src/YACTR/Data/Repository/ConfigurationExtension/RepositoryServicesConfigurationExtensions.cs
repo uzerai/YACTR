@@ -1,10 +1,10 @@
 using YACTR.Data.Repository.Interface;
 using YACTR.Data.Model;
 using YACTR.Data.Model.Authentication;
-using YACTR.Data.Model.Location;
+using YACTR.Data.Model.Climbing;
 using YACTR.Data.Model.Organizations;
 using YACTR.Data.Model.Achievement;
-using Route = YACTR.Data.Model.Location.Route;
+using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Data.Repository.ConfigurationExtension;
 

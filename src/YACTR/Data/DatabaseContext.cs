@@ -5,8 +5,8 @@ using YACTR.Data.Model;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Organizations;
-using Route = YACTR.Data.Model.Location.Route;
-using YACTR.Data.Model.Location;
+using Route = YACTR.Data.Model.Climbing.Route;
+using YACTR.Data.Model.Climbing;
 using YACTR.Data.Model.Achievement;
 
 namespace YACTR.Data;

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using YACTR.Data.Model.Organizations;
 using NetTopologySuite.Geometries;
 
-namespace YACTR.Data.Model.Location;
+namespace YACTR.Data.Model.Climbing;
 
 /// <summary>
 /// Represents a climing area from a colloquial perspective.

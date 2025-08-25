@@ -1,7 +1,7 @@
 
-using YACTR.Data.Model.Location;
+using YACTR.Data.Model.Climbing;
 using Microsoft.EntityFrameworkCore;
-using Route = YACTR.Data.Model.Location.Route;
+using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Data.ConfigurationExtension;
 

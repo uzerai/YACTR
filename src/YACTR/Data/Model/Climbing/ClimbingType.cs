@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace YACTR.Data.Model.Location;
+namespace YACTR.Data.Model.Climbing;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ClimbingType

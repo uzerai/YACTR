@@ -1,5 +1,5 @@
 using FastEndpoints;
-using YACTR.Data.Model.Location;
+using YACTR.Data.Model.Climbing;
 
 namespace YACTR.Endpoints;
 
