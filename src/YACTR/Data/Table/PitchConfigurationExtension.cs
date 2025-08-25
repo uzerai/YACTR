@@ -16,6 +16,11 @@ public static class PitchConfigurationExtension
             .HasMany(e => e.Routes)
             .WithMany(e => e.Pitches)
             .UsingEntity<RoutePitch>();
+
+        // Configure ClimbingType enum for Pitch - will use PostgreSQL enum
+        modelBuilder.Entity<Pitch>()
+            .Property(e => e.Type)
+            .HasColumnType("climbing_type");
             
         return modelBuilder;
     }

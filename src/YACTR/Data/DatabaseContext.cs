@@ -40,6 +40,9 @@ public class DatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Configure PostgreSQL enum
+        modelBuilder.HasPostgresEnum<ClimbingType>();
+        
         // For inherited abstract models.
         modelBuilder.ConfigureBaseEntityAbstractModel();
 

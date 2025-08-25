@@ -11,7 +11,7 @@ namespace YACTR.Data.Model.Location;
 public class Pitch : BaseEntity
 {
     public string? Name { get; set; }
-    public required PitchType Type { get; set; } = PitchType.Sport;
+    public required ClimbingType Type { get; set; } = ClimbingType.Sport;
     public string? Description { get; set; }
     
     [ForeignKey("Sector")]
