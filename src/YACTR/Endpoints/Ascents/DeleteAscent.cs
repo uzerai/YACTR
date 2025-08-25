@@ -10,17 +10,14 @@ public record DeleteAscentRequest(Guid AscentId);
 
 public class DeleteAscent : Endpoint<DeleteAscentRequest, AscentResponse>
 {
-    private readonly IRepository<RouteAscent> _routeAscentRepository;
-    private readonly IRepository<PitchAscent> _pitchAscentRepository;
+    private readonly IRepository<Ascent> _ascentRepository;
     private readonly IUserContext _userContext;
 
     public DeleteAscent(
-        IRepository<RouteAscent> routeAscentRepository,
-        IRepository<PitchAscent> pitchAscentRepository,
+        IRepository<Ascent> ascentRepository,
         IUserContext userContext)
     {
-        _routeAscentRepository = routeAscentRepository;
-        _pitchAscentRepository = pitchAscentRepository;
+        _ascentRepository = ascentRepository;
         _userContext = userContext;
     }
 
@@ -34,54 +31,30 @@ public class DeleteAscent : Endpoint<DeleteAscentRequest, AscentResponse>
     {
         var currentUser = _userContext.CurrentUser!;
 
-        // Try to find the ascent as a RouteAscent first
-        var routeAscent = await _routeAscentRepository.BuildTrackedQuery()
-            .FirstOrDefaultAsync(ra => ra.Id == req.AscentId, ct);
-        if (routeAscent != null)
+        var ascent = await _ascentRepository.BuildTrackedQuery()
+            .Include(a => a.Route)
+            .FirstOrDefaultAsync(a => a.Id == req.AscentId, ct);
+        
+        if (ascent == null)
         {
-            // Ensure the user owns this ascent
-            if (routeAscent.UserId != currentUser.Id)
-            {
-                await SendForbiddenAsync(ct);
-                return;
-            }
-
-            await _routeAscentRepository.DeleteAsync(routeAscent, ct);
-            await SendAsync(new AscentResponse(
-                Id: routeAscent.Id,
-                UserId: routeAscent.UserId,
-                Type: routeAscent.Type,
-                CompletedAt: routeAscent.CompletedAt,
-                Route: routeAscent.Route,
-                Pitch: null
-            ), cancellation: ct);
+            await SendNotFoundAsync(ct);
             return;
         }
 
-        // Try to find the ascent as a PitchAscent
-        var pitchAscent = await _pitchAscentRepository.BuildTrackedQuery()
-            .FirstOrDefaultAsync(pa => pa.Id == req.AscentId, ct);
-        if (pitchAscent != null)
+        // Ensure the user owns this ascent
+        if (ascent.UserId != currentUser.Id)
         {
-            // Ensure the user owns this ascent
-            if (pitchAscent.UserId != currentUser.Id)
-            {
-                await SendForbiddenAsync(ct);
-                return;
-            }
-
-            await _pitchAscentRepository.DeleteAsync(pitchAscent, ct);
-            await SendAsync(new AscentResponse(
-                Id: pitchAscent.Id,
-                UserId: pitchAscent.UserId,
-                Type: pitchAscent.Type,
-                CompletedAt: pitchAscent.CompletedAt,
-                Route: null,
-                Pitch: pitchAscent.Pitch
-            ), cancellation: ct);
+            await SendForbiddenAsync(ct);
             return;
         }
 
-        await SendNotFoundAsync(ct);
+        await _ascentRepository.DeleteAsync(ascent, ct);
+        await SendAsync(new AscentResponse(
+            Id: ascent.Id,
+            UserId: ascent.UserId,
+            Type: ascent.Type,
+            CompletedAt: ascent.CompletedAt,
+            Route: ascent.Route
+        ), cancellation: ct);
     }
 }

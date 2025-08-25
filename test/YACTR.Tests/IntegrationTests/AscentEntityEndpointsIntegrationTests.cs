@@ -31,7 +31,7 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         await fixture.GetEntityRepository<User>().CreateAsync(TestUserWithAscentPermissions, TestContext.Current.CancellationToken);
     }
 
-    private async Task<(Area area, Sector sector, Route route, Pitch pitch)> CreateTestClimbingData()
+    private async Task<(Area area, Sector sector, Route route)> CreateTestClimbingData()
     {
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
         
@@ -79,17 +79,7 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         };
         route = await fixture.GetEntityRepository<Route>().CreateAsync(route, TestContext.Current.CancellationToken);
 
-        // Create Pitch
-        var pitch = new Pitch()
-        {
-            Name = "Test Pitch",
-            Description = "Test pitch for ascents",
-            Type = PitchType.Sport,
-            SectorId = sector.Id
-        };
-        pitch = await fixture.GetEntityRepository<Pitch>().CreateAsync(pitch, TestContext.Current.CancellationToken);
-
-        return (area, sector, route, pitch);
+        return (area, sector, route);
     }
 
     [Fact]
@@ -106,17 +96,16 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     }
 
     [Fact]
-    public async Task CreateAscent_WithValidRouteAscentData_ReturnsCreatedAscent()
+    public async Task CreateAscent_WithValidAscentData_ReturnsCreatedAscent()
     {
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
         
         // Arrange
-        var (_, _, route, _) = await CreateTestClimbingData();
+        var (_, _, route) = await CreateTestClimbingData();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
         
         var createRequest = new CreateAscentRequest(
             RouteId: route.Id,
-            PitchId: null,
             Type: AscentType.Redpoint,
             CompletedAt: completedAt
         );
@@ -131,71 +120,20 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         result.Type.ShouldBe(AscentType.Redpoint);
         result.CompletedAt.ShouldBe(completedAt);
         result.UserId.ShouldBe(TestUserWithAscentPermissions.Id);
+        result.Route.ShouldNotBeNull();
     }
 
     [Fact]
-    public async Task CreateAscent_WithValidPitchAscentData_ReturnsCreatedAscent()
+    public async Task GetAscentById_WithValidAscentId_ReturnsAscent()
     {
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
         
-        // Arrange
-        var (_, _, _, pitch) = await CreateTestClimbingData();
-        var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
-        
-        var createRequest = new CreateAscentRequest(
-            RouteId: null,
-            PitchId: pitch.Id,
-            Type: AscentType.Flash,
-            CompletedAt: completedAt
-        );
-
-        // Act
-        var (response, result) = await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
-        
-        // Assert
-        response.IsSuccessStatusCode.ShouldBeTrue();
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
-        result.ShouldNotBeNull();
-        result.Type.ShouldBe(AscentType.Flash);
-        result.CompletedAt.ShouldBe(completedAt);
-        result.UserId.ShouldBe(TestUserWithAscentPermissions.Id);
-    }
-
-    [Fact]
-    public async Task CreateAscent_WithNeitherRouteIdNorPitchId_ReturnsBadRequest()
-    {
-        using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
-        
-        // Arrange
-        var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
-        
-        var createRequest = new CreateAscentRequest(
-            RouteId: null,
-            PitchId: null,
-            Type: AscentType.Tick,
-            CompletedAt: completedAt
-        );
-
-        // Act
-        var (response, _) = await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
-        
-        // Assert
-        response.IsSuccessStatusCode.ShouldBeFalse();
-        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
-    }
-
-    [Fact]
-    public async Task GetAscentById_WithValidRouteAscentId_ReturnsAscent()
-    {
-        using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
-        
-        // Arrange - First create a route ascent
-        var (_, _, route, _) = await CreateTestClimbingData();
+        // Arrange - First create an ascent
+        var (_, _, route) = await CreateTestClimbingData();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
         
         var createRequest = new CreateAscentRequest(
             RouteId: route.Id,
-            PitchId: null,
             Type: AscentType.Onsight,
             CompletedAt: completedAt
         );
@@ -212,36 +150,7 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         result.ShouldNotBeNull();
         result.Id.ShouldBe(createdAscent.Id);
         result.Type.ShouldBe(AscentType.Onsight);
-    }
-
-    [Fact]
-    public async Task GetAscentById_WithValidPitchAscentId_ReturnsAscent()
-    {
-        using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
-        
-        // Arrange - First create a pitch ascent
-        var (_, _, _, pitch) = await CreateTestClimbingData();
-        var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
-        
-        var createRequest = new CreateAscentRequest(
-            RouteId: null,
-            PitchId: pitch.Id,
-            Type: AscentType.Seconded,
-            CompletedAt: completedAt
-        );
-        
-        var (createResponse, createdAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
-        createResponse.IsSuccessStatusCode.ShouldBeTrue();
-        
-        // Act
-        var getRequest = new GetAscentByIdRequest(createdAscent.Id);
-        var (response, result) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, AscentResponse>(getRequest);
-        
-        // Assert
-        response.IsSuccessStatusCode.ShouldBeTrue();
-        result.ShouldNotBeNull();
-        result.Id.ShouldBe(createdAscent.Id);
-        result.Type.ShouldBe(AscentType.Seconded);
+        result.Route.ShouldNotBeNull();
     }
 
     [Fact]
@@ -264,12 +173,11 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
         
         // Arrange - First create an ascent
-        var (_, _, route, _) = await CreateTestClimbingData();
+        var (_, _, route) = await CreateTestClimbingData();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
         
         var createRequest = new CreateAscentRequest(
             RouteId: route.Id,
-            PitchId: null,
             Type: AscentType.Project,
             CompletedAt: completedAt
         );
@@ -325,12 +233,11 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var clientWithoutPermissions = fixture.CreateAuthenticatedClient();
         
         // Arrange - Create an ascent with the first user
-        var (_, _, route, _) = await CreateTestClimbingData();
+        var (_, _, route) = await CreateTestClimbingData();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
         
         var createRequest = new CreateAscentRequest(
             RouteId: route.Id,
-            PitchId: null,
             Type: AscentType.Tick,
             CompletedAt: completedAt
         );
@@ -353,17 +260,16 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     }
 
     [Fact]
-    public async Task DeleteAscent_WithValidId_ReturnsNoContent()
+    public async Task DeleteAscent_WithValidId_ReturnsDeletedAscent()
     {
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
         
         // Arrange - First create an ascent
-        var (_, _, route, _) = await CreateTestClimbingData();
+        var (_, _, route) = await CreateTestClimbingData();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
         
         var createRequest = new CreateAscentRequest(
             RouteId: route.Id,
-            PitchId: null,
             Type: AscentType.Tick,
             CompletedAt: completedAt
         );
@@ -373,11 +279,13 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         
         // Act
         var deleteRequest = new DeleteAscentRequest(createdAscent.Id);
-        var (response, _) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, AscentResponse>(deleteRequest);
+        var (response, result) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, AscentResponse>(deleteRequest);
         
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        result.ShouldNotBeNull();
+        result.Id.ShouldBe(createdAscent.Id);
         
         // Verify the ascent is deleted
         var getRequest = new GetAscentByIdRequest(createdAscent.Id);
@@ -392,7 +300,7 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         
         // Act
         var deleteRequest = new DeleteAscentRequest(Guid.NewGuid());
-        var (response, _) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, EmptyResponse>(deleteRequest);
+        var (response, _) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, AscentResponse>(deleteRequest);
         
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -406,12 +314,11 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var clientWithoutPermissions = fixture.CreateAuthenticatedClient();
         
         // Arrange - Create an ascent with the first user
-        var (_, _, route, _) = await CreateTestClimbingData();
+        var (_, _, route) = await CreateTestClimbingData();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
         
         var createRequest = new CreateAscentRequest(
             RouteId: route.Id,
-            PitchId: null,
             Type: AscentType.Tick,
             CompletedAt: completedAt
         );
@@ -421,7 +328,7 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         
         // Act - Try to delete with a different user
         var deleteRequest = new DeleteAscentRequest(createdAscent.Id);
-        var (response, _) = await clientWithoutPermissions.DELETEAsync<DeleteAscent, DeleteAscentRequest, EmptyResponse>(deleteRequest);
+        var (response, _) = await clientWithoutPermissions.DELETEAsync<DeleteAscent, DeleteAscentRequest, AscentResponse>(deleteRequest);
         
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -434,7 +341,6 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         // Arrange
         var createRequest = new CreateAscentRequest(
             RouteId: Guid.NewGuid(),
-            PitchId: null,
             Type: AscentType.Tick,
             CompletedAt: SystemClock.Instance.GetCurrentInstant()
         );
@@ -448,43 +354,40 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     }
 
     [Fact]
-    public async Task GetAllAscents_WithMultipleAscentTypes_ReturnsAllAscentsOrderedByCompletedAt()
+    public async Task GetAllAscents_WithMultipleAscents_ReturnsAllAscentsOrderedByCompletedAt()
     {
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
         
         // Arrange - Create test data and multiple ascents
-        var (_, _, route, pitch) = await CreateTestClimbingData();
+        var (_, _, route) = await CreateTestClimbingData();
         
         var now = SystemClock.Instance.GetCurrentInstant();
         var yesterday = now.Minus(Duration.FromDays(1));
         var twoDaysAgo = now.Minus(Duration.FromDays(2));
         
-        // Create route ascent (oldest)
-        var routeAscentRequest = new CreateAscentRequest(
+        // Create ascent (oldest)
+        var ascentRequest1 = new CreateAscentRequest(
             RouteId: route.Id,
-            PitchId: null,
             Type: AscentType.Redpoint,
             CompletedAt: twoDaysAgo
         );
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(routeAscentRequest);
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(ascentRequest1);
         
-        // Create pitch ascent (middle)
-        var pitchAscentRequest = new CreateAscentRequest(
-            RouteId: null,
-            PitchId: pitch.Id,
+        // Create another ascent (middle)
+        var ascentRequest2 = new CreateAscentRequest(
+            RouteId: route.Id,
             Type: AscentType.Flash,
             CompletedAt: yesterday
         );
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(pitchAscentRequest);
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(ascentRequest2);
         
-        // Create another route ascent (newest)
-        var anotherRouteAscentRequest = new CreateAscentRequest(
+        // Create another ascent (newest)
+        var ascentRequest3 = new CreateAscentRequest(
             RouteId: route.Id,
-            PitchId: null,
             Type: AscentType.Onsight,
             CompletedAt: now
         );
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(anotherRouteAscentRequest);
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(ascentRequest3);
         
         // Act
         var (response, result) = await client.GETAsync<GetAllAscents, EmptyRequest, List<AscentResponse>>(new());

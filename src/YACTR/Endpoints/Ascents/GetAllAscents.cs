@@ -7,13 +7,11 @@ namespace YACTR.Endpoints;
 
 public class GetAllAscents : Endpoint<EmptyRequest, List<AscentResponse>>
 {
-    private readonly IRepository<RouteAscent> _routeAscentRepository;
-    private readonly IRepository<PitchAscent> _pitchAscentRepository;
+    private readonly IRepository<Ascent> _ascentRepository;
 
-    public GetAllAscents(IRepository<RouteAscent> routeAscentRepository, IRepository<PitchAscent> pitchAscentRepository)
+    public GetAllAscents(IRepository<Ascent> ascentRepository)
     {
-        _routeAscentRepository = routeAscentRepository;
-        _pitchAscentRepository = pitchAscentRepository;
+        _ascentRepository = ascentRepository;
     }
 
     public override void Configure()
@@ -23,30 +21,19 @@ public class GetAllAscents : Endpoint<EmptyRequest, List<AscentResponse>>
     }
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
-    {   
-        var routeAscents = await _routeAscentRepository.BuildReadonlyQuery().ToListAsync(ct);
-        var pitchAscents = await _pitchAscentRepository.BuildReadonlyQuery().ToListAsync(ct);
+    {
+        var ascents = await _ascentRepository.BuildReadonlyQuery()
+            .Include(a => a.Route)
+            .ToListAsync(ct);
 
-        // Combine both types of ascents into a single list
-        var allAscents = routeAscents.Select(ra => new AscentResponse(
-            Id: ra.Id,
-            UserId: ra.UserId,
-            Type: ra.Type,
-            CompletedAt: ra.CompletedAt,
-            Route: ra.Route,
-            Pitch: null
-        )).Concat(pitchAscents.Select(pa => new AscentResponse(
-            Id: pa.Id,
-            UserId: pa.UserId,
-            Type: pa.Type,
-            CompletedAt: pa.CompletedAt,
-            Route: null,
-            Pitch: pa.Pitch
-        ))).ToList();
+        var ascentResponses = ascents.Select(a => new AscentResponse(
+            Id: a.Id,
+            UserId: a.UserId,
+            Type: a.Type,
+            CompletedAt: a.CompletedAt,
+            Route: a.Route
+        )).OrderByDescending(a => a.CompletedAt).ToList();
 
-        // Order by completion date (most recent first)
-        var orderedAscents = allAscents.OrderByDescending(a => a.CompletedAt).ToList();
-
-        await SendAsync(orderedAscents, cancellation: ct);
+        await SendAsync(ascentResponses, cancellation: ct);
     }
 } 

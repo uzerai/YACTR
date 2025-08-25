@@ -36,8 +36,7 @@ public class DatabaseContext : DbContext
     public DbSet<Pitch> Pitches { get; set; }
     public DbSet<RoutePitch> RoutePitches { get; set; }
     public DbSet<Image> Images { get; set; }
-    public DbSet<RouteAscent> RouteAscents { get; set; }
-    public DbSet<PitchAscent> PitchAscents { get; set; }
+    public DbSet<Ascent> Ascents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -57,7 +56,7 @@ public class DatabaseContext : DbContext
         modelBuilder.ConfigurePitchModel();
         modelBuilder.ConfigureRoutePitchModel();
         modelBuilder.ConfigureImageModel();
-        modelBuilder.ConfigureBaseAscentAbstractModel();
+        modelBuilder.ConfigureAscentModel();
     }
 
     /// <summary>
