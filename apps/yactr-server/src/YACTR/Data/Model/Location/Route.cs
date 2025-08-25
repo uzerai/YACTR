@@ -26,4 +26,6 @@ public class Route : BaseEntity
     public virtual Image? TopoImage { get; set; }
 
     public virtual ICollection<Pitch> Pitches { get; set; } = [];
+
+    public ClimbingType Type { get; set; }
 }

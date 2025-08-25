@@ -14,7 +14,7 @@ namespace YACTR.Endpoints;
 public record PitchRequestData(
     Guid SectorId,
     string Name,
-    PitchType Type,
+    ClimbingType Type,
     string? Description,
     string? Grade);
 

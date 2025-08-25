@@ -71,7 +71,7 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         var createRequest = new PitchRequestData(
             sector.Id,
             "Test Pitch",
-            PitchType.Sport,
+            ClimbingType.Sport,
             "A challenging sport pitch",
             "5.10a"
         );
@@ -84,7 +84,7 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         result.ShouldNotBeNull();
         result.Name.ShouldBe("Test Pitch");
-        result.Type.ShouldBe(PitchType.Sport);
+        result.Type.ShouldBe(ClimbingType.Sport);
         result.Description.ShouldBe("A challenging sport pitch");
         result.SectorId.ShouldBe(sector.Id);
     }
@@ -98,7 +98,7 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         var (area, sector) = await CreateAreaAndSectorAsync(client, "Test Area for Pitch Types", "Test Sector for Pitch Types");
         
         // Test different pitch types
-        var pitchTypes = new[] { PitchType.Traditional, PitchType.Mixed, PitchType.Aid };
+        var pitchTypes = new[] { ClimbingType.Traditional, ClimbingType.Mixed, ClimbingType.Aid };
         
         foreach (var pitchType in pitchTypes)
         {
@@ -132,7 +132,7 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         var createRequest = new PitchRequestData(
             sector.Id,
             "Test Pitch for GetById",
-            PitchType.Sport,
+            ClimbingType.Sport,
             "Test description",
             "5.9"
         );
@@ -177,7 +177,7 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         var createRequest = new PitchRequestData(
             sector.Id,
             "Test Pitch for Update",
-            PitchType.Sport,
+            ClimbingType.Sport,
             "Original description",
             "5.8"
         );
@@ -219,7 +219,7 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         var createRequest = new PitchRequestData(
             sector.Id,
             "Test Pitch for Delete",
-            PitchType.Sport,
+            ClimbingType.Sport,
             "Test description",
             "5.7"
         );

@@ -24,6 +24,11 @@ public static class RouteConfigurationExtension
             .WithOne(e => e.RelatedEntity as Route)
             .HasForeignKey<Route>(e => e.TopoImageId);
 
+        // Configure ClimbingType enum for Route - regular column (no computed column)
+        modelBuilder.Entity<Route>()
+            .Property(e => e.Type)
+            .HasColumnType("climbing_type");
+
         return modelBuilder;
     }
 } 
