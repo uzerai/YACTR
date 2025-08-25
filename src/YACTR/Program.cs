@@ -20,6 +20,7 @@ using FastEndpoints;
 using FastEndpoints.Swagger;
 using NJsonSchema;
 using NetTopologySuite.Geometries;
+using YACTR.Data.Model.Climbing;
 
 // ############################################################
 // ##########  APP BUILDING  ##################################
@@ -108,6 +109,8 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DatabaseContextConnection"), npgsqlSourceBuilder =>
     {
         // Additional configuration for the Npgsql connection.
+        // Such as, enum mappings:
+        npgsqlSourceBuilder.MapEnum<ClimbingType>("climbing_type");
 
         // Here used to enable NodaTime support.
         npgsqlSourceBuilder.UseNodaTime();
@@ -118,6 +121,7 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
         
         // Enable dynamic JSON support, allowing JSON B columns.
         npgsqlSourceBuilder.ConfigureDataSource(source => source.EnableDynamicJson());
+        
     })
     .UseSnakeCaseNamingConvention();
 });

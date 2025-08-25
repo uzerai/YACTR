@@ -30,7 +30,7 @@ public class DatabaseContext : DbContext
     public DbSet<OrganizationPermission> OrganizationPermissions { get; set; }
     public DbSet<OrganizationTeam> OrganizationTeams { get; set; }
     public DbSet<OrganizationTeamUser> OrganizationTeamUsers { get; set; }
-    public DbSet<Area> Crags { get; set; }
+    public DbSet<Area> Areas { get; set; }
     public DbSet<Sector> Sectors { get; set; }
     public DbSet<Route> Routes { get; set; }
     public DbSet<Pitch> Pitches { get; set; }

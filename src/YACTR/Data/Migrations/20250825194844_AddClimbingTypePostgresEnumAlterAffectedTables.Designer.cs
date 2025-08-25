@@ -10,13 +10,14 @@ using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using YACTR.Data;
 using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.Data.Model.Climbing;
 
 #nullable disable
 
 namespace YACTR.Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250825175328_AddClimbingTypePostgresEnumAlterAffectedTables")]
+    [Migration("20250825194844_AddClimbingTypePostgresEnumAlterAffectedTables")]
     partial class AddClimbingTypePostgresEnumAlterAffectedTables
     {
         /// <inheritdoc />
@@ -80,7 +81,7 @@ namespace YACTR.Data.Migrations
                     b.UseTpcMappingStrategy();
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Location.RoutePitch", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.RoutePitch", b =>
                 {
                     b.Property<Guid>("RouteId")
                         .HasColumnType("uuid")
@@ -228,39 +229,7 @@ namespace YACTR.Data.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Image", b =>
-                {
-                    b.HasBaseType("YACTR.Data.Model.BaseEntity");
-
-                    b.Property<string>("Bucket")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("bucket");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("key");
-
-                    b.Property<Guid?>("RelatedEntityId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("related_entity_id");
-
-                    b.Property<Guid?>("UploaderId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("uploader_id");
-
-                    b.HasIndex("UploaderId")
-                        .HasDatabaseName("ix_images_uploader_id");
-
-                    b.ToTable("images", (string)null);
-                });
-
-            modelBuilder.Entity("YACTR.Data.Model.Location.Area", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Area", b =>
                 {
                     b.HasBaseType("YACTR.Data.Model.BaseEntity");
 
@@ -290,10 +259,10 @@ namespace YACTR.Data.Migrations
                     b.HasIndex("MaintainerOrganizationId")
                         .HasDatabaseName("ix_areas_maintainer_organization_id");
 
-                    b.ToTable("areas");
+                    b.ToTable("areas", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Location.Pitch", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Pitch", b =>
                 {
                     b.HasBaseType("YACTR.Data.Model.BaseEntity");
 
@@ -309,7 +278,7 @@ namespace YACTR.Data.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("sector_id");
 
-                    b.Property<int>("Type")
+                    b.Property<ClimbingType>("Type")
                         .HasColumnType("climbing_type")
                         .HasColumnName("type");
 
@@ -319,7 +288,7 @@ namespace YACTR.Data.Migrations
                     b.ToTable("pitches", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Location.Route", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Route", b =>
                 {
                     b.HasBaseType("YACTR.Data.Model.BaseEntity");
 
@@ -356,7 +325,7 @@ namespace YACTR.Data.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("topo_image_id");
 
-                    b.Property<int>("Type")
+                    b.Property<ClimbingType>("Type")
                         .HasColumnType("climbing_type")
                         .HasColumnName("type");
 
@@ -370,7 +339,7 @@ namespace YACTR.Data.Migrations
                     b.ToTable("routes", (string)null);
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Location.Sector", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Sector", b =>
                 {
                     b.HasBaseType("YACTR.Data.Model.BaseEntity");
 
@@ -405,6 +374,38 @@ namespace YACTR.Data.Migrations
                         .HasDatabaseName("ix_sectors_area_id");
 
                     b.ToTable("sectors", (string)null);
+                });
+
+            modelBuilder.Entity("YACTR.Data.Model.Image", b =>
+                {
+                    b.HasBaseType("YACTR.Data.Model.BaseEntity");
+
+                    b.Property<string>("Bucket")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("bucket");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("key");
+
+                    b.Property<Guid?>("RelatedEntityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("related_entity_id");
+
+                    b.Property<Guid?>("UploaderId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("uploader_id");
+
+                    b.HasIndex("UploaderId")
+                        .HasDatabaseName("ix_images_uploader_id");
+
+                    b.ToTable("images", (string)null);
                 });
 
             modelBuilder.Entity("YACTR.Data.Model.Organizations.Organization", b =>
@@ -468,16 +469,16 @@ namespace YACTR.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Location.RoutePitch", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.RoutePitch", b =>
                 {
-                    b.HasOne("YACTR.Data.Model.Location.Pitch", "Pitch")
+                    b.HasOne("YACTR.Data.Model.Climbing.Pitch", "Pitch")
                         .WithMany()
                         .HasForeignKey("PitchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_route_pitches_pitches_pitch_id");
 
-                    b.HasOne("YACTR.Data.Model.Location.Route", "Route")
+                    b.HasOne("YACTR.Data.Model.Climbing.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -551,7 +552,7 @@ namespace YACTR.Data.Migrations
 
             modelBuilder.Entity("YACTR.Data.Model.Achievement.Ascent", b =>
                 {
-                    b.HasOne("YACTR.Data.Model.Location.Route", "Route")
+                    b.HasOne("YACTR.Data.Model.Climbing.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -570,17 +571,7 @@ namespace YACTR.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Image", b =>
-                {
-                    b.HasOne("YACTR.Data.Model.Authentication.User", "Uploader")
-                        .WithMany()
-                        .HasForeignKey("UploaderId")
-                        .HasConstraintName("fk_images_users_uploader_id");
-
-                    b.Navigation("Uploader");
-                });
-
-            modelBuilder.Entity("YACTR.Data.Model.Location.Area", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Area", b =>
                 {
                     b.HasOne("YACTR.Data.Model.Organizations.Organization", "MaintainerOrganization")
                         .WithMany()
@@ -590,9 +581,9 @@ namespace YACTR.Data.Migrations
                     b.Navigation("MaintainerOrganization");
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Location.Pitch", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Pitch", b =>
                 {
-                    b.HasOne("YACTR.Data.Model.Location.Sector", "Sector")
+                    b.HasOne("YACTR.Data.Model.Climbing.Sector", "Sector")
                         .WithMany()
                         .HasForeignKey("SectorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -602,9 +593,9 @@ namespace YACTR.Data.Migrations
                     b.Navigation("Sector");
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Location.Route", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Route", b =>
                 {
-                    b.HasOne("YACTR.Data.Model.Location.Sector", "Sector")
+                    b.HasOne("YACTR.Data.Model.Climbing.Sector", "Sector")
                         .WithMany("Routes")
                         .HasForeignKey("SectorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -613,7 +604,7 @@ namespace YACTR.Data.Migrations
 
                     b.HasOne("YACTR.Data.Model.Image", "TopoImage")
                         .WithOne("RelatedEntity")
-                        .HasForeignKey("YACTR.Data.Model.Location.Route", "TopoImageId")
+                        .HasForeignKey("YACTR.Data.Model.Climbing.Route", "TopoImageId")
                         .HasConstraintName("fk_routes_images_topo_image_id");
 
                     b.Navigation("Sector");
@@ -621,9 +612,9 @@ namespace YACTR.Data.Migrations
                     b.Navigation("TopoImage");
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Location.Sector", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Sector", b =>
                 {
-                    b.HasOne("YACTR.Data.Model.Location.Area", "Area")
+                    b.HasOne("YACTR.Data.Model.Climbing.Area", "Area")
                         .WithMany("Sectors")
                         .HasForeignKey("AreaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -631,6 +622,16 @@ namespace YACTR.Data.Migrations
                         .HasConstraintName("fk_sectors_areas_area_id");
 
                     b.Navigation("Area");
+                });
+
+            modelBuilder.Entity("YACTR.Data.Model.Image", b =>
+                {
+                    b.HasOne("YACTR.Data.Model.Authentication.User", "Uploader")
+                        .WithMany()
+                        .HasForeignKey("UploaderId")
+                        .HasConstraintName("fk_images_users_uploader_id");
+
+                    b.Navigation("Uploader");
                 });
 
             modelBuilder.Entity("YACTR.Data.Model.Organizations.OrganizationTeam", b =>
@@ -657,19 +658,19 @@ namespace YACTR.Data.Migrations
                     b.Navigation("OrganizationUsers");
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Image", b =>
-                {
-                    b.Navigation("RelatedEntity");
-                });
-
-            modelBuilder.Entity("YACTR.Data.Model.Location.Area", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Area", b =>
                 {
                     b.Navigation("Sectors");
                 });
 
-            modelBuilder.Entity("YACTR.Data.Model.Location.Sector", b =>
+            modelBuilder.Entity("YACTR.Data.Model.Climbing.Sector", b =>
                 {
                     b.Navigation("Routes");
+                });
+
+            modelBuilder.Entity("YACTR.Data.Model.Image", b =>
+                {
+                    b.Navigation("RelatedEntity");
                 });
 
             modelBuilder.Entity("YACTR.Data.Model.Organizations.Organization", b =>

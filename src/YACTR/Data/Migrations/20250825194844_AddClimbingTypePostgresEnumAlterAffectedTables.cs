@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using YACTR.Data.Model.Climbing;
 
 #nullable disable
 
@@ -15,14 +16,14 @@ namespace YACTR.Data.Migrations
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,")
                 .OldAnnotation("Npgsql:PostgresExtension:postgis", ",,");
 
-            migrationBuilder.AddColumn<int>(
+            migrationBuilder.AddColumn<ClimbingType>(
                 name: "type",
                 table: "routes",
                 type: "climbing_type",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: ClimbingType.Sport);
 
-            migrationBuilder.AlterColumn<int>(
+            migrationBuilder.AlterColumn<ClimbingType>(
                 name: "type",
                 table: "pitches",
                 type: "climbing_type",
@@ -48,7 +49,7 @@ namespace YACTR.Data.Migrations
                 table: "pitches",
                 type: "integer",
                 nullable: false,
-                oldClrType: typeof(int),
+                oldClrType: typeof(ClimbingType),
                 oldType: "climbing_type");
         }
     }
