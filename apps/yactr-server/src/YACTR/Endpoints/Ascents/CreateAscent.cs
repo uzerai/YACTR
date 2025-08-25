@@ -1,33 +1,28 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using YACTR.Data.Model.Achievement;
-using YACTR.Data.Model.Location;
 using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.UserContext;
-using Route = YACTR.Data.Model.Location.Route;
 
 namespace YACTR.Endpoints;
 
 public record CreateAscentRequest(
-    Guid? RouteId,
-    Guid? PitchId,
+    Guid RouteId,
     AscentType Type,
     Instant CompletedAt
 );
 
 public class CreateAscent : Endpoint<CreateAscentRequest, AscentResponse>
 {
-    private readonly IRepository<RouteAscent> _routeAscentRepository;
-    private readonly IRepository<PitchAscent> _pitchAscentRepository;
+    private readonly IRepository<Ascent> _ascentRepository;
     private readonly IUserContext _userContext;
 
     public CreateAscent(
-        IRepository<RouteAscent> routeAscentRepository,
-        IRepository<PitchAscent> pitchAscentRepository,
+        IRepository<Ascent> ascentRepository,
         IUserContext userContext)
     {
-        _routeAscentRepository = routeAscentRepository;
-        _pitchAscentRepository = pitchAscentRepository;
+        _ascentRepository = ascentRepository;
         _userContext = userContext;
     }
 
@@ -42,45 +37,27 @@ public class CreateAscent : Endpoint<CreateAscentRequest, AscentResponse>
         var currentUser = _userContext.CurrentUser!;
         var now = SystemClock.Instance.GetCurrentInstant();
 
-        BaseAscent createdAscent;
+        var createdAscent = await _ascentRepository.CreateAsync(new Ascent
+        {
+            Id = Guid.NewGuid(),
+            RouteId = req.RouteId,
+            Type = req.Type,
+            CompletedAt = req.CompletedAt,
+            CreatedAt = now,
+            UserId = currentUser.Id
+        }, ct);
 
-        if (req.RouteId.HasValue)
-        {
-            createdAscent = await _routeAscentRepository.CreateAsync(new RouteAscent
-            {
-                Id = Guid.NewGuid(),
-                RouteId = req.RouteId.Value,
-                Type = req.Type,
-                CompletedAt = req.CompletedAt,
-                CreatedAt = now,
-                UserId = currentUser.Id
-            }, ct);
-        }
-        else if (req.PitchId.HasValue)
-        {
-            createdAscent = await _pitchAscentRepository.CreateAsync(new PitchAscent
-            {
-                Id = Guid.NewGuid(),
-                PitchId = req.PitchId.Value,
-                Type = req.Type,
-                CompletedAt = req.CompletedAt,
-                CreatedAt = now,
-                UserId = currentUser.Id
-            }, ct);
-        }
-        else
-        {
-            await SendErrorsAsync(400, ct);
-            return;
-        }
+        // Reload the ascent with the Route navigation property
+        var ascentWithRoute = await _ascentRepository.BuildReadonlyQuery()
+            .Include(a => a.Route)
+            .FirstAsync(a => a.Id == createdAscent.Id, ct);
 
-        await SendCreatedAtAsync<GetAscentById>(createdAscent.Id, new AscentResponse(
-            Id: createdAscent.Id,
-            UserId: createdAscent.UserId,
-            Type: createdAscent.Type,
-            CompletedAt: createdAscent.CompletedAt,
-            Route: createdAscent is RouteAscent routeAscent ? routeAscent.Route : null,
-            Pitch: createdAscent is PitchAscent pitchAscent ? pitchAscent.Pitch : null
+        await SendCreatedAtAsync<GetAscentById>(ascentWithRoute.Id, new AscentResponse(
+            Id: ascentWithRoute.Id,
+            UserId: ascentWithRoute.UserId,
+            Type: ascentWithRoute.Type,
+            CompletedAt: ascentWithRoute.CompletedAt,
+            Route: ascentWithRoute.Route
         ), cancellation: ct);
     }
 }

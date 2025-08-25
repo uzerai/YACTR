@@ -15,17 +15,14 @@ public record UpdateAscentRequest(
 
 public class UpdateAscent : Endpoint<UpdateAscentRequest, EmptyResponse>
 {
-    private readonly IRepository<RouteAscent> _routeAscentRepository;
-    private readonly IRepository<PitchAscent> _pitchAscentRepository;
+    private readonly IRepository<Ascent> _ascentRepository;
     private readonly IUserContext _userContext;
 
     public UpdateAscent(
-        IRepository<RouteAscent> routeAscentRepository,
-        IRepository<PitchAscent> pitchAscentRepository,
+        IRepository<Ascent> ascentRepository,
         IUserContext userContext)
     {
-        _routeAscentRepository = routeAscentRepository;
-        _pitchAscentRepository = pitchAscentRepository;
+        _ascentRepository = ascentRepository;
         _userContext = userContext;
     }
 
@@ -39,44 +36,25 @@ public class UpdateAscent : Endpoint<UpdateAscentRequest, EmptyResponse>
     {
         var currentUser = _userContext.CurrentUser!;
 
-        // Try to find the ascent as a RouteAscent first
-        var routeAscent = await _routeAscentRepository.BuildTrackedQuery()
-            .FirstOrDefaultAsync(ra => ra.Id == req.AscentId, ct);
-        if (routeAscent != null)
+        var ascent = await _ascentRepository.BuildTrackedQuery()
+            .FirstOrDefaultAsync(a => a.Id == req.AscentId, ct);
+        
+        if (ascent == null)
         {
-            // Ensure the user owns this ascent
-            if (routeAscent.UserId != currentUser.Id)
-            {
-                await SendForbiddenAsync(ct);
-                return;
-            }
-
-            routeAscent.Type = req.Type;
-            routeAscent.CompletedAt = req.CompletedAt;
-            await _routeAscentRepository.UpdateAsync(routeAscent, ct);
-            await SendNoContentAsync(ct);
+            await SendNotFoundAsync(ct);
             return;
         }
 
-        // Try to find the ascent as a PitchAscent
-        var pitchAscent = await _pitchAscentRepository.BuildTrackedQuery()
-            .FirstOrDefaultAsync(pa => pa.Id == req.AscentId, ct);
-        if (pitchAscent != null)
+        // Ensure the user owns this ascent
+        if (ascent.UserId != currentUser.Id)
         {
-            // Ensure the user owns this ascent
-            if (pitchAscent.UserId != currentUser.Id)
-            {
-                await SendForbiddenAsync(ct);
-                return;
-            }
-
-            pitchAscent.Type = req.Type;
-            pitchAscent.CompletedAt = req.CompletedAt;
-            await _pitchAscentRepository.UpdateAsync(pitchAscent, ct);
-            await SendNoContentAsync(ct);
+            await SendForbiddenAsync(ct);
             return;
         }
 
-        await SendNotFoundAsync(ct);
+        ascent.Type = req.Type;
+        ascent.CompletedAt = req.CompletedAt;
+        await _ascentRepository.UpdateAsync(ascent, ct);
+        await SendNoContentAsync(ct);
     }
 }

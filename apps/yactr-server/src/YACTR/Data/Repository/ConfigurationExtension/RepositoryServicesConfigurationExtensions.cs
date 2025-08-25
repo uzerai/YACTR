@@ -29,9 +29,8 @@ public static class RepositoryServicesConfigurationExtensions
         services.AddTransient<IEntityRepository<Route>, EntityRepository<Route>>();
         services.AddTransient<IEntityRepository<Image>, EntityRepository<Image>>();
         
-        // Ascent repositories - using IRepository since BaseAscent doesn't inherit from BaseEntity
-        services.AddTransient<IRepository<RouteAscent>, BaseRepository<RouteAscent>>();
-        services.AddTransient<IRepository<PitchAscent>, BaseRepository<PitchAscent>>();
+        // Ascent repository - using IRepository since Ascent doesn't inherit from BaseEntity
+        services.AddTransient<IRepository<Ascent>, BaseRepository<Ascent>>();
         
         return services;
     }
