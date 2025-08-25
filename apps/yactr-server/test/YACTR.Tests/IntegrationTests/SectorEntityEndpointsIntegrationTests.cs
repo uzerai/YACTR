@@ -2,7 +2,7 @@ using System.Net;
 using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
-using YACTR.Data.Model.Location;
+using YACTR.Data.Model.Climbing;
 using NetTopologySuite.Geometries;
 using NetTopologySuite;
 using YACTR.Endpoints;

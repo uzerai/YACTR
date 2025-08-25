@@ -6,7 +6,7 @@ using Shouldly;
 using YACTR.Data.Model.Achievement;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Authorization.Permissions;
-using YACTR.Data.Model.Location;
+using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints;
 using NetTopologySuite.Geometries;
 using NetTopologySuite;

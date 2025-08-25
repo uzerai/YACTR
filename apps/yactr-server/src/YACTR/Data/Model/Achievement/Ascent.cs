@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using YACTR.Data.Model.Authentication;
 using NodaTime;
-using Route = YACTR.Data.Model.Location.Route;
+using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Data.Model.Achievement;
 

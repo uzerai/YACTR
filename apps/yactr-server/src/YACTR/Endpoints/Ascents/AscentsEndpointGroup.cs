@@ -1,7 +1,7 @@
 using FastEndpoints;
 using NodaTime;
 using YACTR.Data.Model.Achievement;
-using YACTR.Data.Model.Location;
+using YACTR.Data.Model.Climbing;
 
 namespace YACTR.Endpoints;
 
@@ -22,7 +22,7 @@ public record AscentResponse(
   Guid UserId,
   AscentType Type,
   Instant CompletedAt,
-  Data.Model.Location.Route? Route
+  Data.Model.Climbing.Route? Route
 );
 
 public class AscentsEndpointGroup : Group
