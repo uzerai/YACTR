@@ -8,7 +8,7 @@ using YACTR.Tests.TestData;
 
 namespace YACTR.Tests.SeederTests;
 
-[Collection("SeederTests")]
+[Collection("IntegrationTests")]
 public class TauForerLoaderTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
 {
     [Fact]

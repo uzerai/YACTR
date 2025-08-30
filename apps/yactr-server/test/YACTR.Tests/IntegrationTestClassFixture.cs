@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NetTopologySuite.IO.Converters;
 using NodaTime;
-using Xunit.v3;
 using YACTR.Data;
 using YACTR.Data.Model;
 using YACTR.Data.Model.Authentication;
