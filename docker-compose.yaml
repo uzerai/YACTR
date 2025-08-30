@@ -1,4 +1,19 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: container/yactr-api/Dockerfile
+      target: final
+    ports:
+      - "8080:8080"
+    profiles:
+      - development-fulls3
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Minio__Endpoint=file-bucket:9000
+      - Minio__AccessKey=yactr
+      - Minio__SecretKey=yactr
+      - ConnectionStrings__DatabaseContextConnection=Host=database;Database=yactr_dev;Username=yactr;Password=yactr;Port=5432
   database:
     environment:
       POSTGRES_USER: yactr
