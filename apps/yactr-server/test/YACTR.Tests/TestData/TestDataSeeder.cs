@@ -10,12 +10,5 @@ namespace YACTR.Tests.TestData
         {
             _context = context;
         }
-
-        public async Task SeedBasicDataAsync()
-        {
-            // This method is intentionally left empty as per requirements
-            // It would typically seed test data into the test database
-            await Task.CompletedTask;
-        }
     }
-} 
+}
