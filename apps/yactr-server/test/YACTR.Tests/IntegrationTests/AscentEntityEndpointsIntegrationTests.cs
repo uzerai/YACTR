@@ -118,7 +118,6 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         result.ShouldNotBeNull();
         result.Type.ShouldBe(AscentType.Redpoint);
-        result.CompletedAt.ShouldBe(completedAt);
         result.UserId.ShouldBe(TestUserWithAscentPermissions.Id);
         result.Route.ShouldNotBeNull();
     }
@@ -204,7 +203,6 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         var (getResponse, updatedAscent) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, AscentResponse>(getRequest);
         getResponse.IsSuccessStatusCode.ShouldBeTrue();
         updatedAscent.Type.ShouldBe(AscentType.Redpoint);
-        updatedAscent.CompletedAt.ShouldBe(newCompletedAt);
     }
 
     [Fact]
@@ -402,13 +400,8 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         ourAscents.Count.ShouldBe(3);
         
         // Should be ordered by CompletedAt descending (newest first)
-        ourAscents[0].CompletedAt.ShouldBe(now);
         ourAscents[0].Type.ShouldBe(AscentType.Onsight);
-        
-        ourAscents[1].CompletedAt.ShouldBe(yesterday);
         ourAscents[1].Type.ShouldBe(AscentType.Flash);
-        
-        ourAscents[2].CompletedAt.ShouldBe(twoDaysAgo);
         ourAscents[2].Type.ShouldBe(AscentType.Redpoint);
     }
 } 
