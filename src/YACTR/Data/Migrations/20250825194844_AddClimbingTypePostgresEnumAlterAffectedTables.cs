@@ -23,13 +23,16 @@ namespace YACTR.Data.Migrations
                 nullable: false,
                 defaultValue: ClimbingType.Sport);
 
-            migrationBuilder.AlterColumn<ClimbingType>(
+            migrationBuilder.DropColumn(
+                name: "type",
+                table: "pitches");
+
+            migrationBuilder.AddColumn<ClimbingType>(
                 name: "type",
                 table: "pitches",
                 type: "climbing_type",
                 nullable: false,
-                oldClrType: typeof(int),
-                oldType: "integer");
+                defaultValue: ClimbingType.Sport);
         }
 
         /// <inheritdoc />
@@ -44,13 +47,16 @@ namespace YACTR.Data.Migrations
                 .OldAnnotation("Npgsql:Enum:climbing_type", "sport,traditional,boulder,mixed,aid")
                 .OldAnnotation("Npgsql:PostgresExtension:postgis", ",,");
 
-            migrationBuilder.AlterColumn<int>(
+            migrationBuilder.DropColumn(
+                name: "type",
+                table: "pitches");
+
+            migrationBuilder.AddColumn<int>(
                 name: "type",
                 table: "pitches",
                 type: "integer",
                 nullable: false,
-                oldClrType: typeof(ClimbingType),
-                oldType: "climbing_type");
+                defaultValue: 0);
         }
     }
 }
