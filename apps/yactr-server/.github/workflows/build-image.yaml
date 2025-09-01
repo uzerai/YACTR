@@ -1,20 +1,22 @@
 name: Build and Push Docker Image
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_run:
+    workflows: [ "Test Coverage" ]
+    types:
+      - completed
 
 env:
   REGISTRY: ${{ secrets.PRIVATE_REGISTRY_HOST }}
   REGISTRY_USERNAME: ${{ secrets.PRIVATE_REGISTRY_USERNAME }}
   REGISTRY_PASSWORD: ${{ secrets.PRIVATE_REGISTRY_PASSWORD }}
   IMAGE_NAME: yactr-api
-  IMAGE_TAG: ${{ github.ref_name }}
+  IMAGE_TAG: ${{ github.event.workflow_run.head_branch }}
 
 jobs:
   build-and-push:
+    # Run only if Test Coverage concluded successfully AND branch is main
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -48,7 +50,7 @@ jobs:
       with:
         context: .
         file: ./container/yactr-api/Dockerfile
-        push: ${{ github.event_name != 'pull_request' }}
+        push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
@@ -56,7 +58,7 @@ jobs:
         platforms: linux/amd64
 
     - name: Output image info
-      if: github.event_name != 'pull_request'
+      if: always()
       run: |
         echo "Built and pushed image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
         echo "Tags: ${{ steps.meta.outputs.tags }}"

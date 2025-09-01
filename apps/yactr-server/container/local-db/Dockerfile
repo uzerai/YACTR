@@ -1,5 +1,4 @@
 FROM postgres:17.4 AS builder
-MAINTAINER uzerai
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -11,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     postgis \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir "/tmp/pg_uuidv7"
+RUN mkdir "/tmp/pg_uuidv7"  
 WORKDIR "/tmp/pg_uuidv7"
 RUN curl -LO "https://github.com/fboulnois/pg_uuidv7/releases/download/v1.6.0/{pg_uuidv7.tar.gz,SHA256SUMS}" && \
     tar xf pg_uuidv7.tar.gz && \
@@ -23,6 +22,8 @@ RUN cp "$PG_MAJOR/pg_uuidv7.so" "$(pg_config --pkglibdir)" && \
 RUN rm -rf /tmp
 
 FROM builder AS runner
+
+COPY container/local-db/init-scripts /docker-entrypoint-initdb.d
 
 EXPOSE 5432
 CMD ["postgres"]
