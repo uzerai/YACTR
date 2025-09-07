@@ -53,12 +53,17 @@ public class DatabaseContext : DbContext
         modelBuilder.ConfigureOrganizationPermissionModel();
         modelBuilder.ConfigureOrganizationTeamModel();
         modelBuilder.ConfigureOrganizationTeamUserModel();
+        
         modelBuilder.ConfigureAreaModel();
         modelBuilder.ConfigureSectorModel();
         modelBuilder.ConfigureRouteModel();
         modelBuilder.ConfigurePitchModel();
         modelBuilder.ConfigureRoutePitchModel();
+        modelBuilder.ConfigureRouteRatingModel();
+        modelBuilder.ConfigureRouteLikeModel();
+
         modelBuilder.ConfigureImageModel();
+        
         modelBuilder.ConfigureAscentModel();
     }
 

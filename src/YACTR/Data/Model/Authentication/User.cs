@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.Data.Model.Climbing.Rating;
 using YACTR.Data.Model.Organizations;
 
 namespace YACTR.Data.Model.Authentication;
@@ -30,6 +32,10 @@ public class User : BaseEntity
     [Column("admin_permissions", TypeName = "jsonb")]
     public virtual ICollection<Permission> AdminPermissions { get; set; } = [];
     public virtual ICollection<OrganizationUser> OrganizationUsers { get; set; } = [];
-
     public virtual ICollection<Organization> Organizations { get; set; } = [];
+
+    [JsonIgnore]
+    public virtual ICollection<RouteRating> RouteRatings { get; set; } = [];
+    [JsonIgnore]
+    public virtual ICollection<RouteLike> RouteLikes { get; set; } = [];
 }

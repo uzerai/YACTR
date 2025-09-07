@@ -12,8 +12,17 @@ public static class UserConfigurationExtension
             .HasMany(e => e.Organizations)
             .WithMany(e => e.Users)
             .UsingEntity<OrganizationUser>();
+
         modelBuilder.Entity<User>()
             .HasMany(e => e.OrganizationUsers)
+            .WithOne(e => e.User);
+
+        modelBuilder.Entity<User>()
+            .HasMany(e => e.RouteRatings)
+            .WithOne(e => e.User);
+
+        modelBuilder.Entity<User>()
+            .HasMany(e => e.RouteLikes)
             .WithOne(e => e.User);
 
         return modelBuilder;
