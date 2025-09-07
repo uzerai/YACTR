@@ -8,6 +8,7 @@ using YACTR.Data.Model.Organizations;
 using Route = YACTR.Data.Model.Climbing.Route;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Model.Achievement;
+using YACTR.Data.Model.Climbing.Rating;
 
 namespace YACTR.Data;
 
@@ -37,6 +38,8 @@ public class DatabaseContext : DbContext
     public DbSet<RoutePitch> RoutePitches { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<Ascent> Ascents { get; set; }
+    public DbSet<RouteRating> RouteRatings { get; set; }
+    public DbSet<RouteLike> RouteLikes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -63,7 +66,7 @@ public class DatabaseContext : DbContext
         modelBuilder.ConfigureRouteLikeModel();
 
         modelBuilder.ConfigureImageModel();
-        
+
         modelBuilder.ConfigureAscentModel();
     }
 

@@ -5,6 +5,7 @@ using YACTR.Data.Model.Climbing;
 using YACTR.Data.Model.Organizations;
 using YACTR.Data.Model.Achievement;
 using Route = YACTR.Data.Model.Climbing.Route;
+using YACTR.Data.Model.Climbing.Rating;
 
 namespace YACTR.Data.Repository.ConfigurationExtension;
 
@@ -28,6 +29,8 @@ public static class RepositoryServicesConfigurationExtensions
         services.AddTransient<IEntityRepository<Pitch>, EntityRepository<Pitch>>();
         services.AddTransient<IEntityRepository<Route>, EntityRepository<Route>>();
         services.AddTransient<IEntityRepository<Image>, EntityRepository<Image>>();
+        services.AddTransient<IEntityRepository<RouteRating>, EntityRepository<RouteRating>>();
+        services.AddTransient<IEntityRepository<RouteLike>, EntityRepository<RouteLike>>();
         
         // Ascent repository - using IRepository since Ascent doesn't inherit from BaseEntity
         services.AddTransient<IRepository<Ascent>, BaseRepository<Ascent>>();
