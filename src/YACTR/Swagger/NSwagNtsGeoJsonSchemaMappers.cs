@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using NetTopologySuite.Geometries;
 using NJsonSchema;
 using NJsonSchema.Generation;
@@ -50,7 +51,7 @@ public static class NSwagNtsGeoJsonSchemaMappers
                         Type = JsonObjectType.Array,
                         MaxItems = 3,
                         MinItems = 3,
-                        Default = "[11.11, 22.22, 33.33]",
+                        Default = new List<float>{ 11.11f, 22.22f, 33.33f },
                         Item = new() {
                             Type = JsonObjectType.Number,
                         }
@@ -81,7 +82,7 @@ public static class NSwagNtsGeoJsonSchemaMappers
                         Item = new() {
                             Type = JsonObjectType.Array,
                             MaxItems = 3,
-                            Default = "[ 11.11, 22.22, 33.33 ]",
+                            Default = new List<float>{ 11.11f, 22.22f, 33.33f },
                             Item = new() {
                               Type = JsonObjectType.Number
                             }
@@ -113,7 +114,7 @@ public static class NSwagNtsGeoJsonSchemaMappers
                         Item = new() {
                             Type = JsonObjectType.Array,
                             MaxItems = 3,
-                            Default = "[ 11.11, 22.22, 33.33 ]",
+                            Default = new List<float>{ 11.11f, 22.22f, 33.33f },
                             Item = new() {
                               Type = JsonObjectType.Number
                             }
@@ -141,17 +142,25 @@ public static class NSwagNtsGeoJsonSchemaMappers
                     new ()
                     {
                         Type = JsonObjectType.Array,
+                        Description = "Array of polygons, where each polygon is an array of linear rings",
                         Item = new() {
                             Type = JsonObjectType.Array,
-                            MinItems = 3,
+                            Description = "Array of linear rings for a single polygon",
+                            MinItems = 1,
                             Item = new() {
-                              Type = JsonObjectType.Array,
-                              MaxItems = 3,
-                              Default = "[ 11.11, 22.22, 33.33 ]",
-                              Item = new() {
-                                Type = JsonObjectType.Number
-                              }
-                          }
+                                Type = JsonObjectType.Array,
+                                Description = "Linear ring (array of coordinates)",
+                                MinItems = 4,
+                                Item = new() {
+                                    Type = JsonObjectType.Array,
+                                    Description = "Coordinate [longitude, latitude] or [longitude, latitude, elevation]",
+                                    MinItems = 2,
+                                    MaxItems = 3,
+                                    Item = new() {
+                                        Type = JsonObjectType.Number
+                                    }
+                                }
+                            }
                         }
                     }
                 }
