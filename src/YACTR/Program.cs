@@ -18,9 +18,8 @@ using YACTR.Swagger;
 using FileSignatures;
 using FastEndpoints;
 using FastEndpoints.Swagger;
-using NJsonSchema;
-using NetTopologySuite.Geometries;
 using YACTR.Data.Model.Climbing;
+using NSwag;
 
 // ############################################################
 // ##########  APP BUILDING  ##################################
@@ -54,6 +53,34 @@ builder.Services
     });
 builder.Services.AddAuthorization();
 
+// CORS setup based on AllowedHosts from configuration
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("ConfiguredCors", policy =>
+	{
+		var allowedHosts = builder.Configuration["AllowedHosts"];
+		if (string.IsNullOrWhiteSpace(allowedHosts) || allowedHosts == "*")
+		{
+			policy
+				.AllowAnyOrigin()
+				.AllowAnyHeader()
+				.AllowAnyMethod();
+		}
+		else
+		{
+			var origins = allowedHosts
+				.Split([';', ',', ' ', '\t', '\n', '\r'], StringSplitOptions.RemoveEmptyEntries)
+				.Select(h => h.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || h.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ? h : $"https://{h}")
+				.ToArray();
+
+			policy
+				.WithOrigins(origins)
+				.AllowAnyHeader()
+				.AllowAnyMethod();
+		}
+	});
+});
+
 builder.Services
     .AddFastEndpoints()
     // This configures the JSON serialization in the generated schema.
@@ -68,6 +95,13 @@ builder.Services
 
         swaggerSettings.DocumentSettings = docSettings =>
         {
+            docSettings.AddSecurity("JWTBearerAuth", new OpenApiSecurityScheme
+            {
+                Type = OpenApiSecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "JWT Bearer auth using the Authorization header."
+            });
             /**
             * <see cref="NSwagNtsGeoJsonSchemaMappers"/>
             */
@@ -153,6 +187,9 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+// Enable CORS before auth so preflight requests succeed
+app.UseCors("ConfiguredCors");
 
 app.UseAuthentication()
     // This middleware _must_ be squashed between the authentication and authorization middlewares.
