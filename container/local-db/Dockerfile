@@ -1,11 +1,6 @@
 FROM postgres:17.4 AS builder
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    curl \
-    tar \
-    postgresql-server-dev-17 \
+RUN apt-get update && apt-get install -y curl \
     postgresql-17-postgis-3 \
     postgis \
     && rm -rf /var/lib/apt/lists/*
