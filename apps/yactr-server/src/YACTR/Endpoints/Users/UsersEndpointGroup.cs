@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Users;
 
 public class UsersEndpointGroup : Group
 {

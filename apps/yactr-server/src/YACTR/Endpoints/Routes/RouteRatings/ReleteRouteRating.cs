@@ -3,17 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using YACTR.Data.Model.Climbing.Rating;
 using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.UserContext;
+using YACTR.Endpoints.Routes.RouteRatings.ViewModels;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Routes.RouteRatings;
 
-public record UnrateRouteRequest(Guid RouteId);
+public record DeleteRouteRatingRequest(Guid RouteId);
 
-public class UnrateRoute : Endpoint<UnrateRouteRequest, RouteRatingResponse>
+public class DeleteRouteRating : Endpoint<DeleteRouteRatingRequest, RouteRatingResponse>
 {
     private readonly IEntityRepository<RouteRating> _routeRatingRepository;
     private readonly IUserContext _userContext;
 
-    public UnrateRoute(
+    public DeleteRouteRating(
         IEntityRepository<RouteRating> routeRatingRepository,
         IUserContext userContext)
     {
@@ -24,10 +25,10 @@ public class UnrateRoute : Endpoint<UnrateRouteRequest, RouteRatingResponse>
     public override void Configure()
     {
         Delete("/{RouteId}/rating");
-        Group<RouteRatingsEndpointGroup>();
+        Group<RoutesEndpointGroup>();
     }
 
-    public override async Task HandleAsync(UnrateRouteRequest req, CancellationToken ct)
+    public override async Task HandleAsync(DeleteRouteRatingRequest req, CancellationToken ct)
     {
         var currentUser = _userContext.CurrentUser!;
 

@@ -3,10 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using YACTR.Data.Model.Climbing.Rating;
 using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.UserContext;
+using YACTR.Endpoints.Routes.RouteRatings.ViewModels;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Routes.RouteRatings;
 
-public record RateRouteRequest(Guid RouteId, int Rating);
+public class RateRouteRequest
+{
+    public Guid RouteId { get; set; }
+
+    [FromBody]
+    public required RouteRatingRequest Rating { get; set; }
+}
 
 public class RateRoute : Endpoint<RateRouteRequest, RouteRatingResponse>
 {
@@ -24,7 +31,7 @@ public class RateRoute : Endpoint<RateRouteRequest, RouteRatingResponse>
     public override void Configure()
     {
         Post("/{RouteId}/rating");
-        Group<RouteRatingsEndpointGroup>();
+        Group<RoutesEndpointGroup>();
     }
 
     public override async Task HandleAsync(RateRouteRequest req, CancellationToken ct)
@@ -32,7 +39,7 @@ public class RateRoute : Endpoint<RateRouteRequest, RouteRatingResponse>
         var currentUser = _userContext.CurrentUser!;
 
         // Validate rating value (assuming 1-5 scale)
-        if (req.Rating < 1 || req.Rating > 5)
+        if (req.Rating.Rating < 1 || req.Rating.Rating > 5)
         {
             await SendErrorsAsync(400, ct);
             return;
@@ -47,7 +54,7 @@ public class RateRoute : Endpoint<RateRouteRequest, RouteRatingResponse>
         if (existingRating != null)
         {
             // Update existing rating
-            existingRating.Rating = req.Rating;
+            existingRating.Rating = req.Rating.Rating;
             await _routeRatingRepository.UpdateAsync(existingRating, ct);
             routeRating = existingRating;
         }
@@ -59,7 +66,7 @@ public class RateRoute : Endpoint<RateRouteRequest, RouteRatingResponse>
                 Id = Guid.NewGuid(),
                 RouteId = req.RouteId,
                 UserId = currentUser.Id,
-                Rating = req.Rating
+                Rating = req.Rating.Rating
             }, ct);
         }
 

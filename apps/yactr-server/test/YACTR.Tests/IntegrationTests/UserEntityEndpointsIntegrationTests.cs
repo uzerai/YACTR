@@ -3,7 +3,7 @@ using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Data.Model.Authentication;
-using YACTR.Endpoints;
+using YACTR.Endpoints.Users;
 
 namespace YACTR.Tests.Endpoints;
 

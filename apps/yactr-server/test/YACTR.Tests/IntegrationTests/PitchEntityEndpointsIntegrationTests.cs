@@ -5,7 +5,9 @@ using Shouldly;
 using YACTR.Data.Model.Climbing;
 using NetTopologySuite.Geometries;
 using NetTopologySuite;
-using YACTR.Endpoints;
+using YACTR.Endpoints.Pitches;
+using YACTR.Endpoints.Areas;
+using YACTR.Endpoints.Sectors;
 
 namespace YACTR.Tests.Endpoints;
 

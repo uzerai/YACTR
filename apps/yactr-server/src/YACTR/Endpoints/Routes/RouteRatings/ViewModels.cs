@@ -1,7 +1,4 @@
-using FastEndpoints;
-using YACTR.Data.Model.Climbing.Rating;
-
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Routes.RouteRatings.ViewModels;
 
 /// <summary>
 /// Response data for RouteRating entities.
@@ -17,10 +14,10 @@ public record RouteRatingResponse(
     int Rating
 );
 
-public class RouteRatingsEndpointGroup : Group
-{
-    public RouteRatingsEndpointGroup()
-    {
-        Configure("routes", ep => {});
-    }
-}
+/// <summary>
+/// Request data for creating and updating RouteRating entities.
+/// </summary>
+/// <param name="Rating">The rating value (1-5).</param>
+public record RouteRatingRequest(
+    int Rating
+);

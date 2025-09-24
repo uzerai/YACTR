@@ -4,7 +4,7 @@ using YACTR.Data.Model.Climbing.Rating;
 using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.UserContext;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Routes.RouteLikes;
 
 public record LikeRouteRequest(Guid RouteId);
 

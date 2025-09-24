@@ -10,6 +10,7 @@ using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints;
 using NetTopologySuite.Geometries;
 using NetTopologySuite;
+using YACTR.Endpoints.Ascents;
 
 namespace YACTR.Tests.Endpoints;
 
