@@ -30,13 +30,7 @@ public class CreateRoute : Endpoint<RouteRequestData, Route>
             SectorId = req.SectorId,
             FirstAscentClimberName = req.FirstAscentClimberName,
             BolterName = req.BolterName,
-            Pitches = [.. req.Pitches.Select(p => new Pitch
-            {
-                Name = p.Name,
-                Description = p.Description,
-                Type = p.Type,
-                SectorId = req.SectorId,
-            })],
+            Pitches = [],
         }, ct);
 
         await SendCreatedAtAsync<GetRouteById>(createdRoute.Id, createdRoute, cancellation: ct);

@@ -19,7 +19,7 @@ public class Area : BaseEntity
     public required string Name { get; set; }
     public string? Description { get; set; }
     public required Point Location { get; set; }
-    public required MultiPolygon Boundary { get; init; }
+    public required MultiPolygon Boundary { get; set; }
 
     [JsonIgnore]
     [ForeignKey("MaintainerOrganization")]
