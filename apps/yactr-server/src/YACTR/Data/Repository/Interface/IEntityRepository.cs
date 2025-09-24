@@ -21,4 +21,11 @@ public interface IEntityRepository<T> : IRepository<T> where T : BaseEntity
     /// <param name="ct">Cancellation token</param>
     /// <returns>The entity if found; otherwise, null.</returns>
     Task<T?> GetByIdTrackingAsync(Guid id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Get all available (where deleted at is null) entities.
+    /// </summary>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A collection of all available entities.</returns>
+    Task<IEnumerable<T>> GetAllAvailableAsync(CancellationToken ct = default);
 }

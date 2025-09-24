@@ -51,6 +51,12 @@ public partial class EntityRepository<T> : BaseRepository<T>, IEntityRepository<
     public override async Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default)
     {
         return await _context.Set<T>()
+            .ToListAsync(ct);
+    }
+
+    public virtual async Task<IEnumerable<T>> GetAllAvailableAsync(CancellationToken ct = default)
+    {
+        return await _context.Set<T>()
             .WhereAvailable()
             .ToListAsync(ct);
     }
