@@ -4,7 +4,13 @@ using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Endpoints;
 
-public record UpdateRouteRequest(Guid RouteId);
+public class UpdateRouteRequest
+{
+    public Guid RouteId { get; set; }
+
+    [FromBody]
+    public required RouteRequestData Route { get; set; }
+};
 
 public class UpdateRoute : Endpoint<UpdateRouteRequest, EmptyResponse>
 {

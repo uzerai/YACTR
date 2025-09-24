@@ -144,7 +144,28 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
         
         // Act
-        var updateRequest = new UpdateAreaRequest(createdArea.Id);
+        var updatedLocation = geometryFactory.CreatePoint(new Coordinate(-122.4195, 37.775));
+        var updatedBoundary = geometryFactory.CreateMultiPolygon(new[] {
+            geometryFactory.CreatePolygon(new[] {
+                new Coordinate(-122.421, 37.771),
+                new Coordinate(-122.421, 37.781),
+                new Coordinate(-122.411, 37.781),
+                new Coordinate(-122.411, 37.771),
+                new Coordinate(-122.421, 37.771)
+            })
+        });
+
+        var updateRequest = new UpdateAreaRequest
+        {
+            AreaId = createdArea.Id,
+            Area = new AreaRequestData(
+                "Test Area for Update",
+                "Updated description",
+                updatedLocation,
+                updatedBoundary
+            )
+        };
+
         var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);
         
         // Assert
@@ -158,7 +179,29 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         var invalidId = Guid.NewGuid();
             
         // Act
-        var updateRequest = new UpdateAreaRequest(invalidId);
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
+        var boundary = geometryFactory.CreateMultiPolygon(new[] {
+            geometryFactory.CreatePolygon(new[] {
+                new Coordinate(-122.42, 37.77),
+                new Coordinate(-122.42, 37.78),
+                new Coordinate(-122.41, 37.78),
+                new Coordinate(-122.41, 37.77),
+                new Coordinate(-122.42, 37.77)
+            })
+        });
+
+        var updateRequest = new UpdateAreaRequest
+        {
+            AreaId = invalidId,
+            Area = new AreaRequestData(
+                "Non-existent Area",
+                "Doesn't matter",
+                location,
+                boundary
+            )
+        };
+
         var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);
         
         // Assert
