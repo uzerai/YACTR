@@ -21,7 +21,7 @@ public class GetAllAreas : Endpoint<EmptyRequest, List<Area>>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var areas = await _areaRepository.GetAllAsync(ct);
+        var areas = await _areaRepository.GetAllAvailableAsync(ct);
         await SendAsync([.. areas], cancellation: ct);
     }
 } 
