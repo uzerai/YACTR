@@ -1,6 +1,7 @@
 using FastEndpoints;
+using YACTR.Endpoints.Pitches;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Routes;
 
 /// <summary>
 /// Request data for creating and updating the <see cref="Route"/> entity.

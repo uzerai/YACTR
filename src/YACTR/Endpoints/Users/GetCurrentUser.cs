@@ -2,7 +2,7 @@ using FastEndpoints;
 using YACTR.Data.Model.Authentication;
 using YACTR.DI.Authorization.UserContext;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Users;
 
 public class GetCurrentUser : Endpoint<EmptyRequest, User>
 {

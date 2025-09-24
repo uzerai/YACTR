@@ -1,7 +1,7 @@
 using FastEndpoints;
 using NetTopologySuite.Geometries;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Areas;
 
 /// <summary>
 /// Request data for creating and updating the <see cref="Area"/> entity.

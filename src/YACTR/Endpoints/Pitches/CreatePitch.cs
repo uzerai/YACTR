@@ -2,7 +2,7 @@ using FastEndpoints;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Pitches;
 
 public class CreatePitch : Endpoint<PitchRequestData, Pitch>
 {

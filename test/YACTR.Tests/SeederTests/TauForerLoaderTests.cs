@@ -4,6 +4,9 @@ using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints;
+using YACTR.Endpoints.Areas;
+using YACTR.Endpoints.Routes;
+using YACTR.Endpoints.Sectors;
 using YACTR.Tests.TestData;
 
 namespace YACTR.Tests.SeederTests;

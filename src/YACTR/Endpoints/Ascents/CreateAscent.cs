@@ -5,7 +5,7 @@ using YACTR.Data.Model.Achievement;
 using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.UserContext;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Ascents;
 
 public record CreateAscentRequest(
     Guid RouteId,

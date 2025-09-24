@@ -2,7 +2,7 @@ using FastEndpoints;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Sectors;
 
 public record UpdateSectorRequest(Guid SectorId);
 

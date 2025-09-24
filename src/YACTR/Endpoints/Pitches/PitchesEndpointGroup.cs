@@ -1,7 +1,7 @@
 using FastEndpoints;
 using YACTR.Data.Model.Climbing;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Pitches;
 
 /// <summary>
 /// Request data for creating and updating the <see cref="Pitch"/> entity.

@@ -1,9 +1,8 @@
 using FastEndpoints;
 using NodaTime;
 using YACTR.Data.Model.Achievement;
-using YACTR.Data.Model.Climbing;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Ascents;
 
 /// <summary>
 /// Request data for creating and updating Ascent entities.

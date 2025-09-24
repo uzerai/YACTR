@@ -4,7 +4,7 @@ using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.UserContext;
 using Microsoft.EntityFrameworkCore;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Ascents;
 
 public record DeleteAscentRequest(Guid AscentId);
 

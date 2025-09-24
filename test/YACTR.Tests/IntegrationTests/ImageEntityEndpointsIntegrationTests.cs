@@ -9,6 +9,7 @@ using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints;
+using YACTR.Endpoints.Images;
 
 namespace YACTR.Tests.Endpoints;
 

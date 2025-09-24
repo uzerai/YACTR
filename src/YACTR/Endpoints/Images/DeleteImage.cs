@@ -7,7 +7,7 @@ using YACTR.Data.Model.Authorization.Permissions;
 using Minio.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Images;
 
 public class ImageDeleteRequest
 {

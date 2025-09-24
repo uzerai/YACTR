@@ -1,7 +1,4 @@
-using FastEndpoints;
-using YACTR.Data.Model.Climbing.Rating;
-
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Routes.RouteLikes.ViewModels;
 
 /// <summary>
 /// Response data for RouteLike entities.
@@ -14,11 +11,3 @@ public record RouteLikeResponse(
     Guid UserId,
     Guid RouteId
 );
-
-public class RouteLikesEndpointGroup : Group
-{
-    public RouteLikesEndpointGroup()
-    {
-        Configure("routes", ep => {});
-    }
-}

@@ -3,7 +3,7 @@ using YACTR.Data.Model.Achievement;
 using YACTR.Data.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Ascents;
 
 public class GetAllAscents : Endpoint<EmptyRequest, List<AscentResponse>>
 {

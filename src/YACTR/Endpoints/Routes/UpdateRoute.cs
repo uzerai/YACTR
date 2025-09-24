@@ -1,8 +1,9 @@
 using FastEndpoints;
 using YACTR.Data.Repository.Interface;
+using YACTR.Endpoints.Routes;
 using Route = YACTR.Data.Model.Climbing.Route;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Routes;
 
 public class UpdateRouteRequest
 {

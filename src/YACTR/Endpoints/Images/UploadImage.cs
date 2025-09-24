@@ -5,7 +5,7 @@ using YACTR.DI.Authorization.UserContext;
 using YACTR.DI.Authorization.Permissions;
 using YACTR.Data.Model.Authorization.Permissions;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Images;
 
 public class UploadImage : Endpoint<ImageUploadRequest, Image>
 {

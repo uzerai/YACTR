@@ -1,7 +1,7 @@
 using FastEndpoints;
 using NetTopologySuite.Geometries;
 
-namespace YACTR.Endpoints;
+namespace YACTR.Endpoints.Sectors;
 
 /// <summary>
 /// Request data for creating and updating the <see cref="Sector"/> entity.
