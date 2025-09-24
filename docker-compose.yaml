@@ -25,10 +25,11 @@ services:
       - database-data:/var/lib/postgresql/data
       - ./container/local-db/init-scripts/01-init-extensions.sql:/docker-entrypoint-initdb.d/01-init-extensions.sql
     # Add build context to install extensions
-    build:
-      context: .
-      dockerfile: container/local-db/Dockerfile
-      target: runner
+    image: registry.botten.me/yactr-database:main
+    # build:
+    #   context: .
+    #   dockerfile: container/local-db/Dockerfile
+    #   target: runner
     profiles:
       - test
       - development
