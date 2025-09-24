@@ -223,10 +223,10 @@ internal static class TestDataFactory
 
         return new SectorRequestData(
             Name: name,
-            Area: sectorArea,
+            SectorArea: sectorArea,
             EntryPoint: entryPoint,
-            Photo: null,
-            Description: null,
+            RecommendedParkingLocation: null,
+            ApproachPath: null,
             AreaId: areaId
         );
     }
