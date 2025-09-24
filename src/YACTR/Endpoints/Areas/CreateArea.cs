@@ -1,6 +1,8 @@
 using FastEndpoints;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
+using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Areas;
 
@@ -17,6 +19,7 @@ public class CreateArea : Endpoint<AreaRequestData, Area>
     {
         Post("/");
         Group<AreasEndpointGroup>();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.AreasWrite)));
     }
 
     public override async Task HandleAsync(AreaRequestData req, CancellationToken ct)

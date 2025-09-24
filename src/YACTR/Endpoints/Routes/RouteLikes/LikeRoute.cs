@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using YACTR.Data.Model.Climbing.Rating;
 using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.UserContext;
+using YACTR.Endpoints.Routes.RouteLikes.ViewModels;
 
 namespace YACTR.Endpoints.Routes.RouteLikes;
 
@@ -24,7 +25,7 @@ public class LikeRoute : Endpoint<LikeRouteRequest, RouteLikeResponse>
     public override void Configure()
     {
         Post("/{RouteId}/like");
-        Group<RouteLikesEndpointGroup>();
+        Group<RoutesEndpointGroup>();
     }
 
     public override async Task HandleAsync(LikeRouteRequest req, CancellationToken ct)
