@@ -65,7 +65,8 @@ public class UserContextMiddleware
                         user.LastLogin = clock.GetCurrentInstant();
                         await userRepository.SaveAsync();
                     }
-
+                    
+                    _logger.LogInformation("User {UserAuth0NameIdentifier} logged in. User: {User}", auth0Id, user);
                     context.Items["CurrentUser"] = user;
                 }
             }
