@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Organizations;
 
 namespace YACTR.Data.ConfigurationExtension;
@@ -7,9 +8,6 @@ public static class OrganizationUserConfigurationExtension
 {
     public static ModelBuilder ConfigureOrganizationUserModel(this ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<OrganizationUser>()
-              .HasMany(e => e.Permissions)
-              .WithOne(e => e.OrganizationUser);
         modelBuilder.Entity<OrganizationUser>()
             .HasKey(e => new { e.OrganizationId, e.UserId });
         modelBuilder.Entity<OrganizationUser>()
@@ -20,6 +18,14 @@ public static class OrganizationUserConfigurationExtension
             .HasOne(e => e.User)
             .WithMany(e => e.OrganizationUsers)
             .HasForeignKey(e => e.UserId);
+
+        modelBuilder.Entity<OrganizationUser>()
+            .Property(e => e.Permissions)
+            .HasColumnType("jsonb");
+
+        modelBuilder.Entity<OrganizationUser>()
+            .HasIndex(e => e.Permissions)
+            .HasMethod("gin");
 
         return modelBuilder;
     }
