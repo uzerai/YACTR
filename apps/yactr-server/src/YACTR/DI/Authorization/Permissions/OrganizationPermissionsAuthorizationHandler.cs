@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using YACTR.Data.Model.Authorization.Permissions;
 namespace YACTR.DI.Authorization.Permissions;
 
 public class OrganizationPermissionsAuthorizationHandler : AuthorizationHandler<OrganizationPermissionRequiredAttribute>

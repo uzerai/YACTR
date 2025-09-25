@@ -1,9 +1,12 @@
 using FastEndpoints;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
+using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Areas;
 
+[PlatformPermissionRequired(Permission.AreasWrite)]
 public class UpdateAreaRequest
 {
     public Guid AreaId { get; set; }

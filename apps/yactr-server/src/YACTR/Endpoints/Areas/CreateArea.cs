@@ -6,6 +6,7 @@ using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Areas;
 
+[PlatformPermissionRequired(Permission.AreasWrite)]
 public class CreateArea : Endpoint<AreaRequestData, Area>
 {
     private readonly IEntityRepository<Area> _areaRepository;
@@ -19,7 +20,6 @@ public class CreateArea : Endpoint<AreaRequestData, Area>
     {
         Post("/");
         Group<AreasEndpointGroup>();
-        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.AreasWrite)));
     }
 
     public override async Task HandleAsync(AreaRequestData req, CancellationToken ct)
