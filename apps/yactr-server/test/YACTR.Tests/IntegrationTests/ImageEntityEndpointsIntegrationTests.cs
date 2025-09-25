@@ -23,6 +23,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         Auth0UserId = $"test|{Guid.NewGuid()}",
         PlatformPermissions = Enum.GetValues<Permission>()
     };
+
     // Minimum jpeg valid magic bytes.
     public static readonly byte[] MINIMAL_JPEG = { 0xFF,0xD8,0xFF,0xE0,0x00,0x10,0x4A,0x46,0x49,0x46,0x00,0x01,0x01,0x01,0x00,0x48,0x00,0x48,0x00,0x00,
         0xFF,0xDB,0x00,0x43,0x00,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
@@ -76,7 +77,15 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     {
 
         // Arrange
-        using var client = fixture.CreateAuthenticatedClient();
+        User userWithoutPermissions = new()
+        {
+            Auth0UserId = $"user_without_image_perms|{Guid.NewGuid()}",
+            Username = "user_without_image_perms",
+            Email = "user@test.example",
+            PlatformPermissions = [.. DefaultUserPermissions.PlatformPermissions]
+        };
+
+        using var client = fixture.CreateAuthenticatedClient(userWithoutPermissions);
         var request = new ImageUploadRequest()
         {
             Image = TEST_FILE
@@ -176,8 +185,16 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     public async Task DeleteImage_WithoutPermissions_ReturnsForbidden()
     {
         // Arrange
+        User userWithoutPermissions = new()
+        {
+            Auth0UserId = $"user_without_image_perms|{Guid.NewGuid()}",
+            Username = "user_without_image_perms",
+            Email = "user@test.example",
+            PlatformPermissions = [.. DefaultUserPermissions.PlatformPermissions]
+        };
+
         using var clientWithPermissions = fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
-        using var clientWithoutPermissions = fixture.CreateAuthenticatedClient();
+        using var clientWithoutPermissions = fixture.CreateAuthenticatedClient(userWithoutPermissions);
 
         // First create an image with a user that has permissions
         var uploadRequest = new ImageUploadRequest()

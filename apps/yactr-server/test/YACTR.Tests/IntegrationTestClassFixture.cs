@@ -94,22 +94,13 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     {
         HttpClient client = CreateClient();
 
-        if (user is null)
-        {
-            user = DatabaseContext.Users
-                .WhereAuth0UserId(TestAuthenticationHandler.DEFAULT_TEST_USER.Auth0UserId)
-                .FirstOrDefault();
-            // Ensure that the test user is created or already exists if creating the client for the 
-            // default test user.
-            if (user is null)
-            {
-                DatabaseContext.Users.Add(TestAuthenticationHandler.DEFAULT_TEST_USER);
-                DatabaseContext.SaveChanges();
-            }
+        user ??= TestAuthenticationHandler.DEFAULT_TEST_USER;
 
-            user = DatabaseContext.Users
-                .WhereAuth0UserId(TestAuthenticationHandler.DEFAULT_TEST_USER.Auth0UserId)
-                .First();
+        // If the user has not been created; create it and assign the user to created one.
+        if (!DatabaseContext.Users.WhereAuth0UserId(user.Auth0UserId).Any())
+        {
+            user = DatabaseContext.Users.Add(user).Entity;
+            DatabaseContext.SaveChanges();
         }
 
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
