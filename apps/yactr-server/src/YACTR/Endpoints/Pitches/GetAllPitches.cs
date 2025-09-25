@@ -24,4 +24,4 @@ public class GetAllPitches : Endpoint<EmptyRequest, List<Pitch>>
         var pitches = await _pitchRepository.GetAllAsync(ct);
         await SendAsync([.. pitches], cancellation: ct);
     }
-} 
+}

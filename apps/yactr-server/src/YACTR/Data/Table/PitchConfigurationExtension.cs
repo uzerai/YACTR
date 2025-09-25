@@ -21,7 +21,7 @@ public static class PitchConfigurationExtension
         modelBuilder.Entity<Pitch>()
             .Property(e => e.Type)
             .HasColumnType("climbing_type");
-            
+
         return modelBuilder;
     }
-} 
+}

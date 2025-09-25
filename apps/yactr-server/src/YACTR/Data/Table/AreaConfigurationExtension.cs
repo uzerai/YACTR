@@ -18,4 +18,4 @@ public static class AreaConfigurationExtension
 
         return modelBuilder;
     }
-} 
+}

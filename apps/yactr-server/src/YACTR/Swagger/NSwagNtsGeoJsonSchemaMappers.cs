@@ -23,19 +23,19 @@ namespace YACTR.Swagger;
 /// </summary>
 public static class NSwagNtsGeoJsonSchemaMappers
 {
-  /// <summary>
-  /// Registers a handful of ObjectTypeMappers to the JsonSchemaGeneratorSettings for NSwag to
-  /// force the swagger open api spec to conform to what's expected of the endpoints which 
-  /// use the NetTopologySuite GeoJson format.
-  /// </summary>
-  /// <param name="schemaGeneratorSettings"></param>
-  public static void AddNtsGeoJsonSchemas(this JsonSchemaGeneratorSettings schemaGeneratorSettings)
-  {
-    schemaGeneratorSettings.TypeMappers.Add(
-        new ObjectTypeMapper(typeof(Point), new JsonSchema()
-        {
-          Type = JsonObjectType.Object,
-          Properties = {
+    /// <summary>
+    /// Registers a handful of ObjectTypeMappers to the JsonSchemaGeneratorSettings for NSwag to
+    /// force the swagger open api spec to conform to what's expected of the endpoints which 
+    /// use the NetTopologySuite GeoJson format.
+    /// </summary>
+    /// <param name="schemaGeneratorSettings"></param>
+    public static void AddNtsGeoJsonSchemas(this JsonSchemaGeneratorSettings schemaGeneratorSettings)
+    {
+        schemaGeneratorSettings.TypeMappers.Add(
+            new ObjectTypeMapper(typeof(Point), new JsonSchema()
+            {
+                Type = JsonObjectType.Object,
+                Properties = {
                 {
                     "type",
                     new () {
@@ -56,15 +56,15 @@ public static class NSwagNtsGeoJsonSchemaMappers
                         }
                     }
                 }
-            },
-        })
-    );
+                },
+            })
+        );
 
-    schemaGeneratorSettings.TypeMappers.Add(
-        new ObjectTypeMapper(typeof(Polygon), new JsonSchema()
-        {
-          Type = JsonObjectType.Object,
-          Properties = {
+        schemaGeneratorSettings.TypeMappers.Add(
+            new ObjectTypeMapper(typeof(Polygon), new JsonSchema()
+            {
+                Type = JsonObjectType.Object,
+                Properties = {
                 {
                     "type",
                     new () {
@@ -95,15 +95,15 @@ public static class NSwagNtsGeoJsonSchemaMappers
                         }
                     }
                 }
-            },
-        })
-    );
+                },
+            })
+        );
 
-    schemaGeneratorSettings.TypeMappers.Add(
-        new ObjectTypeMapper(typeof(LineString), new JsonSchema()
-        {
-          Type = JsonObjectType.Object,
-          Properties = {
+        schemaGeneratorSettings.TypeMappers.Add(
+            new ObjectTypeMapper(typeof(LineString), new JsonSchema()
+            {
+                Type = JsonObjectType.Object,
+                Properties = {
                 {
                     "type",
                     new () {
@@ -127,15 +127,15 @@ public static class NSwagNtsGeoJsonSchemaMappers
                         }
                     }
                 }
-            },
-        })
-    );
+                },
+            })
+        );
 
-    schemaGeneratorSettings.TypeMappers.Add(
-        new ObjectTypeMapper(typeof(MultiPolygon), new JsonSchema()
-        {
-          Type = JsonObjectType.Object,
-          Properties = {
+        schemaGeneratorSettings.TypeMappers.Add(
+            new ObjectTypeMapper(typeof(MultiPolygon), new JsonSchema()
+            {
+                Type = JsonObjectType.Object,
+                Properties = {
                 {
                     "type",
                     new () {
@@ -170,8 +170,8 @@ public static class NSwagNtsGeoJsonSchemaMappers
                         }
                     }
                 }
-            },
-        })
-    );
-  }
+                },
+            })
+        );
+    }
 }

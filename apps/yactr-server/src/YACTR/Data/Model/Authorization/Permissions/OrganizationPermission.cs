@@ -16,7 +16,7 @@ public class OrganizationPermission
     [JsonIgnore]
     [ForeignKey("User")]
     public Guid UserId { get; set; }
-    
+
     [JsonIgnore]
     public virtual OrganizationUser OrganizationUser { get; set; } = null!;
     [JsonIgnore]

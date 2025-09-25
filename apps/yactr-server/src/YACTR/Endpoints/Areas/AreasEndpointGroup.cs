@@ -21,6 +21,6 @@ public class AreasEndpointGroup : Group
 {
     public AreasEndpointGroup()
     {
-        Configure("areas", ep => {});
+        Configure("areas", ep => { });
     }
-} 
+}

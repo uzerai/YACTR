@@ -25,4 +25,4 @@ public class GetAllRoutes : Endpoint<EmptyRequest, List<Route>>
         var routes = await _routeRepository.GetAllAsync(ct);
         await SendAsync([.. routes], cancellation: ct);
     }
-} 
+}

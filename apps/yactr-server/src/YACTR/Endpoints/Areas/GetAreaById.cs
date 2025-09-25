@@ -24,7 +24,7 @@ public class GetAreaById : Endpoint<GetAreaByIdRequest, Area>
     public override async Task HandleAsync(GetAreaByIdRequest req, CancellationToken ct)
     {
         var area = await _areaRepository.GetByIdAsync(req.AreaId, ct);
-        
+
         if (area == null)
         {
             await SendNotFoundAsync(ct);
@@ -33,4 +33,4 @@ public class GetAreaById : Endpoint<GetAreaByIdRequest, Area>
 
         await SendAsync(area, cancellation: ct);
     }
-} 
+}

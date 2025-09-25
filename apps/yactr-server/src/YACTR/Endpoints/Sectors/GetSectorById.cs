@@ -24,7 +24,7 @@ public class GetSectorById : Endpoint<GetSectorByIdRequest, Sector>
     public override async Task HandleAsync(GetSectorByIdRequest req, CancellationToken ct)
     {
         var sector = await _sectorRepository.GetByIdAsync(req.SectorId, ct);
-        
+
         if (sector == null)
         {
             await SendNotFoundAsync(ct);
@@ -33,4 +33,4 @@ public class GetSectorById : Endpoint<GetSectorByIdRequest, Sector>
 
         await SendAsync(sector, cancellation: ct);
     }
-} 
+}

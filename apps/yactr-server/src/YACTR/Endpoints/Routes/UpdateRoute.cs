@@ -40,7 +40,7 @@ public class UpdateRoute : Endpoint<UpdateRouteRequest, EmptyResponse>
         // Note: This would need to be implemented with proper request body handling
         // The original controller had incomplete update logic
         await _routeRepository.UpdateAsync(existingRoute, ct);
-        
+
         await SendNoContentAsync(ct);
     }
-} 
+}

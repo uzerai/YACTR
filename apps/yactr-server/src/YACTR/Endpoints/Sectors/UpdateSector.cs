@@ -33,7 +33,7 @@ public class UpdateSector : Endpoint<UpdateSectorRequest, EmptyResponse>
         // Note: This would need to be implemented with proper request body handling
         // The original controller had incomplete update logic
         await _sectorRepository.UpdateAsync(existingSector, ct);
-        
+
         await SendNoContentAsync(ct);
     }
-} 
+}

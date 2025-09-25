@@ -13,7 +13,7 @@ public class Pitch : BaseEntity
     public string? Name { get; set; }
     public required ClimbingType Type { get; set; } = ClimbingType.Sport;
     public string? Description { get; set; }
-    
+
     [ForeignKey("Sector")]
     public required Guid SectorId { get; set; }
     public virtual Sector Sector { get; set; } = null!;

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using YACTR.Data.Model.Authentication;
+using YACTR.Data.Model.Authorization.Permissions;
 
 namespace YACTR.Tests;
 
@@ -12,7 +13,7 @@ namespace YACTR.Tests;
 /// Authenticates test users through the use of the <see cref="AuthenticationScheme"/>.
 /// </summary>
 /// <remarks>
-/// Due to the nature of how the <see cref="DI.Authorization.UserContext.UserContextMiddleware"/> service
+/// Due to the nature of how the <see cref="DI.Authorization.UserPermissionsClaims.UserContextMiddleware"/> service
 /// extracts and auto-creates valid JWT tokens in production, any valid <see cref="AuthenticationScheme"/> token/string
 /// will have a user created automatically.
 /// 
@@ -24,9 +25,10 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
     public const string TokenSplitChars = "::";
     public static readonly User DEFAULT_TEST_USER = new()
     {
-        Auth0UserId = $"test0|{Guid.Empty}",
-        Email = "test@test.dev",
-        Username = "test_user",
+      Auth0UserId = $"test0|{Guid.Empty}",
+      Email = "test@test.dev",
+      Username = "test_user",
+      PlatformPermissions = Enum.GetValues<Permission>()
     };
 
     /// <summary>

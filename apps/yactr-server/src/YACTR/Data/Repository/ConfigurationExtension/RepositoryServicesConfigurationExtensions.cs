@@ -31,10 +31,10 @@ public static class RepositoryServicesConfigurationExtensions
         services.AddTransient<IEntityRepository<Image>, EntityRepository<Image>>();
         services.AddTransient<IEntityRepository<RouteRating>, EntityRepository<RouteRating>>();
         services.AddTransient<IEntityRepository<RouteLike>, EntityRepository<RouteLike>>();
-        
+
         // Ascent repository - using IRepository since Ascent doesn't inherit from BaseEntity
         services.AddTransient<IRepository<Ascent>, BaseRepository<Ascent>>();
-        
+
         return services;
     }
 }

@@ -1,21 +1,20 @@
 using FastEndpoints;
 using YACTR.Data.Model;
 using YACTR.DI.Service;
-using YACTR.DI.Authorization.UserContext;
 using YACTR.DI.Authorization.Permissions;
 using YACTR.Data.Model.Authorization.Permissions;
+using FastEndpoints.Security;
+using System.Security.Claims;
 
 namespace YACTR.Endpoints.Images;
 
 public class UploadImage : Endpoint<ImageUploadRequest, Image>
 {
     private readonly IImageStorageService _imageStorageService;
-    private readonly IUserContext _userContext;
 
-    public UploadImage(IImageStorageService imageStorageService, IUserContext userContext)
+    public UploadImage(IImageStorageService imageStorageService)
     {
         _imageStorageService = imageStorageService;
-        _userContext = userContext;
     }
 
     public override void Configure()
@@ -28,6 +27,11 @@ public class UploadImage : Endpoint<ImageUploadRequest, Image>
 
     public override async Task HandleAsync(ImageUploadRequest req, CancellationToken ct)
     {
+        if (!Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId))
+        {
+            await SendUnauthorizedAsync(ct);
+            return;
+        }
         if (req.Image is null)
         {
             await SendErrorsAsync(cancellation: ct);
@@ -38,7 +42,7 @@ public class UploadImage : Endpoint<ImageUploadRequest, Image>
         {
             var uploadedImage = await _imageStorageService.UploadImageAsync(
                 req.Image.OpenReadStream(),
-                _userContext.CurrentUser!,
+                userId,
                 req.RelatedEntityId, ct);
 
             await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, uploadedImage, cancellation: ct);
@@ -48,6 +52,6 @@ public class UploadImage : Endpoint<ImageUploadRequest, Image>
             await SendErrorsAsync(422, cancellation: ct);
             return;
         }
-        
+
     }
-} 
+}

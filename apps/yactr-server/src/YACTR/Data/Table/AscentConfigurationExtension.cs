@@ -10,7 +10,7 @@ public static class BaseAscentConfigurationExtension
     {
         modelBuilder.Entity<Ascent>()
             .ToTable("ascents");
-        
+
         return modelBuilder;
     }
 }

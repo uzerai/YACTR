@@ -14,4 +14,4 @@ public class ImagesEndpointGroup : Group
     {
         Configure("images", ep => { });
     }
-} 
+}

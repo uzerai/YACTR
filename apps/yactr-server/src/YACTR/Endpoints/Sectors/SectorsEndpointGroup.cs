@@ -21,6 +21,6 @@ public class SectorsEndpointGroup : Group
 {
     public SectorsEndpointGroup()
     {
-        Configure("sectors", ep => {});
+        Configure("sectors", ep => { });
     }
-} 
+}

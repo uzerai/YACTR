@@ -1,9 +1,10 @@
+using System.Security.Claims;
 using FastEndpoints;
+using FastEndpoints.Security;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using YACTR.Data.Model.Achievement;
 using YACTR.Data.Repository.Interface;
-using YACTR.DI.Authorization.UserContext;
 
 namespace YACTR.Endpoints.Ascents;
 
@@ -16,14 +17,10 @@ public record CreateAscentRequest(
 public class CreateAscent : Endpoint<CreateAscentRequest, AscentResponse>
 {
     private readonly IRepository<Ascent> _ascentRepository;
-    private readonly IUserContext _userContext;
 
-    public CreateAscent(
-        IRepository<Ascent> ascentRepository,
-        IUserContext userContext)
+    public CreateAscent(IRepository<Ascent> ascentRepository)
     {
         _ascentRepository = ascentRepository;
-        _userContext = userContext;
     }
 
     public override void Configure()
@@ -34,7 +31,12 @@ public class CreateAscent : Endpoint<CreateAscentRequest, AscentResponse>
 
     public override async Task HandleAsync(CreateAscentRequest req, CancellationToken ct)
     {
-        var currentUser = _userContext.CurrentUser!;
+        if (!Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId))
+        {
+            await SendUnauthorizedAsync(ct);
+            return;
+        }
+
         var now = SystemClock.Instance.GetCurrentInstant();
 
         var createdAscent = await _ascentRepository.CreateAsync(new Ascent
@@ -44,7 +46,7 @@ public class CreateAscent : Endpoint<CreateAscentRequest, AscentResponse>
             Type = req.Type,
             CompletedAt = req.CompletedAt,
             CreatedAt = now,
-            UserId = currentUser.Id
+            UserId = userId
         }, ct);
 
         // Reload the ascent with the Route navigation property

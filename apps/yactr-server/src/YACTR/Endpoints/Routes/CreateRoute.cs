@@ -35,4 +35,4 @@ public class CreateRoute : Endpoint<RouteRequestData, Route>
 
         await SendCreatedAtAsync<GetRouteById>(createdRoute.Id, createdRoute, cancellation: ct);
     }
-} 
+}

@@ -2,8 +2,9 @@ using FastEndpoints;
 using NodaTime;
 using YACTR.Data.Model.Achievement;
 using YACTR.Data.Repository.Interface;
-using YACTR.DI.Authorization.UserContext;
 using Microsoft.EntityFrameworkCore;
+using FastEndpoints.Security;
+using System.Security.Claims;
 
 namespace YACTR.Endpoints.Ascents;
 
@@ -16,14 +17,10 @@ public record UpdateAscentRequest(
 public class UpdateAscent : Endpoint<UpdateAscentRequest, EmptyResponse>
 {
     private readonly IRepository<Ascent> _ascentRepository;
-    private readonly IUserContext _userContext;
 
-    public UpdateAscent(
-        IRepository<Ascent> ascentRepository,
-        IUserContext userContext)
+    public UpdateAscent(IRepository<Ascent> ascentRepository)
     {
         _ascentRepository = ascentRepository;
-        _userContext = userContext;
     }
 
     public override void Configure()
@@ -34,11 +31,14 @@ public class UpdateAscent : Endpoint<UpdateAscentRequest, EmptyResponse>
 
     public override async Task HandleAsync(UpdateAscentRequest req, CancellationToken ct)
     {
-        var currentUser = _userContext.CurrentUser!;
+        if (!Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId))
+        {
+            await SendUnauthorizedAsync(ct);
+        }
 
         var ascent = await _ascentRepository.BuildTrackedQuery()
             .FirstOrDefaultAsync(a => a.Id == req.AscentId, ct);
-        
+
         if (ascent == null)
         {
             await SendNotFoundAsync(ct);
@@ -46,7 +46,7 @@ public class UpdateAscent : Endpoint<UpdateAscentRequest, EmptyResponse>
         }
 
         // Ensure the user owns this ascent
-        if (ascent.UserId != currentUser.Id)
+        if (ascent.UserId != userId)
         {
             await SendForbiddenAsync(ct);
             return;

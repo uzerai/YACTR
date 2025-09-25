@@ -20,4 +20,4 @@ public static class RouteLikeConfigurationExtension
 
         return modelBuilder;
     }
-} 
+}

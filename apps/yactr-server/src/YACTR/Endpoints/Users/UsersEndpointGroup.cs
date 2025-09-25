@@ -6,6 +6,6 @@ public class UsersEndpointGroup : Group
 {
     public UsersEndpointGroup()
     {
-        Configure("users", ep => {});
+        Configure("users", ep => { });
     }
-} 
+}

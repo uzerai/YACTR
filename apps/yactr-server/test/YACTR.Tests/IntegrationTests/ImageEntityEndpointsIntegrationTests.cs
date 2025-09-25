@@ -8,7 +8,6 @@ using YACTR.Data.Model;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Climbing;
-using YACTR.Endpoints;
 using YACTR.Endpoints.Images;
 
 namespace YACTR.Tests.Endpoints;
@@ -32,7 +31,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xC2,0x00,0x0B,0x08,0x00,0x01,0x00,0x01,0x01,0x01,
         0x11,0x00,0xFF,0xC4,0x00,0x14,0x10,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
         0x00,0x00,0x00,0x00,0xFF,0xDA,0x00,0x08,0x01,0x01,0x00,0x01,0x3F,0x10 };
-    
+
     private readonly IFormFile TEST_FILE = new FormFile(
         baseStream: new MemoryStream(MINIMAL_JPEG),
         baseStreamOffset: 0,
@@ -43,7 +42,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     {
         Headers = new HeaderDictionary(),
         ContentType = "image/jpeg"
-    }; 
+    };
 
     // Let's just provide the test user with image permissions as a basis for all the tests.
     protected override async ValueTask SetupAsync()
@@ -52,25 +51,26 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
 
         await fixture.GetEntityRepository<User>().CreateAsync(TestUserWithImagePermissions, TestContext.Current.CancellationToken);
     }
-    
+
     [Fact]
     public async Task UploadImage_WithValidImageData_ReturnsCreatedImage()
     {
         // Arrange
         using var client = fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
-        var request = new ImageUploadRequest(){
-          Image = TEST_FILE
+        var request = new ImageUploadRequest()
+        {
+            Image = TEST_FILE
         };
-        
+
         // Act
         var (response, result) = await client.POSTAsync<UploadImage, ImageUploadRequest, Image>(request, true);
-        
+
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         result.ShouldNotBeNull();
     }
-    
+
     [Fact]
     public async Task UploadImage_WithoutPermissions_ReturnsForbidden()
     {
@@ -81,10 +81,10 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         {
             Image = TEST_FILE
         };
-        
+
         // Act
         var (response, _) = await client.POSTAsync<UploadImage, ImageUploadRequest, Image>(request, true);
-        
+
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
@@ -124,7 +124,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
 
         imageFromDatabase!.RelatedEntityId.ShouldBeEquivalentTo(area.Id);
     }
-    
+
     [Fact]
     public async Task UploadImage_WithoutAuthentication_ReturnsUnauthorized()
     {
@@ -133,10 +133,10 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         {
             Image = TEST_FILE
         };
-        
+
         // Act
         var (response, _) = await fixture.AnonymousClient.POSTAsync<UploadImage, ImageUploadRequest, Image>(request, true);
-        
+
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -147,7 +147,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     {
         // Arrange
         using var client = fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
-        
+
         // First create an image to delete
         var uploadRequest = new ImageUploadRequest()
         {
@@ -178,7 +178,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         // Arrange
         using var clientWithPermissions = fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
         using var clientWithoutPermissions = fixture.CreateAuthenticatedClient();
-        
+
         // First create an image with a user that has permissions
         var uploadRequest = new ImageUploadRequest()
         {
@@ -274,4 +274,4 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         result.ShouldNotBeNull();
         result.Id.ShouldBe(uploadedImage.Id);
     }
-} 
+}

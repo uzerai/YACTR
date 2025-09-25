@@ -24,7 +24,7 @@ public class DeleteArea : Endpoint<DeleteAreaRequest, EmptyResponse>
     public override async Task HandleAsync(DeleteAreaRequest req, CancellationToken ct)
     {
         var area = await _areaRepository.GetByIdAsync(req.AreaId, ct);
-        
+
         if (area == null)
         {
             await SendNotFoundAsync(ct);
@@ -34,4 +34,4 @@ public class DeleteArea : Endpoint<DeleteAreaRequest, EmptyResponse>
         await _areaRepository.DeleteAsync(area, ct);
         await SendNoContentAsync(ct);
     }
-} 
+}

@@ -24,7 +24,7 @@ public class DeleteSector : Endpoint<DeleteSectorRequest, EmptyResponse>
     public override async Task HandleAsync(DeleteSectorRequest req, CancellationToken ct)
     {
         var sector = await _sectorRepository.GetByIdAsync(req.SectorId, ct);
-        
+
         if (sector == null)
         {
             await SendNotFoundAsync(ct);
@@ -34,4 +34,4 @@ public class DeleteSector : Endpoint<DeleteSectorRequest, EmptyResponse>
         await _sectorRepository.DeleteAsync(sector, ct);
         await SendNoContentAsync(ct);
     }
-} 
+}

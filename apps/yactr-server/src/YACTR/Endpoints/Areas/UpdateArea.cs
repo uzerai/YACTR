@@ -4,7 +4,8 @@ using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Endpoints.Areas;
 
-public class UpdateAreaRequest {
+public class UpdateAreaRequest
+{
     public Guid AreaId { get; set; }
 
     [FromBody]
@@ -42,7 +43,7 @@ public class UpdateArea : Endpoint<UpdateAreaRequest, EmptyResponse>
         area.Boundary = req.Area.Boundary;
 
         await _areaRepository.UpdateAsync(area, ct);
-        
+
         await SendNoContentAsync(ct);
     }
-} 
+}

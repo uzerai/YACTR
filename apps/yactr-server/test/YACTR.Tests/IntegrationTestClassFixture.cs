@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
+using Bogus;
 using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -50,7 +50,7 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     protected override void ConfigureApp(IWebHostBuilder builder)
     {
         base.ConfigureApp(builder);
-        
+
         builder.UseEnvironment("Test");
     }
 
@@ -81,7 +81,7 @@ public class IntegrationTestClassFixture : AppFixture<Program>
 
         services.AddRepositories();
         services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);
-  }
+    }
 
     /// <summary>
     /// Creates a test http client which is authenticated against the provided user.
@@ -91,6 +91,7 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     public HttpClient CreateAuthenticatedClient(User? user = null)
     {
         HttpClient client = CreateClient();
+
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             TestAuthenticationHandler.AuthenticationScheme,
             TestAuthenticationHandler.GenerateAuthenticationToken(user ?? TestAuthenticationHandler.DEFAULT_TEST_USER));
@@ -103,6 +104,11 @@ public class IntegrationTestClassFixture : AppFixture<Program>
         return Services.GetRequiredService<IEntityRepository<T>>();
     }
 
+  public IRepository<T> GetRepository<T>() where T : class
+  {
+    return Services.GetRequiredService<IRepository<T>>();
+    }
+
     /// <summary>
     /// Currently the test suite is ran against a single database which is on the host computer.
     /// This method truncates the database of the current database context to ensure that the test suite
@@ -110,9 +116,9 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    private async Task TruncateTestDatabaseAsync(CancellationToken cancellationToken = default)
-    {
-        await DatabaseContext.Database.ExecuteSqlRawAsync("""
+  private async Task TruncateTestDatabaseAsync(CancellationToken cancellationToken = default)
+  {
+    await DatabaseContext.Database.ExecuteSqlRawAsync("""
             DO $$
             DECLARE
                 r RECORD;
@@ -131,5 +137,5 @@ public class IntegrationTestClassFixture : AppFixture<Program>
                 RAISE NOTICE 'All tables in public schema have been truncated successfully.';
             END $$
         """, cancellationToken);
-    }
+  }
 }
