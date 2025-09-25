@@ -44,7 +44,7 @@ public class CreateOrganization : Endpoint<CreateOrganizationRequestData, Organi
 
         var createdOrganization = await _organizationRepository.CreateAsync(newOrganization, ct);
 
-        Logger.LogDebug("Creating organizationUser for {UserId} in organization {OrganizationId}", userId, createdOrganization.Id);
+        Logger.LogInformation("Creating organizationUser for {UserId} in organization {OrganizationId}", userId, createdOrganization.Id);
         var organizationUser = new OrganizationUser
         {
             OrganizationId = createdOrganization.Id,
