@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Bogus;
 using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Authentication;
@@ -12,6 +13,7 @@ using NodaTime;
 using YACTR.Data;
 using YACTR.Data.Model;
 using YACTR.Data.Model.Authentication;
+using YACTR.Data.QueryExtensions;
 using YACTR.Data.Repository.ConfigurationExtension;
 using YACTR.Data.Repository.Interface;
 
@@ -92,9 +94,27 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     {
         HttpClient client = CreateClient();
 
+        if (user is null)
+        {
+            user = DatabaseContext.Users
+                .WhereAuth0UserId(TestAuthenticationHandler.DEFAULT_TEST_USER.Auth0UserId)
+                .FirstOrDefault();
+            // Ensure that the test user is created or already exists if creating the client for the 
+            // default test user.
+            if (user is null)
+            {
+                DatabaseContext.Users.Add(TestAuthenticationHandler.DEFAULT_TEST_USER);
+                DatabaseContext.SaveChanges();
+            }
+
+            user = DatabaseContext.Users
+                .WhereAuth0UserId(TestAuthenticationHandler.DEFAULT_TEST_USER.Auth0UserId)
+                .First();
+        }
+
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             TestAuthenticationHandler.AuthenticationScheme,
-            TestAuthenticationHandler.GenerateAuthenticationToken(user ?? TestAuthenticationHandler.DEFAULT_TEST_USER));
+            TestAuthenticationHandler.GenerateAuthenticationToken(user));
 
         return client;
     }
@@ -104,9 +124,9 @@ public class IntegrationTestClassFixture : AppFixture<Program>
         return Services.GetRequiredService<IEntityRepository<T>>();
     }
 
-  public IRepository<T> GetRepository<T>() where T : class
-  {
-    return Services.GetRequiredService<IRepository<T>>();
+    public IRepository<T> GetRepository<T>() where T : class
+    {
+        return Services.GetRequiredService<IRepository<T>>();
     }
 
     /// <summary>
@@ -116,9 +136,9 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-  private async Task TruncateTestDatabaseAsync(CancellationToken cancellationToken = default)
-  {
-    await DatabaseContext.Database.ExecuteSqlRawAsync("""
+    private async Task TruncateTestDatabaseAsync(CancellationToken cancellationToken = default)
+    {
+        await DatabaseContext.Database.ExecuteSqlRawAsync("""
             DO $$
             DECLARE
                 r RECORD;
@@ -137,5 +157,5 @@ public class IntegrationTestClassFixture : AppFixture<Program>
                 RAISE NOTICE 'All tables in public schema have been truncated successfully.';
             END $$
         """, cancellationToken);
-  }
+    }
 }
