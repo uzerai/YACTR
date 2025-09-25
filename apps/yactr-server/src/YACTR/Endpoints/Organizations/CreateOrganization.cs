@@ -50,10 +50,6 @@ public class CreateOrganization : Endpoint<CreateOrganizationRequestData, Organi
             OrganizationId = createdOrganization.Id,
             UserId = userId,
             Permissions = Enum.GetValues<Permission>()
-                .Select(permission => new OrganizationPermission
-                {
-                    Permission = permission
-                }).ToList()
         };
 
         await _organizationUserRepository.CreateAsync(organizationUser, ct);

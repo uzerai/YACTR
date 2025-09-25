@@ -21,7 +21,7 @@ public class OrganizationUser
     [JsonIgnore]
     public virtual User User { get; set; } = null!;
 
-    // This could be a jsonb column, let's explore that later when we have entities that require filtering by permission.
-    public virtual ICollection<OrganizationPermission> Permissions { get; set; } = DefaultUserPermissions.OrganizationPermissions.Select(x => new OrganizationPermission { Permission = x }).ToList();
+    [JsonIgnore]
+    public virtual ICollection<Permission> Permissions { get; set; } = [];
     public virtual ICollection<OrganizationTeamUser> OrganizationTeamUsers { get; set; } = [];
 }

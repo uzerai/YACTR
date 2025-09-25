@@ -28,7 +28,6 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<OrganizationUser> OrganizationUsers { get; set; }
-    public DbSet<OrganizationPermission> OrganizationPermissions { get; set; }
     public DbSet<OrganizationTeam> OrganizationTeams { get; set; }
     public DbSet<OrganizationTeamUser> OrganizationTeamUsers { get; set; }
     public DbSet<Area> Areas { get; set; }
@@ -53,7 +52,6 @@ public class DatabaseContext : DbContext
         modelBuilder.ConfigureUserModel();
         modelBuilder.ConfigureOrganizationModel();
         modelBuilder.ConfigureOrganizationUserModel();
-        modelBuilder.ConfigureOrganizationPermissionModel();
         modelBuilder.ConfigureOrganizationTeamModel();
         modelBuilder.ConfigureOrganizationTeamUserModel();
 
