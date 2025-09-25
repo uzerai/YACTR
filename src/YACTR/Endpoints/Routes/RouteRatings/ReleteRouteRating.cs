@@ -1,55 +1,55 @@
-using FastEndpoints;
-using Microsoft.EntityFrameworkCore;
-using YACTR.Data.Model.Climbing.Rating;
-using YACTR.Data.Repository.Interface;
-using YACTR.DI.Authorization.UserContext;
-using YACTR.Endpoints.Routes.RouteRatings.ViewModels;
+// using FastEndpoints;
+// using Microsoft.EntityFrameworkCore;
+// using YACTR.Data.Model.Climbing.Rating;
+// using YACTR.Data.Repository.Interface;
+// using YACTR.DI.Authorization.UserContext;
+// using YACTR.Endpoints.Routes.RouteRatings.ViewModels;
 
-namespace YACTR.Endpoints.Routes.RouteRatings;
+// namespace YACTR.Endpoints.Routes.RouteRatings;
 
-public record DeleteRouteRatingRequest(Guid RouteId);
+// public record DeleteRouteRatingRequest(Guid RouteId);
 
-public class DeleteRouteRating : Endpoint<DeleteRouteRatingRequest, RouteRatingResponse>
-{
-    private readonly IEntityRepository<RouteRating> _routeRatingRepository;
-    private readonly IUserContext _userContext;
+// public class DeleteRouteRating : Endpoint<DeleteRouteRatingRequest, RouteRatingResponse>
+// {
+//     private readonly IEntityRepository<RouteRating> _routeRatingRepository;
+//     private readonly IUserContext _userContext;
 
-    public DeleteRouteRating(
-        IEntityRepository<RouteRating> routeRatingRepository,
-        IUserContext userContext)
-    {
-        _routeRatingRepository = routeRatingRepository;
-        _userContext = userContext;
-    }
+//     public DeleteRouteRating(
+//         IEntityRepository<RouteRating> routeRatingRepository,
+//         IUserContext userContext)
+//     {
+//         _routeRatingRepository = routeRatingRepository;
+//         _userContext = userContext;
+//     }
 
-    public override void Configure()
-    {
-        Delete("/{RouteId}/rating");
-        Group<RoutesEndpointGroup>();
-    }
+//     public override void Configure()
+//     {
+//         Delete("/{RouteId}/rating");
+//         Group<RoutesEndpointGroup>();
+//     }
 
-    public override async Task HandleAsync(DeleteRouteRatingRequest req, CancellationToken ct)
-    {
-        var currentUser = _userContext.CurrentUser!;
+//     public override async Task HandleAsync(DeleteRouteRatingRequest req, CancellationToken ct)
+//     {
+//         var currentUser = _userContext.CurrentUser!;
 
-        // Find the user's rating for this route
-        var existingRating = await _routeRatingRepository.BuildTrackedQuery()
-            .FirstOrDefaultAsync(rr => rr.RouteId == req.RouteId && rr.UserId == currentUser.Id, ct);
+//         // Find the user's rating for this route
+//         var existingRating = await _routeRatingRepository.BuildTrackedQuery()
+//             .FirstOrDefaultAsync(rr => rr.RouteId == req.RouteId && rr.UserId == currentUser.Id, ct);
 
-        if (existingRating == null)
-        {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+//         if (existingRating == null)
+//         {
+//             await SendNotFoundAsync(ct);
+//             return;
+//         }
 
-        // Delete the rating
-        await _routeRatingRepository.DeleteAsync(existingRating, ct);
+//         // Delete the rating
+//         await _routeRatingRepository.DeleteAsync(existingRating, ct);
 
-        await SendOkAsync(new RouteRatingResponse(
-            Id: existingRating.Id,
-            UserId: existingRating.UserId,
-            RouteId: existingRating.RouteId,
-            Rating: existingRating.Rating
-        ), cancellation: ct);
-    }
-}
+//         await SendOkAsync(new RouteRatingResponse(
+//             Id: existingRating.Id,
+//             UserId: existingRating.UserId,
+//             RouteId: existingRating.RouteId,
+//             Rating: existingRating.Rating
+//         ), cancellation: ct);
+//     }
+// }

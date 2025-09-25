@@ -25,7 +25,7 @@ public class GetRouteById : Endpoint<GetRouteByIdRequest, Route>
     public override async Task HandleAsync(GetRouteByIdRequest req, CancellationToken ct)
     {
         var route = await _routeRepository.GetByIdAsync(req.RouteId, ct);
-        
+
         if (route == null)
         {
             await SendNotFoundAsync(ct);
@@ -34,4 +34,4 @@ public class GetRouteById : Endpoint<GetRouteByIdRequest, Route>
 
         await SendAsync(route, cancellation: ct);
     }
-} 
+}

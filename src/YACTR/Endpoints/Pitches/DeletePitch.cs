@@ -24,7 +24,7 @@ public class DeletePitch : Endpoint<DeletePitchRequest, EmptyResponse>
     public override async Task HandleAsync(DeletePitchRequest req, CancellationToken ct)
     {
         var pitch = await _pitchRepository.GetByIdAsync(req.PitchId, ct);
-        
+
         if (pitch == null)
         {
             await SendNotFoundAsync(ct);
@@ -34,4 +34,4 @@ public class DeletePitch : Endpoint<DeletePitchRequest, EmptyResponse>
         await _pitchRepository.DeleteAsync(pitch, ct);
         await SendNoContentAsync(ct);
     }
-} 
+}

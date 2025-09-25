@@ -14,7 +14,7 @@ public abstract partial class BaseEntity
     [JsonPropertyOrder(2)]
     [Required]
     public Instant UpdatedAt { get; set; }
-    
+
     [JsonPropertyOrder(3)]
     [Required]
     public Instant CreatedAt { get; set; }

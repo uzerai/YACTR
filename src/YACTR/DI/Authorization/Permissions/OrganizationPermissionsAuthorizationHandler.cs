@@ -1,19 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
-using YACTR.DI.Authorization.UserContext;
-
 namespace YACTR.DI.Authorization.Permissions;
 
 public class OrganizationPermissionsAuthorizationHandler : AuthorizationHandler<OrganizationPermissionRequiredAttribute>
 {
     private readonly ILogger<OrganizationPermissionsAuthorizationHandler> _logger;
-    private readonly IUserContext _userContext;
 
     public OrganizationPermissionsAuthorizationHandler(
-        ILogger<OrganizationPermissionsAuthorizationHandler> logger,
-        IUserContext userContext)
+        ILogger<OrganizationPermissionsAuthorizationHandler> logger)
     {
         _logger = logger;
-        _userContext = userContext;
     }
 
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OrganizationPermissionRequiredAttribute requirement)
@@ -28,7 +23,7 @@ public class OrganizationPermissionsAuthorizationHandler : AuthorizationHandler<
             return Task.CompletedTask;
         }
 
-        var organizationIdFromRoute = httpContext.GetRouteValue("OrganizationId") as string;
+        string? organizationIdFromRoute = httpContext.GetRouteValue("OrganizationId")?.ToString();
         if (organizationIdFromRoute == null)
         {
             _logger.LogError("OrganizationPermissionRequiredAttribute assigned on organization-less endpoint; aborting authorization check.");
@@ -43,36 +38,14 @@ public class OrganizationPermissionsAuthorizationHandler : AuthorizationHandler<
             return Task.CompletedTask;
         }
 
-        var user = _userContext.CurrentUser;
-        if (user == null)
-        {
-            // We should ideally never see this stage of execution.
-            _logger.LogError("No authenticated user found; aborting authorization check in OrganizationPermissionAuth stage.");
-            context.Fail();
-            return Task.CompletedTask;
-        }
-
-        var organizationPermissions = user.OrganizationUsers
-            .Where(ou => ou.OrganizationId == organizationId)
-            .SelectMany(ou => ou.Permissions)
-            .ToList();
-
-        if (!organizationPermissions.Any())
-        {
-            _logger.LogError("User has no permissions for organization {OrganizationId}; aborting authorization check.", organizationId);
-            context.Fail();
-            return Task.CompletedTask;
-        }
-
-        if (!organizationPermissions.Any(orgPerm => orgPerm.Permission == requirement.Permission))
-        {
-            context.Fail();
-        }
-        else
+        if (context.User.Identities.First(x => x.Name == organizationId.ToString())
+            .HasClaim(LocalClaimTypes.OrganizationPermission, requirement.Permission.ToString()))
         {
             context.Succeed(requirement);
+            return Task.CompletedTask;
         }
 
+        context.Fail();
         return Task.CompletedTask;
     }
 }

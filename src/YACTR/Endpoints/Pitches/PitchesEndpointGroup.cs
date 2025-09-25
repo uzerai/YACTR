@@ -22,6 +22,6 @@ public class PitchesEndpointGroup : Group
 {
     public PitchesEndpointGroup()
     {
-        Configure("pitches", ep => {});
+        Configure("pitches", ep => { });
     }
-} 
+}

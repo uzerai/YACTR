@@ -22,7 +22,7 @@ public class GetAllOrganizationTeams : Endpoint<GetAllOrganizationTeamsRequest, 
     {
         Get("/");
         Group<OrganizationTeamsEndpointGroup>();
-        Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.TeamsRead)));
+        // Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.TeamsRead)));
     }
 
     public override async Task HandleAsync(GetAllOrganizationTeamsRequest req, CancellationToken ct)
@@ -30,7 +30,7 @@ public class GetAllOrganizationTeams : Endpoint<GetAllOrganizationTeamsRequest, 
         var teams = await _organizationTeamRepository.BuildReadonlyQuery()
             .Where(e => e.OrganizationId == req.OrganizationId)
             .ToListAsync(ct);
-        
+
         await SendAsync(teams, cancellation: ct);
     }
 }

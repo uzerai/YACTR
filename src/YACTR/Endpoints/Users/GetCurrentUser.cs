@@ -1,16 +1,17 @@
 using FastEndpoints;
 using YACTR.Data.Model.Authentication;
-using YACTR.DI.Authorization.UserContext;
+using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Endpoints.Users;
 
 public class GetCurrentUser : Endpoint<EmptyRequest, User>
 {
-    private readonly IUserContext _userContext;
 
-    public GetCurrentUser(IUserContext userContext)
+    private readonly IEntityRepository<User> _userRepository;
+
+    public GetCurrentUser(IEntityRepository<User> userRepository)
     {
-        _userContext = userContext;
+        _userRepository = userRepository;
     }
 
     public override void Configure()
@@ -21,6 +22,7 @@ public class GetCurrentUser : Endpoint<EmptyRequest, User>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        await SendAsync(_userContext.CurrentUser!, cancellation: ct);
+
+        await SendOkAsync();
     }
-} 
+}

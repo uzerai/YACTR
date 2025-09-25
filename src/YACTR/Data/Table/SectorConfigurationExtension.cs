@@ -11,11 +11,11 @@ public static class SectorConfigurationExtension
             .HasOne(e => e.Area)
             .WithMany(e => e.Sectors)
             .HasForeignKey(e => e.AreaId);
-        
+
         modelBuilder.Entity<Sector>()
             .HasMany(e => e.Routes)
             .WithOne(e => e.Sector);
 
         return modelBuilder;
     }
-} 
+}

@@ -45,7 +45,7 @@ public class DatabaseContext : DbContext
     {
         // Configure PostgreSQL enum
         modelBuilder.HasPostgresEnum<ClimbingType>();
-        
+
         // For inherited abstract models.
         modelBuilder.ConfigureBaseEntityAbstractModel();
 
@@ -56,7 +56,7 @@ public class DatabaseContext : DbContext
         modelBuilder.ConfigureOrganizationPermissionModel();
         modelBuilder.ConfigureOrganizationTeamModel();
         modelBuilder.ConfigureOrganizationTeamUserModel();
-        
+
         modelBuilder.ConfigureAreaModel();
         modelBuilder.ConfigureSectorModel();
         modelBuilder.ConfigureRouteModel();

@@ -24,4 +24,4 @@ public class GetAllAreas : Endpoint<EmptyRequest, List<Area>>
         var areas = await _areaRepository.GetAllAvailableAsync(ct);
         await SendAsync([.. areas], cancellation: ct);
     }
-} 
+}

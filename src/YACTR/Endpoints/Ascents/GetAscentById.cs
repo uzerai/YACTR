@@ -27,7 +27,7 @@ public class GetAscentById : Endpoint<GetAscentByIdRequest, AscentResponse>
         var ascent = await _ascentRepository.BuildReadonlyQuery()
             .Include(a => a.Route)
             .FirstOrDefaultAsync(a => a.Id == req.AscentId, ct);
-        
+
         if (ascent == null)
         {
             await SendNotFoundAsync(ct);
@@ -42,4 +42,4 @@ public class GetAscentById : Endpoint<GetAscentByIdRequest, AscentResponse>
             Route: ascent.Route
         ), cancellation: ct);
     }
-} 
+}

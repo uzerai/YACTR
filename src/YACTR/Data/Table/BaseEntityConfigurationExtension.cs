@@ -9,7 +9,7 @@ public static class BaseEntityConfigurationExtension
     {
         modelBuilder.Entity<BaseEntity>()
           .UseTpcMappingStrategy();
-        
+
         return modelBuilder;
     }
 }

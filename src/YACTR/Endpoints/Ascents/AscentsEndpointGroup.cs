@@ -28,6 +28,6 @@ public class AscentsEndpointGroup : Group
 {
     public AscentsEndpointGroup()
     {
-        Configure("ascents", ep => {});
+        Configure("ascents", ep => { });
     }
-} 
+}

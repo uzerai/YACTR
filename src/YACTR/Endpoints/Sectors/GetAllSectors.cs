@@ -24,4 +24,4 @@ public class GetAllSectors : Endpoint<EmptyRequest, List<Sector>>
         var sectors = await _sectorRepository.GetAllAsync(ct);
         await SendAsync([.. sectors], cancellation: ct);
     }
-} 
+}

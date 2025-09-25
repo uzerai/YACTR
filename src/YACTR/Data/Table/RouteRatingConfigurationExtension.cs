@@ -20,4 +20,4 @@ public static class RouteRatingConfigurationExtension
 
         return modelBuilder;
     }
-} 
+}

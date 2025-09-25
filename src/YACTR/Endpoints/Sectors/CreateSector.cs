@@ -33,4 +33,4 @@ public class CreateSector : Endpoint<SectorRequestData, Sector>
 
         await SendCreatedAtAsync<GetSectorById>(createdSector.Id, createdSector, cancellation: ct);
     }
-} 
+}

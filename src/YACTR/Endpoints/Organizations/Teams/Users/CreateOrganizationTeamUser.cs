@@ -26,7 +26,7 @@ public class CreateOrganizationTeamUser : Endpoint<CreateOrganizationTeamUserReq
     {
         Post("/{TeamId}/users");
         Group<OrganizationTeamsEndpointGroup>();
-        Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.TeamsWrite)));
+        // Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.TeamsWrite)));
     }
 
     public override async Task HandleAsync(CreateOrganizationTeamUserRequest req, CancellationToken ct)
@@ -42,7 +42,7 @@ public class CreateOrganizationTeamUser : Endpoint<CreateOrganizationTeamUserReq
         if (await _organizationTeamRepository.GetByIdAsync(req.TeamId, ct) is null)
         {
             AddError(r => r.TeamId, "Team does not exist");
-            await SendErrorsAsync((int) HttpStatusCode.FailedDependency, ct);
+            await SendErrorsAsync((int)HttpStatusCode.FailedDependency, ct);
             return;
         }
 
@@ -50,4 +50,4 @@ public class CreateOrganizationTeamUser : Endpoint<CreateOrganizationTeamUserReq
 
         await SendAsync(createdTeamUser, cancellation: ct);
     }
-} 
+}

@@ -36,4 +36,4 @@ public class GetAllAscents : Endpoint<EmptyRequest, List<AscentResponse>>
 
         await SendAsync(ascentResponses, cancellation: ct);
     }
-} 
+}

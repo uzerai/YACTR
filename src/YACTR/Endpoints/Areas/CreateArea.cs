@@ -34,4 +34,4 @@ public class CreateArea : Endpoint<AreaRequestData, Area>
 
         await SendCreatedAtAsync<GetAreaById>(createdArea.Id, createdArea, cancellation: ct);
     }
-} 
+}

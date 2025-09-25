@@ -13,13 +13,14 @@ using NetTopologySuite;
 using NetTopologySuite.IO.Converters;
 using Minio;
 using YACTR.DI.Service;
-using YACTR.DI.Authorization.UserContext;
 using YACTR.Swagger;
 using FileSignatures;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using YACTR.Data.Model.Climbing;
 using NSwag;
+using Microsoft.AspNetCore.Authentication;
+using YACTR.DI.Authorization.Permissions;
 
 // ############################################################
 // ##########  APP BUILDING  ##################################
@@ -29,6 +30,25 @@ using NSwag;
 /// If you are adding a new NuGet package, please add it to this section, and register all other 
 /// injected services that are internally developed as part of the API in the section below this one.
 var builder = WebApplication.CreateBuilder(args);
+
+/// ############################################################
+/// ##########  CUSTOM SERVICES SETUP  #########################
+/// ############################################################
+/// 
+/// Repository setup and registration done here;
+/// 
+/// If you are adding a new repository:
+/// Please add it to the extension method in
+///     YACTR.DI.Repository.ConfigurationExtension.RepositoryServiceConfigurationExtensions
+/// instead of adding them here.
+/// 
+builder.Services.AddRepositories();
+// The claims transformation is what provides the user permissions to our custom local
+// authorization handling that checks the database user _post_ validating authentication with
+// our third party IDP.
+builder.Services.AddTransient<IClaimsTransformation, DatabaseUserPermissionClaimsTransformer>();
+builder.Services.AddPermissionsAuthorizationHandling();
+builder.Services.AddApplicationServices();
 
 /// Authentication extraction through JWT Bearer tokens.
 /// Intended to be used with the corresponding Auth0 tenant; but 
@@ -56,29 +76,29 @@ builder.Services.AddAuthorization();
 // CORS setup based on AllowedHosts from configuration
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("ConfiguredCors", policy =>
-	{
-		var allowedHosts = builder.Configuration["AllowedHosts"];
-		if (string.IsNullOrWhiteSpace(allowedHosts) || allowedHosts == "*")
-		{
-			policy
-				.AllowAnyOrigin()
-				.AllowAnyHeader()
-				.AllowAnyMethod();
-		}
-		else
-		{
-			var origins = allowedHosts
-				.Split([';', ',', ' ', '\t', '\n', '\r'], StringSplitOptions.RemoveEmptyEntries)
-				.Select(h => h.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || h.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ? h : $"https://{h}")
-				.ToArray();
+    options.AddPolicy("ConfiguredCors", policy =>
+    {
+        var allowedHosts = builder.Configuration["AllowedHosts"];
+        if (string.IsNullOrWhiteSpace(allowedHosts) || allowedHosts == "*")
+        {
+            policy
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+        else
+        {
+            var origins = allowedHosts
+                .Split([';', ',', ' ', '\t', '\n', '\r'], StringSplitOptions.RemoveEmptyEntries)
+                .Select(h => h.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || h.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ? h : $"https://{h}")
+                .ToArray();
 
-			policy
-				.WithOrigins(origins)
-				.AllowAnyHeader()
-				.AllowAnyMethod();
-		}
-	});
+            policy
+                .WithOrigins(origins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+    });
 });
 
 builder.Services
@@ -119,7 +139,7 @@ builder.Services
 // Add NodaTime clock service so we can use it in the database context for timestamping BaseEntity objects.
 // This is the SystemClock for the running version of the server.
 // Replace it in the test environment to be whatever you wish.
-builder.Services.AddSingleton<IClock>(SystemClock.Instance);
+builder.Services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);
 
 // Add NetTopologySuite.IO.Converters.GeoJsonConverterFactory to the service container.
 builder.Services.AddSingleton(NtsGeometryServices.Instance);
@@ -152,30 +172,13 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
 
         // Enable NetTopologySuite
         npgsqlSourceBuilder.UseNetTopologySuite();
-        
+
         // Enable dynamic JSON support, allowing JSON B columns.
         npgsqlSourceBuilder.ConfigureDataSource(source => source.EnableDynamicJson());
-        
+
     })
     .UseSnakeCaseNamingConvention();
 });
-
-
-/// ############################################################
-/// ##########  CUSTOM SERVICES SETUP  #########################
-/// ############################################################
-/// 
-/// Repository setup and registration done here;
-/// 
-/// If you are adding a new repository:
-/// Please add it to the extension method in
-///     YACTR.DI.Repository.ConfigurationExtension.RepositoryServiceConfigurationExtensions
-/// instead of adding them here.
-/// 
-builder.Services.AddRepositories();
-builder.Services.AddUserContext();
-builder.Services.AddPermissionsAuthorizationHandling();
-builder.Services.AddApplicationServices();
 
 // ############################################################
 // ##########  APP INITIALIZATION  ############################
@@ -192,9 +195,6 @@ if (!app.Environment.IsDevelopment())
 app.UseCors("ConfiguredCors");
 
 app.UseAuthentication()
-    // This middleware _must_ be squashed between the authentication and authorization middlewares.
-    // Otherwise the context it adds gets lost somewhere in the handling of the UseAuthorization middleware.
-    .UseUserContext()
     .UseAuthorization()
     .UseFastEndpoints()
     .UseSwaggerGen();

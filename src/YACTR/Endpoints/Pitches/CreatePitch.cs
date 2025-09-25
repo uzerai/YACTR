@@ -31,4 +31,4 @@ public class CreatePitch : Endpoint<PitchRequestData, Pitch>
 
         await SendCreatedAtAsync<GetPitchById>(createdPitch.Id, createdPitch, cancellation: ct);
     }
-} 
+}

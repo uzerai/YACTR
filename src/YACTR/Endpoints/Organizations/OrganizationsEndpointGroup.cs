@@ -4,8 +4,8 @@ namespace YACTR.Endpoints.Organizations;
 
 public class OrganizationsEndpointGroup : Group
 {
-  public OrganizationsEndpointGroup()
-  {
-    Configure("organizations", ep => {});
-  }
+    public OrganizationsEndpointGroup()
+    {
+        Configure("organizations", ep => { });
+    }
 }

@@ -104,8 +104,8 @@ public class TauForerDataLoader
         {
             PropertyNameCaseInsensitive = true
         };
-        
-        return JsonSerializer.Deserialize<TauForerData>(jsonContent, options) 
+
+        return JsonSerializer.Deserialize<TauForerData>(jsonContent, options)
                ?? throw new InvalidOperationException("Failed to deserialize JSON data");
     }
 
@@ -146,7 +146,7 @@ public class TauForerDataLoader
     private static Dictionary<int, Guid> CreateAreaIdMapping(TauForerData data)
     {
         var mapping = new Dictionary<int, Guid>();
-        
+
         foreach (var region in data.Regions)
         {
             foreach (var area in region.Areas)
@@ -155,14 +155,14 @@ public class TauForerDataLoader
                 mapping[area.Id] = Guid.NewGuid();
             }
         }
-        
+
         return mapping;
     }
 
     private static Dictionary<int, Guid> CreateSectorIdMapping(TauForerData data)
     {
         var mapping = new Dictionary<int, Guid>();
-        
+
         foreach (var region in data.Regions)
         {
             foreach (var area in region.Areas)
@@ -174,14 +174,14 @@ public class TauForerDataLoader
                 }
             }
         }
-        
+
         return mapping;
     }
 
     public static List<Area> ConvertToAreas(TauForerData data, Dictionary<int, Guid> areaIdMapping)
     {
         var areas = new List<Area>();
-        
+
         foreach (var region in data.Regions)
         {
             foreach (var tauForerArea in region.Areas)
@@ -195,24 +195,24 @@ public class TauForerDataLoader
                     Boundary = CreateBoundaryFromSectors(tauForerArea.Sectors),
                     MaintainerOrganizationId = null // No organization mapping in the data
                 };
-                
+
                 areas.Add(area);
             }
         }
-        
+
         return areas;
     }
 
     public static List<Sector> ConvertToSectors(TauForerData data, Dictionary<int, Guid> areaIdMapping, Dictionary<int, Guid> sectorIdMapping)
     {
         var sectors = new List<Sector>();
-        
+
         foreach (var region in data.Regions)
         {
             foreach (var tauForerArea in region.Areas)
             {
                 var areaId = areaIdMapping[tauForerArea.Id];
-                
+
                 foreach (var tauForerSector in tauForerArea.Sectors)
                 {
                     var sector = new Sector
@@ -220,27 +220,27 @@ public class TauForerDataLoader
                         Id = sectorIdMapping[tauForerSector.Id],
                         Name = tauForerSector.Name,
                         SectorArea = CreatePolygonFromOutline(tauForerSector.Outline),
-                        EntryPoint = CreatePoint(tauForerSector.Outline.FirstOrDefault()?.Latitude ?? 0, 
+                        EntryPoint = CreatePoint(tauForerSector.Outline.FirstOrDefault()?.Latitude ?? 0,
                                                tauForerSector.Outline.FirstOrDefault()?.Longitude ?? 0),
-                        RecommendedParkingLocation = tauForerSector.Parking != null 
+                        RecommendedParkingLocation = tauForerSector.Parking != null
                             ? CreatePoint(tauForerSector.Parking.Latitude, tauForerSector.Parking.Longitude)
                             : null,
                         ApproachPath = null, // Not available in the data
                         AreaId = areaId
                     };
-                    
+
                     sectors.Add(sector);
                 }
             }
         }
-        
+
         return sectors;
     }
 
     public static List<Route> ConvertToRoutes(TauForerData data, Dictionary<int, Guid> sectorIdMapping)
     {
         var routes = new List<Route>();
-        
+
         foreach (var region in data.Regions)
         {
             foreach (var tauForerArea in region.Areas)
@@ -248,7 +248,7 @@ public class TauForerDataLoader
                 foreach (var tauForerSector in tauForerArea.Sectors)
                 {
                     var sectorId = sectorIdMapping[tauForerSector.Id];
-                    
+
                     foreach (var tauForerProblem in tauForerSector.Problems)
                     {
                         var route = new Route
@@ -257,7 +257,7 @@ public class TauForerDataLoader
                             Name = tauForerProblem.Name,
                             Description = tauForerProblem.Description,
                             Grade = tauForerProblem.Grade,
-                            FirstAscentDate = tauForerProblem.FaYear > 0 
+                            FirstAscentDate = tauForerProblem.FaYear > 0
                                 ? Instant.FromDateTimeUtc(new DateTime(tauForerProblem.FaYear, 1, 1, 0, 0, 0, DateTimeKind.Utc))
                                 : null,
                             FirstAscentClimberName = tauForerProblem.Fa,
@@ -266,13 +266,13 @@ public class TauForerDataLoader
                             TopoImageId = null,
                             Type = MapClimbingType(tauForerProblem.T.SubType)
                         };
-                        
+
                         routes.Add(route);
                     }
                 }
             }
         }
-        
+
         return routes;
     }
 
@@ -289,7 +289,7 @@ public class TauForerDataLoader
             var centerLat = outline.FirstOrDefault()?.Latitude ?? 0;
             var centerLon = outline.FirstOrDefault()?.Longitude ?? 0;
             var offset = 0.001; // Small offset for a simple polygon
-            
+
             var coordinates = new Coordinate[]
             {
                 new(centerLon - offset, centerLat - offset),
@@ -298,10 +298,10 @@ public class TauForerDataLoader
                 new(centerLon - offset, centerLat + offset),
                 new(centerLon - offset, centerLat - offset) // Close the ring
             };
-            
+
             return new Polygon(new LinearRing(coordinates)) { SRID = 4326 };
         }
-        
+
         var outlineCoordinates = outline.Select(c => new Coordinate(c.Longitude, c.Latitude)).ToArray();
         // Close the ring if not already closed
         if (outlineCoordinates.First() != outlineCoordinates.Last())
@@ -311,7 +311,7 @@ public class TauForerDataLoader
             closedCoordinates[outlineCoordinates.Length] = outlineCoordinates[0];
             outlineCoordinates = closedCoordinates;
         }
-        
+
         return new Polygon(new LinearRing(outlineCoordinates)) { SRID = 4326 };
     }
 

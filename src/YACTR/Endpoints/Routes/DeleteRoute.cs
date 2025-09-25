@@ -25,7 +25,7 @@ public class DeleteRoute : Endpoint<DeleteRouteRequest, EmptyResponse>
     public override async Task HandleAsync(DeleteRouteRequest req, CancellationToken ct)
     {
         var route = await _routeRepository.GetByIdAsync(req.RouteId, ct);
-        
+
         if (route == null)
         {
             await SendNotFoundAsync(ct);
@@ -35,4 +35,4 @@ public class DeleteRoute : Endpoint<DeleteRouteRequest, EmptyResponse>
         await _routeRepository.DeleteAsync(route, ct);
         await SendNoContentAsync(ct);
     }
-} 
+}

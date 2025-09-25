@@ -21,7 +21,7 @@ public class CreateOrganizationTeam : Endpoint<CreateOrganizationTeamRequest, Or
     {
         Post("/");
         Group<OrganizationTeamsEndpointGroup>();
-        Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.TeamsWrite)));
+        // Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.TeamsWrite)));
     }
 
     public override async Task HandleAsync(CreateOrganizationTeamRequest req, CancellationToken ct)

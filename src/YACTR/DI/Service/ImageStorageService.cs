@@ -5,6 +5,7 @@ using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 using FileSignatures;
+using System.Security.Claims;
 
 namespace YACTR.DI.Service;
 
@@ -32,16 +33,15 @@ public class ImageStorageService : IImageStorageService
 
     private bool IsImageFile(Stream image)
     {
-      _uploadedFileFormat = _fileFormatInspector.DetermineFileFormat(image);
-
-      return _uploadedFileFormat is FileSignatures.Formats.Image;
+        _uploadedFileFormat = _fileFormatInspector.DetermineFileFormat(image);
+        return _uploadedFileFormat is FileSignatures.Formats.Image;
     }
 
-    public async Task<Image> UploadImageAsync(Stream image, User user, Guid? relatedEntityId, CancellationToken ct = default)
+    public async Task<Image> UploadImageAsync(Stream image, Guid userId, Guid? relatedEntityId, CancellationToken ct = default)
     {
         if (!IsImageFile(image))
         {
-          throw new Exception("File is not an image");
+            throw new Exception("File is not an image");
         }
 
         try
@@ -74,7 +74,7 @@ public class ImageStorageService : IImageStorageService
             {
                 Key = objectName,
                 Bucket = BUCKET_NAME,
-                UploaderId = user.Id,
+                UploaderId = userId,
                 RelatedEntityId = relatedEntityId,
             }, ct);
 
@@ -96,6 +96,6 @@ public class ImageStorageService : IImageStorageService
             .WithBucket(image.Bucket)
             .WithObject(image.Key), ct);
 
-        return image; 
+        return image;
     }
 }

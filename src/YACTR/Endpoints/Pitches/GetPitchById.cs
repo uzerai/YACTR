@@ -33,4 +33,4 @@ public class GetPitchById : Endpoint<GetPitchByIdRequest, Pitch>
 
         await SendAsync(pitch, cancellation: ct);
     }
-} 
+}
