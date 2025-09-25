@@ -17,6 +17,7 @@ public class GetAllAreas : Endpoint<EmptyRequest, List<Area>>
     {
         Get("/");
         Group<AreasEndpointGroup>();
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)

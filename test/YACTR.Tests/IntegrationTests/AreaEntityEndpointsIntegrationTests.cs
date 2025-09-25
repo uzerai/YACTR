@@ -14,25 +14,15 @@ namespace YACTR.Tests.Endpoints;
 [Collection("IntegrationTests")]
 public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
 {
-    public User AllPermissionsUser = new()
-    {
-        Username = "test_user_with_all_permissions",
-        Email = "test_user@test.dev",
-        Auth0UserId = $"test|{Guid.NewGuid()}",
-        PlatformPermissions = Enum.GetValues<Permission>()
-    };
-
     protected override async ValueTask SetupAsync()
     {
         await base.SetupAsync();
-        await fixture.GetEntityRepository<User>()
-            .CreateAsync(AllPermissionsUser, TestContext.Current.CancellationToken);
     }
 
     [Fact]
     public async Task GetAll_ReturnsSuccessStatusCode()
     {
-        using var client = fixture.CreateAuthenticatedClient();
+        using var client = fixture.CreateClient();
 
         // Act
         var (response, result) = await client.GETAsync<GetAllAreas, EmptyRequest, List<Area>>(new());
@@ -45,7 +35,7 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
     [Fact]
     public async Task Create_WithValidData_ReturnsCreatedArea()
     {
-        using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
+        using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -81,7 +71,7 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
     [Fact]
     public async Task GetById_WithValidId_ReturnsArea()
     {
-        using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
+        using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -135,7 +125,7 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
     [Fact]
     public async Task Update_WithValidData_ReturnsNoContent()
     {
-        using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
+        using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -229,7 +219,7 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
     [Fact]
     public async Task Delete_WithValidId_ReturnsNoContent()
     {
-        using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
+        using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -270,7 +260,7 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
     [Fact]
     public async Task Delete_WithInvalidId_ReturnsNotFound()
     {
-        using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
+        using var client = fixture.CreateAuthenticatedClient();
         var invalidId = Guid.NewGuid();
 
         // Act
