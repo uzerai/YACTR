@@ -85,7 +85,7 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     [Fact]
     public async Task GetAllAscents_ReturnsSuccessStatusCode()
     {
-        using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
+        using var client = fixture.AnonymousClient;
 
         // Act
         var (response, result) = await client.GETAsync<GetAllAscents, EmptyRequest, List<AscentResponse>>(new());

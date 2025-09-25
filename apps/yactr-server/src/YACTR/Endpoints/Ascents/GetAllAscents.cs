@@ -18,6 +18,7 @@ public class GetAllAscents : Endpoint<EmptyRequest, List<AscentResponse>>
     {
         Get("/");
         Group<AscentsEndpointGroup>();
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
