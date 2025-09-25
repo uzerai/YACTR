@@ -18,3 +18,6 @@ test:
     set-option -t yactr-test -g mouse on \; \
     set-option -t yactr-test destroy-unattached on \; \
     attach -t yactr-test
+
+run-migrations:
+    dotnet ef database update --project src/YACTR

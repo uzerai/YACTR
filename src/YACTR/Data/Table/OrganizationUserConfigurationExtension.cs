@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Organizations;
 
 namespace YACTR.Data.ConfigurationExtension;
