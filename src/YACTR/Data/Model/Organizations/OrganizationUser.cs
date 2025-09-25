@@ -22,6 +22,6 @@ public class OrganizationUser
     public virtual User User { get; set; } = null!;
 
     [JsonIgnore]
-    public virtual ICollection<Permission> Permissions { get; set; } = [];
+    public virtual ICollection<Permission> Permissions { get; set; } = DefaultUserPermissions.OrganizationPermissions;
     public virtual ICollection<OrganizationTeamUser> OrganizationTeamUsers { get; set; } = [];
 }

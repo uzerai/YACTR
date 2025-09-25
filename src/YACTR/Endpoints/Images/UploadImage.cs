@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace YACTR.Endpoints.Images;
 
+[PlatformPermissionRequired(Permission.ImagesWrite)]
 public class UploadImage : Endpoint<ImageUploadRequest, Image>
 {
     private readonly IImageStorageService _imageStorageService;

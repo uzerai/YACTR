@@ -19,7 +19,7 @@ public class OrganizationTeamUser
     [ForeignKey("OrganizationTeam")]
     public Guid OrganizationTeamId { get; set; }
     [Column("permissions", TypeName = "jsonb")]
-    public virtual ICollection<Permission> Permissions { get; set; } = DefaultUserPermissions.TeamPermissions.ToList();
+    public virtual ICollection<Permission> Permissions { get; set; } = DefaultUserPermissions.TeamPermissions;
 
     public virtual User User { get; set; } = null!;
     public virtual Organization Organization { get; set; } = null!;

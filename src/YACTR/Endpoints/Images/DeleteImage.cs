@@ -16,6 +16,7 @@ public class ImageDeleteRequest
     public Guid ImageId { get; set; }
 }
 
+[PlatformPermissionRequired(Permission.ImagesWrite)]
 public class DeleteImage : Endpoint<ImageDeleteRequest, Image>
 {
     private readonly IImageStorageService _imageStorageService;
