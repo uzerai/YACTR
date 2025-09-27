@@ -1,3 +1,4 @@
+using System.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -68,12 +69,12 @@ sealed class DatabaseUserPermissionClaimsTransformer(
     public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
         // This is going to match the ID of the IDP user.
-        var nameIdentifier = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        string? nameIdentifier = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         ArgumentNullException.ThrowIfNull(nameIdentifier);
 
-        var email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-        var username = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        string? email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        string? username = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
         ArgumentNullException.ThrowIfNull(email);
 
@@ -102,10 +103,32 @@ sealed class DatabaseUserPermissionClaimsTransformer(
         }
 
         logger.LogInformation("User {NameIdentifier} logged in. User: {User}", nameIdentifier, user);
-        ClaimsIdentity localDbUserClaimsIdentity = new ClaimsIdentity([], ClaimTypes.AuthenticationMethod, ClaimTypes.Name, ClaimTypes.Role);
+        ClaimsIdentity localDbUserClaimsIdentity = CreatePlatformClaimsIdentity(user);
 
-        logger.LogDebug("Adding local permission claims for authenticated user: {UserId}", user.Id);
-        localDbUserClaimsIdentity.AddClaims([
+        principal.AddIdentity(localDbUserClaimsIdentity);
+
+        logger.LogDebug("Adding organization permissions from {OrganizationUsersCount} organizations", user.OrganizationUsers.Count);
+        foreach (var orgUser in user.OrganizationUsers)
+        {
+            principal.AddIdentity(new ClaimsIdentity(
+              [
+                new Claim(ClaimTypes.AuthenticationMethod, "PlatformOrganization"),
+                new Claim(ClaimTypes.NameIdentifier, orgUser.OrganizationId.ToString()),
+                new Claim(ClaimTypes.Role, "User"),
+                  .. orgUser.Permissions.Select(
+                    permission => new Claim(LocalClaimTypes.OrganizationPermission, permission.ToString()!)
+                )], ClaimTypes.AuthenticationMethod, ClaimTypes.NameIdentifier, ClaimTypes.Role));
+        }
+
+        return principal;
+    }
+
+    private ClaimsIdentity CreatePlatformClaimsIdentity(User user)
+    {
+        logger.LogDebug("Adding platform identity claims for authenticated user: {UserId}", user.Id);
+        ClaimsIdentity results = new([], ClaimTypes.AuthenticationMethod, ClaimTypes.Name, ClaimTypes.Role);
+
+        results.AddClaims([
               new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Sid, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
@@ -120,21 +143,6 @@ sealed class DatabaseUserPermissionClaimsTransformer(
             )
         ]);
 
-        principal.AddIdentity(localDbUserClaimsIdentity);
-
-        logger.LogDebug("Adding organization permissions from {OrganizationUsersCount} organizations", user.OrganizationUsers.Count);
-        foreach (var orgUser in user?.OrganizationUsers ?? [])
-        {
-            principal.AddIdentity(new ClaimsIdentity(
-              [
-                new Claim(ClaimTypes.AuthenticationMethod, "PlatformOrganization"),
-                new Claim(ClaimTypes.NameIdentifier, orgUser.OrganizationId.ToString()),
-                new Claim(ClaimTypes.Role, "User"),
-                  .. orgUser.Permissions.Select(
-                    permission => new Claim(LocalClaimTypes.OrganizationPermission, permission.ToString()!)
-                )], ClaimTypes.AuthenticationMethod, ClaimTypes.NameIdentifier, ClaimTypes.Role));
-        }
-
-        return principal;
+        return results;
     }
 }
