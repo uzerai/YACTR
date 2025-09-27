@@ -1,9 +1,12 @@
 using FastEndpoints;
+using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
 
 using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Endpoints.Routes;
+
+
 
 public class CreateRoute : Endpoint<RouteRequestData, Route>
 {
@@ -22,6 +25,27 @@ public class CreateRoute : Endpoint<RouteRequestData, Route>
 
     public override async Task HandleAsync(RouteRequestData req, CancellationToken ct)
     {
+        IEnumerable<Pitch> pitches = req.Pitches.Select(reqDataPitch => new Pitch()
+        {
+            Name = reqDataPitch.Name,
+            Description = reqDataPitch.Description,
+            Type = reqDataPitch.Type,
+            SectorId = req.SectorId
+        });
+
+        if (pitches.Count() < 1)
+        {
+            pitches = [
+                new Pitch()
+                {
+                    Name = req.Name,
+                    Description = req.Description,
+                    Type = req.Type,
+                    SectorId = req.SectorId,
+                }
+            ];
+        }
+
         var createdRoute = await _routeRepository.CreateAsync(new()
         {
             Name = req.Name,

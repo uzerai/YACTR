@@ -12,7 +12,7 @@ public class UpdateAreaRequest
     public Guid AreaId { get; set; }
 
     [FromBody]
-    public required AreaRequestData Area { get; set; }
+    public required AreaRequestData Data { get; set; }
 }
 
 public class UpdateArea : Endpoint<UpdateAreaRequest, EmptyResponse>
@@ -40,10 +40,10 @@ public class UpdateArea : Endpoint<UpdateAreaRequest, EmptyResponse>
             return;
         }
 
-        area.Name = req.Area.Name;
-        area.Description = req.Area.Description;
-        area.Location = req.Area.Location;
-        area.Boundary = req.Area.Boundary;
+        area.Name = req.Data.Name;
+        area.Description = req.Data.Description;
+        area.Location = req.Data.Location;
+        area.Boundary = req.Data.Boundary;
 
         await _areaRepository.UpdateAsync(area, ct);
 

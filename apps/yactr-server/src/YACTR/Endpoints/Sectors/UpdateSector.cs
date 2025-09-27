@@ -4,7 +4,14 @@ using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Endpoints.Sectors;
 
-public record UpdateSectorRequest(Guid SectorId);
+public class UpdateSectorRequest
+{
+    public Guid SectorId { get; set; }
+
+    [FromBody]
+    public required SectorRequestData Data { get; set; }
+
+}
 
 public class UpdateSector : Endpoint<UpdateSectorRequest, EmptyResponse>
 {
@@ -30,8 +37,13 @@ public class UpdateSector : Endpoint<UpdateSectorRequest, EmptyResponse>
             return;
         }
 
-        // Note: This would need to be implemented with proper request body handling
-        // The original controller had incomplete update logic
+        existingSector.Name = req.Data.Name;
+        existingSector.SectorArea = req.Data.SectorArea;
+        existingSector.EntryPoint = req.Data.EntryPoint;
+        existingSector.RecommendedParkingLocation = req.Data.RecommendedParkingLocation;
+        existingSector.ApproachPath = req.Data.ApproachPath;
+        existingSector.AreaId = req.Data.AreaId;
+
         await _sectorRepository.UpdateAsync(existingSector, ct);
 
         await SendNoContentAsync(ct);

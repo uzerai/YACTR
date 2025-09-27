@@ -15,6 +15,7 @@ public class GetAllPitches : Endpoint<EmptyRequest, List<Pitch>>
 
     public override void Configure()
     {
+        AllowAnonymous();
         Get("/");
         Group<PitchesEndpointGroup>();
     }

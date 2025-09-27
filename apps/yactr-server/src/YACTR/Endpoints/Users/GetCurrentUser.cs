@@ -8,7 +8,6 @@ namespace YACTR.Endpoints.Users;
 
 public class GetCurrentUser : Endpoint<EmptyRequest, User>
 {
-
     private readonly IEntityRepository<User> _userRepository;
 
     public GetCurrentUser(IEntityRepository<User> userRepository)

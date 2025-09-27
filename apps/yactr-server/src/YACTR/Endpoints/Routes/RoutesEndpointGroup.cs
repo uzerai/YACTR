@@ -1,4 +1,5 @@
 using FastEndpoints;
+using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints.Pitches;
 
 namespace YACTR.Endpoints.Routes;
@@ -13,6 +14,7 @@ public record RouteRequestData(
     Guid SectorId,
     PitchRequestData[] Pitches,
     string Name,
+    ClimbingType Type,
     string? Description,
     string? Grade,
     string? FirstAscentClimberName,
