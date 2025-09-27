@@ -13,6 +13,7 @@ namespace YACTR.Endpoints.Pitches;
 /// <param name="Grade">The grade of the pitch.</param>
 public record PitchRequestData(
     Guid SectorId,
+    Guid RouteId,
     string Name,
     ClimbingType Type,
     string? Description,

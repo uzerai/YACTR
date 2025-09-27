@@ -26,7 +26,8 @@ public class CreatePitch : Endpoint<PitchRequestData, Pitch>
             Name = req.Name,
             Description = req.Description,
             Type = req.Type,
-            SectorId = req.SectorId
+            SectorId = req.SectorId,
+            RouteId = req.RouteId
         }, ct);
 
         await SendCreatedAtAsync<GetPitchById>(createdPitch.Id, createdPitch, cancellation: ct);

@@ -3,7 +3,6 @@ using NodaTime;
 using YACTR.Data.ConfigurationExtension;
 using YACTR.Data.Model;
 using YACTR.Data.Model.Authentication;
-using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Organizations;
 using Route = YACTR.Data.Model.Climbing.Route;
 using YACTR.Data.Model.Climbing;
@@ -34,7 +33,6 @@ public class DatabaseContext : DbContext
     public DbSet<Sector> Sectors { get; set; }
     public DbSet<Route> Routes { get; set; }
     public DbSet<Pitch> Pitches { get; set; }
-    public DbSet<RoutePitch> RoutePitches { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<Ascent> Ascents { get; set; }
     public DbSet<RouteRating> RouteRatings { get; set; }
@@ -59,7 +57,6 @@ public class DatabaseContext : DbContext
         modelBuilder.ConfigureSectorModel();
         modelBuilder.ConfigureRouteModel();
         modelBuilder.ConfigurePitchModel();
-        modelBuilder.ConfigureRoutePitchModel();
         modelBuilder.ConfigureRouteRatingModel();
         modelBuilder.ConfigureRouteLikeModel();
 

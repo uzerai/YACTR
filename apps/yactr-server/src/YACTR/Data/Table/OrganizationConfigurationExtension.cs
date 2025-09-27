@@ -10,10 +10,12 @@ public static class OrganizationConfigurationExtension
         modelBuilder.Entity<Organization>()
             .HasMany(e => e.OrganizationUsers)
             .WithOne(e => e.Organization);
+
         modelBuilder.Entity<Organization>()
             .HasMany(e => e.Users)
             .WithMany(e => e.Organizations)
             .UsingEntity<OrganizationUser>();
+
         modelBuilder.Entity<Organization>()
             .HasMany(e => e.Teams)
             .WithOne(e => e.Organization);

@@ -14,9 +14,9 @@ public class Pitch : BaseEntity
     public required ClimbingType Type { get; set; } = ClimbingType.Sport;
     public string? Description { get; set; }
 
-    [ForeignKey("Sector")]
-    public required Guid SectorId { get; set; }
+    public Guid SectorId { get; set; }
     public virtual Sector Sector { get; set; } = null!;
-    [JsonIgnore]
-    public virtual ICollection<Route> Routes { get; set; } = [];
+
+    public Guid RouteId { get; set; }
+    public virtual Route Route { get; set; } = null!;
 }

@@ -1,5 +1,4 @@
 
-using YACTR.Data.Model.Climbing;
 using Microsoft.EntityFrameworkCore;
 using Route = YACTR.Data.Model.Climbing.Route;
 
@@ -16,8 +15,8 @@ public static class RouteConfigurationExtension
 
         modelBuilder.Entity<Route>()
             .HasMany(e => e.Pitches)
-            .WithMany(e => e.Routes)
-            .UsingEntity<RoutePitch>();
+            .WithOne(e => e.Route)
+            .HasForeignKey(e => e.RouteId);
 
         modelBuilder.Entity<Route>()
             .HasOne(e => e.TopoImage)
