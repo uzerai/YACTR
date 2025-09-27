@@ -165,7 +165,7 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         var updateRequest = new UpdateAreaRequest
         {
             AreaId = createdArea.Id,
-            Area = new AreaRequestData(
+            Data = new AreaRequestData(
                 "Test Area for Update",
                 "Updated description",
                 updatedLocation,
@@ -201,7 +201,7 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         var updateRequest = new UpdateAreaRequest
         {
             AreaId = invalidId,
-            Area = new AreaRequestData(
+            Data = new AreaRequestData(
                 "Non-existent Area",
                 "Doesn't matter",
                 location,
