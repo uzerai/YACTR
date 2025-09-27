@@ -154,7 +154,11 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         sectorResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act
-        var updateRequest = new UpdateSectorRequest(createdSector.Id);
+        var updateRequest = new UpdateSectorRequest()
+        {
+            SectorId = createdSector.Id,
+            Data = new("", geometryFactory.CreatePolygon(), geometryFactory.CreatePoint(), null, null, area.Id)
+        };
         var (response, _) = await client.PUTAsync<UpdateSector, UpdateSectorRequest, EmptyResponse>(updateRequest);
 
         // Assert
@@ -166,9 +170,15 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     {
         using var client = fixture.CreateAuthenticatedClient();
         var invalidId = Guid.NewGuid();
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+
 
         // Act
-        var updateRequest = new UpdateSectorRequest(invalidId);
+        var updateRequest = new UpdateSectorRequest()
+        {
+            SectorId = invalidId,
+            Data = new("", geometryFactory.CreatePolygon(), geometryFactory.CreatePoint(), null, null, Guid.NewGuid())
+        };
         var (response, _) = await client.PUTAsync<UpdateSector, UpdateSectorRequest, EmptyResponse>(updateRequest);
 
         // Assert

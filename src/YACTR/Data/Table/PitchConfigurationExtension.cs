@@ -12,11 +12,6 @@ public static class PitchConfigurationExtension
             .WithMany()
             .HasForeignKey(e => e.SectorId);
 
-        modelBuilder.Entity<Pitch>()
-            .HasMany(e => e.Routes)
-            .WithMany(e => e.Pitches)
-            .UsingEntity<RoutePitch>();
-
         // Configure ClimbingType enum for Pitch - will use PostgreSQL enum
         modelBuilder.Entity<Pitch>()
             .Property(e => e.Type)

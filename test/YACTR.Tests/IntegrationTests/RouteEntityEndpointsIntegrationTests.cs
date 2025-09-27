@@ -47,6 +47,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
 
         var routeReq = new RouteRequestData(
             SectorId: sector.Id,
+            Type: ClimbingType.Sport,
             Pitches: [],
             Name: "Test Route Create",
             Description: "A sample route",
@@ -74,6 +75,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         // Create a route first
         var routeReq = new RouteRequestData(
             SectorId: sector.Id,
+            Type: ClimbingType.Sport,
             Pitches: [],
             Name: "Test Route Read",
             Description: null,
@@ -114,6 +116,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         // Create route to update
         var routeReq = new RouteRequestData(
             SectorId: sector.Id,
+            Type: ClimbingType.Sport,
             Pitches: [],
             Name: "Test Route Update",
             Description: null,
@@ -133,7 +136,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     public async Task Update_WithInvalidId_ReturnsNotFound()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var updateReq = new UpdateRouteRequest { RouteId = Guid.NewGuid(), Route = new RouteRequestData(Guid.NewGuid(), [], "x", null, null, null, null) };
+        var updateReq = new UpdateRouteRequest { RouteId = Guid.NewGuid(), Route = new RouteRequestData(Guid.NewGuid(), [], "x", ClimbingType.Sport, null, null, null, null) };
         var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(updateReq);
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -149,6 +152,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         // Create route to delete
         var routeReq = new RouteRequestData(
             SectorId: sector.Id,
+            Type: ClimbingType.Sport,
             Pitches: [],
             Name: "Test Route Delete",
             Description: null,
