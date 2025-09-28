@@ -3,11 +3,7 @@ using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Data.Model.Climbing;
-using NetTopologySuite.Geometries;
-using NetTopologySuite;
-using YACTR.Endpoints;
 using YACTR.Endpoints.Sectors;
-using YACTR.Endpoints.Areas;
 
 namespace YACTR.Tests.Endpoints;
 
@@ -32,60 +28,18 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     {
         using var client = fixture.CreateAuthenticatedClient();
 
-        // Arrange - First create an area and sector
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-        var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-        var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.78),
-                new Coordinate(-122.41, 37.78),
-                new Coordinate(-122.41, 37.77),
-                new Coordinate(-122.42, 37.77)
-            })
-        });
-
-        var areaRequest = new AreaRequestData(
-            "Test Area for GetById",
-            "Test area description",
-            areaLocation,
-            areaBoundary
-        );
-
-        var (areaResponse, area) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(areaRequest);
-        areaResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        var sectorArea = geometryFactory.CreatePolygon(new[] {
-            new Coordinate(-122.419, 37.774),
-            new Coordinate(-122.419, 37.775),
-            new Coordinate(-122.418, 37.775),
-            new Coordinate(-122.418, 37.774),
-            new Coordinate(-122.419, 37.774)
-        });
-
-        var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
-
-        var sectorRequest = new SectorRequestData(
-            "Test Sector for GetById",
-            sectorArea,
-            entryPoint,
-            null,
-            null,
-            area.Id
-        );
-
-        var (sectorResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, Sector>(sectorRequest);
-        sectorResponse.IsSuccessStatusCode.ShouldBeTrue();
+        // Arrange
+        var (area, sector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
         // Act
-        var getRequest = new GetSectorByIdRequest(createdSector.Id);
+        var getRequest = new GetSectorByIdRequest(sector.Id);
         var (response, result) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, Sector>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
-        result.Id.ShouldBe(createdSector.Id);
-        result.Name.ShouldBe("Test Sector for GetById");
+        result.Id.ShouldBe(sector.Id);
+        result.Name.ShouldBe(sector.Name);
     }
 
     [Fact]
@@ -108,56 +62,19 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     {
         using var client = fixture.CreateAuthenticatedClient();
 
-        // Arrange - First create an area and sector
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-        var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-        var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.78),
-                new Coordinate(-122.41, 37.78),
-                new Coordinate(-122.41, 37.77),
-                new Coordinate(-122.42, 37.77)
-            })
-        });
-
-        var areaRequest = new AreaRequestData(
-            "Test Area for Update",
-            "Test area description",
-            areaLocation,
-            areaBoundary
-        );
-
-        var (areaResponse, area) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(areaRequest);
-        areaResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        var sectorArea = geometryFactory.CreatePolygon(new[] {
-            new Coordinate(-122.419, 37.774),
-            new Coordinate(-122.419, 37.775),
-            new Coordinate(-122.418, 37.775),
-            new Coordinate(-122.418, 37.774),
-            new Coordinate(-122.419, 37.774)
-        });
-
-        var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
-
-        var sectorRequest = new SectorRequestData(
-            "Test Sector for Update",
-            sectorArea,
-            entryPoint,
-            null,
-            null,
-            area.Id
-        );
-
-        var (sectorResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, Sector>(sectorRequest);
-        sectorResponse.IsSuccessStatusCode.ShouldBeTrue();
+        // Arrange
+        var (area, sector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
         // Act
         var updateRequest = new UpdateSectorRequest()
         {
-            SectorId = createdSector.Id,
-            Data = new("", geometryFactory.CreatePolygon(), geometryFactory.CreatePoint(), null, null, area.Id)
+            SectorId = sector.Id,
+            Data = new("Updated Sector",
+            fixture.TestDataSeeder.NewPolygon(),
+            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataSeeder.NewLineString(),
+            area.Id)
         };
         var (response, _) = await client.PUTAsync<UpdateSector, UpdateSectorRequest, EmptyResponse>(updateRequest);
 
@@ -170,14 +87,18 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     {
         using var client = fixture.CreateAuthenticatedClient();
         var invalidId = Guid.NewGuid();
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
 
 
         // Act
         var updateRequest = new UpdateSectorRequest()
         {
             SectorId = invalidId,
-            Data = new("", geometryFactory.CreatePolygon(), geometryFactory.CreatePoint(), null, null, Guid.NewGuid())
+            Data = new("",
+            fixture.TestDataSeeder.NewPolygon(),
+            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataSeeder.NewLineString(),
+            Guid.NewGuid())
         };
         var (response, _) = await client.PUTAsync<UpdateSector, UpdateSectorRequest, EmptyResponse>(updateRequest);
 
@@ -191,60 +112,17 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     {
         using var client = fixture.CreateAuthenticatedClient();
 
-        // Arrange - First create an area and sector
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-        var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-        var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.78),
-                new Coordinate(-122.41, 37.78),
-                new Coordinate(-122.41, 37.77),
-                new Coordinate(-122.42, 37.77)
-            })
-        });
-
-        var areaRequest = new AreaRequestData(
-            "Test Area for Delete",
-            "Test area description",
-            areaLocation,
-            areaBoundary
-        );
-
-        var (areaResponse, area) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(areaRequest);
-        areaResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        var sectorArea = geometryFactory.CreatePolygon(new[] {
-            new Coordinate(-122.419, 37.774),
-            new Coordinate(-122.419, 37.775),
-            new Coordinate(-122.418, 37.775),
-            new Coordinate(-122.418, 37.774),
-            new Coordinate(-122.419, 37.774)
-        });
-
-        var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
-
-        var sectorRequest = new SectorRequestData(
-            "Test Sector for Delete",
-            sectorArea,
-            entryPoint,
-            null,
-            null,
-            area.Id
-        );
-
-        var (sectorResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, Sector>(sectorRequest);
-        sectorResponse.IsSuccessStatusCode.ShouldBeTrue();
+        // Arrange
+        var (area, sector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
         // Act
-        var deleteRequest = new DeleteSectorRequest(createdSector.Id);
+        var deleteRequest = new DeleteSectorRequest(sector.Id);
         var (response, _) = await client.DELETEAsync<DeleteSector, DeleteSectorRequest, EmptyResponse>(deleteRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        // Verify the sector is actually deleted
-        var getRequest = new GetSectorByIdRequest(createdSector.Id);
+        var getRequest = new GetSectorByIdRequest(sector.Id);
         var (getResponse, _) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, Sector>(getRequest);
         getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }

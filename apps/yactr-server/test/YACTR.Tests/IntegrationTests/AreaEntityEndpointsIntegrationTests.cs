@@ -6,8 +6,6 @@ using YACTR.Data.Model.Climbing;
 using NetTopologySuite.Geometries;
 using NetTopologySuite;
 using YACTR.Endpoints.Areas;
-using YACTR.Data.Model.Authorization.Permissions;
-using YACTR.Data.Model.Authentication;
 
 namespace YACTR.Tests.Endpoints;
 
@@ -23,7 +21,7 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
     public async Task GetAll_ReturnsSuccessStatusCode()
     {
         using var client = fixture.CreateClient();
-
+        await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         // Act
         var (response, result) = await client.GETAsync<GetAllAreas, EmptyRequest, List<Area>>(new());
 
@@ -38,17 +36,8 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-        var boundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.78),
-                new Coordinate(-122.41, 37.78),
-                new Coordinate(-122.41, 37.77),
-                new Coordinate(-122.42, 37.77)
-            })
-        });
+        var location = fixture.TestDataSeeder.NewPoint();
+        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
 
         var createRequest = new AreaRequestData(
             "Test Climbing Area",
@@ -64,47 +53,26 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         response.IsSuccessStatusCode.ShouldBeTrue();
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         result.ShouldNotBeNull();
-        result.Name.ShouldBe("Test Climbing Area");
-        result.Description.ShouldBe("A beautiful climbing area for testing");
+        result.Name.ShouldBe(createRequest.Name);
+        result.Description.ShouldBe(createRequest.Description);
     }
 
     [Fact]
     public async Task GetById_WithValidId_ReturnsArea()
     {
+        // Arrange
         using var client = fixture.CreateAuthenticatedClient();
-
-        // Arrange - First create an area
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-        var boundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.78),
-                new Coordinate(-122.41, 37.78),
-                new Coordinate(-122.41, 37.77),
-                new Coordinate(-122.42, 37.77)
-            })
-        });
-
-        var createRequest = new AreaRequestData(
-            "Test Area for GetById",
-            "Test description",
-            location,
-            boundary
-        );
-
-        var (createResponse, createdArea) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
-        createResponse.IsSuccessStatusCode.ShouldBeTrue();
+        var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
         // Act
-        var getRequest = new GetAreaByIdRequest(createdArea.Id);
+        var getRequest = new GetAreaByIdRequest(area.Id);
         var (response, result) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, Area>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
-        result.Id.ShouldBe(createdArea.Id);
-        result.Name.ShouldBe("Test Area for GetById");
+        result.Id.ShouldBe(area.Id);
+        result.Name.ShouldBe(area.Name);
     }
 
     [Fact]
@@ -128,48 +96,16 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-        var boundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.78),
-                new Coordinate(-122.41, 37.78),
-                new Coordinate(-122.41, 37.77),
-                new Coordinate(-122.42, 37.77)
-            })
-        });
-
-        var createRequest = new AreaRequestData(
-            "Test Area for Update",
-            "Original description",
-            location,
-            boundary
-        );
-
-        var (createResponse, createdArea) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
-        createResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        // Act
-        var updatedLocation = geometryFactory.CreatePoint(new Coordinate(-122.4195, 37.775));
-        var updatedBoundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.421, 37.771),
-                new Coordinate(-122.421, 37.781),
-                new Coordinate(-122.411, 37.781),
-                new Coordinate(-122.411, 37.771),
-                new Coordinate(-122.421, 37.771)
-            })
-        });
+        var (area, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
         var updateRequest = new UpdateAreaRequest
         {
-            AreaId = createdArea.Id,
+            AreaId = area.Id,
             Data = new AreaRequestData(
                 "Test Area for Update",
                 "Updated description",
-                updatedLocation,
-                updatedBoundary
+                fixture.TestDataSeeder.NewPoint(),
+                fixture.TestDataSeeder.NewMultiPolygon()
             )
         };
 
@@ -186,17 +122,8 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         var invalidId = Guid.NewGuid();
 
         // Act
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-        var boundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.78),
-                new Coordinate(-122.41, 37.78),
-                new Coordinate(-122.41, 37.77),
-                new Coordinate(-122.42, 37.77)
-            })
-        });
+        var location = fixture.TestDataSeeder.NewPoint();
+        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
 
         var updateRequest = new UpdateAreaRequest
         {
@@ -222,37 +149,17 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-        var location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-        var boundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.78),
-                new Coordinate(-122.41, 37.78),
-                new Coordinate(-122.41, 37.77),
-                new Coordinate(-122.42, 37.77)
-            })
-        });
-
-        var createRequest = new AreaRequestData(
-            "Test Area for Delete",
-            "Test description",
-            location,
-            boundary
-        );
-
-        var (createResponse, createdArea) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
-        createResponse.IsSuccessStatusCode.ShouldBeTrue();
+        var (area, sector, route) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
         // Act
-        var deleteRequest = new DeleteAreaRequest(createdArea.Id);
+        var deleteRequest = new DeleteAreaRequest(area.Id);
         var (response, _) = await client.DELETEAsync<DeleteArea, DeleteAreaRequest, EmptyResponse>(deleteRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         // Verify the area is actually deleted
-        var getRequest = new GetAreaByIdRequest(createdArea.Id);
+        var getRequest = new GetAreaByIdRequest(area.Id);
         var (getResponse, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, Area>(getRequest);
         getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }

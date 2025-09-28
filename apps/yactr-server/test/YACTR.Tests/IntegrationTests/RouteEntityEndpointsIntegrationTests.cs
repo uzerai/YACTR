@@ -3,29 +3,13 @@ using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Data.Model.Climbing;
-using YACTR.Endpoints.Areas;
 using YACTR.Endpoints.Routes;
-using YACTR.Endpoints.Sectors;
 
 namespace YACTR.Tests.Endpoints;
 
 [Collection("IntegrationTests")]
 public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
 {
-    private static async Task<(Area area, Sector sector)> CreateAreaAndSectorAsync(HttpClient client)
-    {
-        // Create area
-        var areaReq = TestDataFactory.CreateAreaRequest("Routes Test Area");
-        var (areaResponse, area) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(areaReq);
-        areaResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        // Create sector within area
-        var sectorReq = TestDataFactory.CreateSectorRequest(area.Id, "Routes Test Sector");
-        var (sectorResponse, sector) = await client.POSTAsync<CreateSector, SectorRequestData, Sector>(sectorReq);
-        sectorResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        return (area, sector);
-    }
 
     [Fact]
     public async Task GetAll_ReturnsSuccessStatusCode()
@@ -43,12 +27,19 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     {
         using var client = fixture.CreateAuthenticatedClient();
 
-        var (_, sector) = await CreateAreaAndSectorAsync(client);
+        var (_, sector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
         var routeReq = new RouteRequestData(
             SectorId: sector.Id,
             Type: ClimbingType.Sport,
-            Pitches: [],
+            Pitches: [
+                new RoutePitchRequestData(
+                    Name: "Test Pitch",
+                    Type: ClimbingType.Sport,
+                    Description: "A sample pitch",
+                    Grade: "5.10a"
+                )
+            ],
             Name: "Test Route Create",
             Description: "A sample route",
             Grade: "5.10a",
@@ -70,22 +61,10 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     {
         using var client = fixture.CreateAuthenticatedClient();
 
-        var (_, sector) = await CreateAreaAndSectorAsync(client);
+        var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var created = routes.First();
 
         // Create a route first
-        var routeReq = new RouteRequestData(
-            SectorId: sector.Id,
-            Type: ClimbingType.Sport,
-            Pitches: [],
-            Name: "Test Route Read",
-            Description: null,
-            Grade: null,
-            FirstAscentClimberName: null,
-            BolterName: null
-        );
-        var (createResp, created) = await client.POSTAsync<CreateRoute, RouteRequestData, Route>(routeReq);
-        createResp.IsSuccessStatusCode.ShouldBeTrue();
-
         // Fetch it
         var getReq = new GetRouteByIdRequest(created.Id);
         var (response, result) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, Route>(getReq);
@@ -93,7 +72,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Id.ShouldBe(created.Id);
-        result.Name.ShouldBe("Test Route Read");
+        result.Name.ShouldBe(created.Name);
     }
 
     [Fact]
@@ -111,21 +90,20 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     {
         using var client = fixture.CreateAuthenticatedClient();
 
-        var (_, sector) = await CreateAreaAndSectorAsync(client);
+        var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var created = routes.First();
 
         // Create route to update
-        var routeReq = new RouteRequestData(
+        RouteRequestData routeReq = new(
             SectorId: sector.Id,
             Type: ClimbingType.Sport,
             Pitches: [],
             Name: "Test Route Update",
-            Description: null,
-            Grade: null,
-            FirstAscentClimberName: null,
-            BolterName: null
+            Description: "Updated Test Route Description",
+            Grade: "",
+            FirstAscentClimberName: "Updated Test Route First Ascent Climber Name",
+            BolterName: "Updated Test Route Bolter Name"
         );
-        var (createResp, created) = await client.POSTAsync<CreateRoute, RouteRequestData, Route>(routeReq);
-        createResp.IsSuccessStatusCode.ShouldBeTrue();
 
         var updateReq = new UpdateRouteRequest { RouteId = created.Id, Route = routeReq };
         var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(updateReq);
@@ -147,21 +125,8 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     {
         using var client = fixture.CreateAuthenticatedClient();
 
-        var (_, sector) = await CreateAreaAndSectorAsync(client);
-
-        // Create route to delete
-        var routeReq = new RouteRequestData(
-            SectorId: sector.Id,
-            Type: ClimbingType.Sport,
-            Pitches: [],
-            Name: "Test Route Delete",
-            Description: null,
-            Grade: null,
-            FirstAscentClimberName: null,
-            BolterName: null
-        );
-        var (createResp, created) = await client.POSTAsync<CreateRoute, RouteRequestData, Route>(routeReq);
-        createResp.IsSuccessStatusCode.ShouldBeTrue();
+        var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var created = routes.First();
 
         // Delete
         var deleteReq = new DeleteRouteRequest(created.Id);
@@ -182,59 +147,6 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         var (response, _) = await client.DELETEAsync<DeleteRoute, DeleteRouteRequest, EmptyResponse>(deleteReq);
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
-    }
-}
-
-internal static class TestDataFactory
-{
-    public static AreaRequestData CreateAreaRequest(string name)
-    {
-        var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-
-        var location = geometryFactory.CreatePoint(new NetTopologySuite.Geometries.Coordinate(-122.4194, 37.7749));
-        var boundary = geometryFactory.CreateMultiPolygon(new[]
-        {
-            geometryFactory.CreatePolygon(new[]
-            {
-                new NetTopologySuite.Geometries.Coordinate(-122.42, 37.77),
-                new NetTopologySuite.Geometries.Coordinate(-122.42, 37.78),
-                new NetTopologySuite.Geometries.Coordinate(-122.41, 37.78),
-                new NetTopologySuite.Geometries.Coordinate(-122.41, 37.77),
-                new NetTopologySuite.Geometries.Coordinate(-122.42, 37.77)
-            })
-        });
-
-        return new AreaRequestData(
-            Name: name,
-            Description: "Test area for routes",
-            Location: location,
-            Boundary: boundary
-        );
-    }
-
-    public static SectorRequestData CreateSectorRequest(Guid areaId, string name)
-    {
-        var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-
-        var sectorArea = geometryFactory.CreatePolygon(new[]
-        {
-            new NetTopologySuite.Geometries.Coordinate(-122.419, 37.774),
-            new NetTopologySuite.Geometries.Coordinate(-122.419, 37.775),
-            new NetTopologySuite.Geometries.Coordinate(-122.418, 37.775),
-            new NetTopologySuite.Geometries.Coordinate(-122.418, 37.774),
-            new NetTopologySuite.Geometries.Coordinate(-122.419, 37.774)
-        });
-
-        var entryPoint = geometryFactory.CreatePoint(new NetTopologySuite.Geometries.Coordinate(-122.4185, 37.7745));
-
-        return new SectorRequestData(
-            Name: name,
-            SectorArea: sectorArea,
-            EntryPoint: entryPoint,
-            RecommendedParkingLocation: null,
-            ApproachPath: null,
-            AreaId: areaId
-        );
     }
 }
 

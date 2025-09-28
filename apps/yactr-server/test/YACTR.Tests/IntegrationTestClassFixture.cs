@@ -16,6 +16,7 @@ using YACTR.Data.Model.Authentication;
 using YACTR.Data.QueryExtensions;
 using YACTR.Data.Repository.ConfigurationExtension;
 using YACTR.Data.Repository.Interface;
+using YACTR.Tests.TestData;
 
 namespace YACTR.Tests;
 
@@ -23,6 +24,8 @@ public class IntegrationTestClassFixture : AppFixture<Program>
 {
     public DatabaseContext DatabaseContext { get; private set; } = null!;
     public HttpClient AnonymousClient { get; private set; } = null!;
+    public TestDataSeeder TestDataSeeder { get; private set; } = null!;
+
     protected JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
@@ -37,6 +40,8 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     {
         AnonymousClient = CreateClient();
         DatabaseContext = Services.GetRequiredService<DatabaseContext>();
+        TestDataSeeder = new TestDataSeeder(DatabaseContext);
+
         await DatabaseContext.Database.EnsureCreatedAsync();
     }
 
