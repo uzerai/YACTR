@@ -22,8 +22,8 @@ test:
     attach -t yactr-test
 
 [doc('Runs migrations against the dev-profile docker-compose')]
-run-migrations:
-    dotnet ef database update --project src/YACTR
+run-migrations environment='development':
+    ASPNETCORE_ENVIRONMENT={{environment}} dotnet ef database update --project src/YACTR
 
 [doc('Creates a migration in the project')]
 add-migration migration_name:
