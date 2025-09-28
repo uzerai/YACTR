@@ -37,12 +37,13 @@ public class CreateRoute : Endpoint<RouteRequestData, Route>
         }
         else
         {
-            pitches = req.Pitches.Select(reqDataPitch => new Pitch()
+            pitches = req.Pitches.Select((reqDataPitch, Index) => new Pitch()
             {
                 Name = reqDataPitch.Name,
                 Description = reqDataPitch.Description,
                 Type = reqDataPitch.Type,
-                SectorId = req.SectorId
+                SectorId = req.SectorId,
+                PitchOrder = Index
             });
         }
 

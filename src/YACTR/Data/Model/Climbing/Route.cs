@@ -19,7 +19,7 @@ public class Route : BaseEntity
     public string? BolterName { get; set; }
     public ClimbingType Type { get; set; }
 
-    public required Guid SectorId { get; set; }
+    public Guid SectorId { get; init; }
     [ForeignKey("SectorId")]
     public virtual Sector Sector { get; set; } = null!;
 
