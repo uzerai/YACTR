@@ -1,4 +1,6 @@
+using System.Net;
 using FastEndpoints.Testing;
+using Shouldly;
 
 namespace YACTR.Tests.Endpoints;
 
@@ -15,7 +17,6 @@ public class RootEndpointsIntegrationTests(IntegrationTestClassFixture fixture) 
 
         // Assert
         response.EnsureSuccessStatusCode();
-        // Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
     [Fact]
@@ -25,6 +26,6 @@ public class RootEndpointsIntegrationTests(IntegrationTestClassFixture fixture) 
         var response = await fixture.AnonymousClient.GetAsync("/", TestContext.Current.CancellationToken);
 
         // Assert
-        // Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 }
