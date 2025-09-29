@@ -3,56 +3,13 @@ using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Data.Model.Climbing;
-using NetTopologySuite.Geometries;
-using NetTopologySuite;
 using YACTR.Endpoints.Pitches;
-using YACTR.Endpoints.Areas;
-using YACTR.Endpoints.Sectors;
-using YACTR.Endpoints.Routes;
 
 namespace YACTR.Tests.Endpoints;
 
 [Collection("IntegrationTests")]
 public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
 {
-    private async Task<(Area area, Sector sector, Route route)> CreateAreaSectorRouteAsync(HttpClient client, string areaName = "Test Area", string sectorName = "Test Sector", string routeName = "Test Route")
-    {
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-        var areaLocation = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749));
-        var areaBoundary = geometryFactory.CreateMultiPolygon(new[] {
-            geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.78),
-                new Coordinate(-122.41, 37.78),
-                new Coordinate(-122.41, 37.77),
-                new Coordinate(-122.42, 37.77)
-            })
-        });
-
-        var areaRequest = new AreaRequestData(areaName, "Test area description", areaLocation, areaBoundary);
-        var (areaResponse, area) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(areaRequest);
-        areaResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        var sectorArea = geometryFactory.CreatePolygon(new[] {
-            new Coordinate(-122.419, 37.774),
-            new Coordinate(-122.419, 37.775),
-            new Coordinate(-122.418, 37.775),
-            new Coordinate(-122.418, 37.774),
-            new Coordinate(-122.419, 37.774)
-        });
-
-        var entryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4185, 37.7745));
-        var sectorRequest = new SectorRequestData(sectorName, sectorArea, entryPoint, null, null, area.Id);
-        var (sectorResponse, sector) = await client.POSTAsync<CreateSector, SectorRequestData, Sector>(sectorRequest);
-        sectorResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        var routeRequest = new RouteRequestData(sector.Id, [], routeName, ClimbingType.Sport, "", "", "", "");
-        var (routeResponse, route) = await client.POSTAsync<CreateRoute, RouteRequestData, Route>(routeRequest);
-        routeResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        return (area, sector, route);
-    }
-
     [Fact]
     public async Task GetAll_ReturnsSuccessStatusCode()
     {
@@ -72,7 +29,8 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area and sector
-        var (area, sector, route) = await CreateAreaSectorRouteAsync(client, "Test Area for Pitch", "Test Sector for Pitch", "Test Route for Pitch");
+        var (area, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
 
         // Create pitch request
         var createRequest = new PitchRequestData(
@@ -103,7 +61,8 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area and sector
-        var (area, sector, route) = await CreateAreaSectorRouteAsync(client, "Test Area for Pitch Types", "Test Sector for Pitch Types", "Test Route for Pitch Types");
+        var (area, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
 
         // Test different pitch types
         var pitchTypes = new[] { ClimbingType.Traditional, ClimbingType.Mixed, ClimbingType.Aid };
@@ -136,7 +95,8 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area, sector, and pitch
-        var (area, sector, route) = await CreateAreaSectorRouteAsync(client, "Test Area for GetById", "Test Sector for GetById", "Test Route for GetById");
+        var (area, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
 
         var createRequest = new PitchRequestData(
             sector.Id,
@@ -182,7 +142,8 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area, sector, and pitch
-        var (area, sector, route) = await CreateAreaSectorRouteAsync(client, "Test Area for Update", "Test Sector for Update", "Test Route for Delete");
+        var (area, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
 
         var createRequest = new PitchRequestData(
             sector.Id,
@@ -225,7 +186,8 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange - First create an area, sector, and pitch
-        var (area, sector, route) = await CreateAreaSectorRouteAsync(client, "Test Area for Delete", "Test Sector for Delete", "Test Route for Delete");
+        var (area, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
 
         var createRequest = new PitchRequestData(
             sector.Id,

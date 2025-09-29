@@ -3,8 +3,6 @@ using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Data.Model.Climbing;
-using NetTopologySuite.Geometries;
-using NetTopologySuite;
 using YACTR.Endpoints.Areas;
 
 namespace YACTR.Tests.Endpoints;

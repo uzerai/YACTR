@@ -6,9 +6,6 @@ using Shouldly;
 using YACTR.Data.Model.Achievement;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Authorization.Permissions;
-using YACTR.Data.Model.Climbing;
-using NetTopologySuite.Geometries;
-using NetTopologySuite;
 using YACTR.Endpoints.Ascents;
 
 namespace YACTR.Tests.Endpoints;
@@ -31,57 +28,6 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         await fixture.GetEntityRepository<User>().CreateAsync(TestUserWithAscentPermissions, TestContext.Current.CancellationToken);
     }
 
-    private async Task<(Area area, Sector sector, Route route)> CreateTestClimbingData()
-    {
-        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-
-        // Create Area
-        var area = new Area()
-        {
-            Name = "Test Climbing Area",
-            Description = "Test area for ascents",
-            Location = geometryFactory.CreatePoint(new Coordinate(-122.4194, 37.7749)),
-            Boundary = geometryFactory.CreateMultiPolygon(new[] {
-                geometryFactory.CreatePolygon(new[] {
-                    new Coordinate(-122.42, 37.77),
-                    new Coordinate(-122.42, 37.78),
-                    new Coordinate(-122.41, 37.78),
-                    new Coordinate(-122.41, 37.77),
-                    new Coordinate(-122.42, 37.77)
-                })
-            })
-        };
-        area = await fixture.GetEntityRepository<Area>().CreateAsync(area, TestContext.Current.CancellationToken);
-
-        // Create Sector
-        var sector = new Sector()
-        {
-            Name = "Test Sector",
-            AreaId = area.Id,
-            SectorArea = geometryFactory.CreatePolygon(new[] {
-                new Coordinate(-122.42, 37.77),
-                new Coordinate(-122.42, 37.775),
-                new Coordinate(-122.415, 37.775),
-                new Coordinate(-122.415, 37.77),
-                new Coordinate(-122.42, 37.77)
-            }),
-            EntryPoint = geometryFactory.CreatePoint(new Coordinate(-122.4175, 37.7725))
-        };
-        sector = await fixture.GetEntityRepository<Sector>().CreateAsync(sector, TestContext.Current.CancellationToken);
-
-        // Create Route
-        var route = new Route()
-        {
-            Name = "Test Route",
-            Description = "Test route for ascents",
-            Grade = "5.10a",
-            SectorId = sector.Id
-        };
-        route = await fixture.GetEntityRepository<Route>().CreateAsync(route, TestContext.Current.CancellationToken);
-
-        return (area, sector, route);
-    }
-
     [Fact]
     public async Task GetAllAscents_ReturnsSuccessStatusCode()
     {
@@ -101,7 +47,8 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
 
         // Arrange
-        var (_, _, route) = await CreateTestClimbingData();
+        var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
 
         var createRequest = new CreateAscentRequest(
@@ -128,7 +75,8 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
 
         // Arrange - First create an ascent
-        var (_, _, route) = await CreateTestClimbingData();
+        var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
 
         var createRequest = new CreateAscentRequest(
@@ -172,7 +120,8 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
 
         // Arrange - First create an ascent
-        var (_, _, route) = await CreateTestClimbingData();
+        var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
 
         var createRequest = new CreateAscentRequest(
@@ -231,7 +180,8 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var clientWithoutPermissions = fixture.CreateAuthenticatedClient();
 
         // Arrange - Create an ascent with the first user
-        var (_, _, route) = await CreateTestClimbingData();
+        var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
 
         var createRequest = new CreateAscentRequest(
@@ -263,7 +213,8 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
 
         // Arrange - First create an ascent
-        var (_, _, route) = await CreateTestClimbingData();
+        var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
 
         var createRequest = new CreateAscentRequest(
@@ -312,7 +263,8 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var clientWithoutPermissions = fixture.CreateAuthenticatedClient();
 
         // Arrange - Create an ascent with the first user
-        var (_, _, route) = await CreateTestClimbingData();
+        var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
         var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
 
         var createRequest = new CreateAscentRequest(
@@ -357,7 +309,8 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var client = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
 
         // Arrange - Create test data and multiple ascents
-        var (_, _, route) = await CreateTestClimbingData();
+        var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
 
         var now = SystemClock.Instance.GetCurrentInstant();
         var yesterday = now.Minus(Duration.FromDays(1));
