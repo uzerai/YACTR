@@ -23,12 +23,8 @@ public class GetCurrentUser : Endpoint<EmptyRequest, User>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        if (!Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId))
-        {
-            await SendUnauthorizedAsync(ct);
-            return;
-        }
+        _ = Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId);
 
-        await SendOkAsync((await _userRepository.GetByIdAsync(userId))!, ct);
+        await SendOkAsync((await _userRepository.GetByIdAsync(userId, ct))!, ct);
     }
 }

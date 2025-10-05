@@ -23,7 +23,6 @@ public class UploadImage : Endpoint<ImageUploadRequest, Image>
         Post("/");
         Group<ImagesEndpointGroup>();
         AllowFileUploads();
-        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.ImagesWrite)));
     }
 
     public override async Task HandleAsync(ImageUploadRequest req, CancellationToken ct)
@@ -33,6 +32,7 @@ public class UploadImage : Endpoint<ImageUploadRequest, Image>
             await SendUnauthorizedAsync(ct);
             return;
         }
+
         if (req.Image is null)
         {
             await SendErrorsAsync(cancellation: ct);
