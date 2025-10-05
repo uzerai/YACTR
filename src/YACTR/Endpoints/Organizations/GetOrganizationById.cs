@@ -1,8 +1,6 @@
 using FastEndpoints;
-using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Organizations;
 using YACTR.Data.Repository.Interface;
-using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Organizations;
 
@@ -22,7 +20,6 @@ public class GetOrganizationById : Endpoint<GetOrganizationByIdRequest, Organiza
     {
         Get("/{OrganizationId}");
         Group<OrganizationsEndpointGroup>();
-        // Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.OrganizationsRead)));
     }
 
     public override async Task HandleAsync(GetOrganizationByIdRequest req, CancellationToken ct)
