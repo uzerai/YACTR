@@ -1,29 +1,27 @@
 using FastEndpoints;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
+using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Sectors;
 
 public record DeleteSectorRequest(Guid SectorId);
 
-public class DeleteSector : Endpoint<DeleteSectorRequest, EmptyResponse>
+public class DeleteSector : AuthenticatedEndpoint<DeleteSectorRequest, EmptyResponse>
 {
-    private readonly IEntityRepository<Sector> _sectorRepository;
-
-    public DeleteSector(IEntityRepository<Sector> sectorRepository)
-    {
-        _sectorRepository = sectorRepository;
-    }
+    public required IEntityRepository<Sector> SectorRepository { get; init; }
 
     public override void Configure()
     {
         Delete("/{SectorId}");
         Group<SectorsEndpointGroup>();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.SectorsWrite)));
     }
 
     public override async Task HandleAsync(DeleteSectorRequest req, CancellationToken ct)
     {
-        var sector = await _sectorRepository.GetByIdAsync(req.SectorId, ct);
+        var sector = await SectorRepository.GetByIdAsync(req.SectorId, ct);
 
         if (sector == null)
         {
@@ -31,7 +29,7 @@ public class DeleteSector : Endpoint<DeleteSectorRequest, EmptyResponse>
             return;
         }
 
-        await _sectorRepository.DeleteAsync(sector, ct);
+        await SectorRepository.DeleteAsync(sector, ct);
         await SendNoContentAsync(ct);
     }
 }

@@ -9,12 +9,7 @@ public record GetAscentByIdRequest(Guid AscentId);
 
 public class GetAscentById : Endpoint<GetAscentByIdRequest, AscentResponse>
 {
-    private readonly IRepository<Ascent> _ascentRepository;
-
-    public GetAscentById(IRepository<Ascent> ascentRepository)
-    {
-        _ascentRepository = ascentRepository;
-    }
+    public required IRepository<Ascent> AscentRepository { get; init; }
 
     public override void Configure()
     {
@@ -24,7 +19,7 @@ public class GetAscentById : Endpoint<GetAscentByIdRequest, AscentResponse>
 
     public override async Task HandleAsync(GetAscentByIdRequest req, CancellationToken ct)
     {
-        var ascent = await _ascentRepository.BuildReadonlyQuery()
+        var ascent = await AscentRepository.BuildReadonlyQuery()
             .Include(a => a.Route)
             .FirstOrDefaultAsync(a => a.Id == req.AscentId, ct);
 

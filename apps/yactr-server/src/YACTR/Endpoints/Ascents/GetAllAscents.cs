@@ -7,12 +7,7 @@ namespace YACTR.Endpoints.Ascents;
 
 public class GetAllAscents : Endpoint<EmptyRequest, List<AscentResponse>>
 {
-    private readonly IRepository<Ascent> _ascentRepository;
-
-    public GetAllAscents(IRepository<Ascent> ascentRepository)
-    {
-        _ascentRepository = ascentRepository;
-    }
+    public required IRepository<Ascent> AscentRepository { get; init; }
 
     public override void Configure()
     {
@@ -23,7 +18,7 @@ public class GetAllAscents : Endpoint<EmptyRequest, List<AscentResponse>>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var ascents = await _ascentRepository.BuildReadonlyQuery()
+        var ascents = await AscentRepository.BuildReadonlyQuery()
             .Include(a => a.Route)
             .ToListAsync(ct);
 

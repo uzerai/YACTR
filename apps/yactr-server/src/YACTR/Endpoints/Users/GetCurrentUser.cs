@@ -1,19 +1,12 @@
-using System.Security.Claims;
 using FastEndpoints;
-using FastEndpoints.Security;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Endpoints.Users;
 
-public class GetCurrentUser : Endpoint<EmptyRequest, User>
+public class GetCurrentUser : AuthenticatedEndpoint<EmptyRequest, User>
 {
-    private readonly IEntityRepository<User> _userRepository;
-
-    public GetCurrentUser(IEntityRepository<User> userRepository)
-    {
-        _userRepository = userRepository;
-    }
+    public required IEntityRepository<User> UserRepository { get; init; }
 
     public override void Configure()
     {
@@ -23,8 +16,6 @@ public class GetCurrentUser : Endpoint<EmptyRequest, User>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        _ = Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId);
-
-        await SendOkAsync((await _userRepository.GetByIdAsync(userId, ct))!, ct);
+        await SendOkAsync((await UserRepository.GetByIdAsync(CurrentUserId, ct))!, ct);
     }
 }

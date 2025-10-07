@@ -1,24 +1,21 @@
 using FastEndpoints;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
-
+using YACTR.DI.Authorization.Permissions;
 using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Endpoints.Routes;
 
-public class CreateRoute : Endpoint<RouteRequestData, Route>
+public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, Route>
 {
-    private readonly IEntityRepository<Route> _routeRepository;
-
-    public CreateRoute(IEntityRepository<Route> routeRepository)
-    {
-        _routeRepository = routeRepository;
-    }
+    public required IEntityRepository<Route> RouteRepository { get; init; }
 
     public override void Configure()
     {
         Post("/");
         Group<RoutesEndpointGroup>();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.RoutesWrite)));
     }
 
     public override async Task HandleAsync(RouteRequestData req, CancellationToken ct)
@@ -37,7 +34,7 @@ public class CreateRoute : Endpoint<RouteRequestData, Route>
         }
         else
         {
-            pitches = req.Pitches.Select((reqDataPitch, Index) => new Pitch()
+            pitches = req.Pitches!.Select((reqDataPitch, Index) => new Pitch()
             {
                 Name = reqDataPitch.Name,
                 Description = reqDataPitch.Description,
@@ -47,7 +44,7 @@ public class CreateRoute : Endpoint<RouteRequestData, Route>
             });
         }
 
-        var createdRoute = await _routeRepository.CreateAsync(new()
+        var createdRoute = await RouteRepository.CreateAsync(new()
         {
             Name = req.Name,
             Description = req.Description,

@@ -1,30 +1,27 @@
 using FastEndpoints;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Repository.Interface;
-
+using YACTR.DI.Authorization.Permissions;
 using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Endpoints.Routes;
 
 public record DeleteRouteRequest(Guid RouteId);
 
-public class DeleteRoute : Endpoint<DeleteRouteRequest, EmptyResponse>
+public class DeleteRoute : AuthenticatedEndpoint<DeleteRouteRequest, EmptyResponse>
 {
-    private readonly IEntityRepository<Route> _routeRepository;
-
-    public DeleteRoute(IEntityRepository<Route> routeRepository)
-    {
-        _routeRepository = routeRepository;
-    }
+    public required IEntityRepository<Route> RouteRepository { get; init; }
 
     public override void Configure()
     {
         Delete("/{RouteId}");
         Group<RoutesEndpointGroup>();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.RoutesWrite)));
     }
 
     public override async Task HandleAsync(DeleteRouteRequest req, CancellationToken ct)
     {
-        var route = await _routeRepository.GetByIdAsync(req.RouteId, ct);
+        var route = await RouteRepository.GetByIdAsync(req.RouteId, ct);
 
         if (route == null)
         {
@@ -32,7 +29,7 @@ public class DeleteRoute : Endpoint<DeleteRouteRequest, EmptyResponse>
             return;
         }
 
-        await _routeRepository.DeleteAsync(route, ct);
+        await RouteRepository.DeleteAsync(route, ct);
         await SendNoContentAsync(ct);
     }
 }

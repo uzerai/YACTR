@@ -6,7 +6,6 @@ using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Areas;
 
-[PlatformPermissionRequired(Permission.AreasWrite)]
 public class UpdateAreaRequest
 {
     public Guid AreaId { get; set; }
@@ -15,24 +14,20 @@ public class UpdateAreaRequest
     public required AreaRequestData Data { get; set; }
 }
 
-public class UpdateArea : Endpoint<UpdateAreaRequest, EmptyResponse>
+public class UpdateArea : AuthenticatedEndpoint<UpdateAreaRequest, EmptyResponse>
 {
-    private readonly IEntityRepository<Area> _areaRepository;
-
-    public UpdateArea(IEntityRepository<Area> areaRepository)
-    {
-        _areaRepository = areaRepository;
-    }
+    public required IEntityRepository<Area> AreaRepository { get; init; }
 
     public override void Configure()
     {
         Put("/{AreaId}");
         Group<AreasEndpointGroup>();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.AreasWrite)));
     }
 
     public override async Task HandleAsync(UpdateAreaRequest req, CancellationToken ct)
     {
-        var area = await _areaRepository.GetByIdAsync(req.AreaId, ct);
+        var area = await AreaRepository.GetByIdAsync(req.AreaId, ct);
 
         if (area == null)
         {
@@ -45,7 +40,7 @@ public class UpdateArea : Endpoint<UpdateAreaRequest, EmptyResponse>
         area.Location = req.Data.Location;
         area.Boundary = req.Data.Boundary;
 
-        await _areaRepository.UpdateAsync(area, ct);
+        await AreaRepository.UpdateAsync(area, ct);
 
         await SendNoContentAsync(ct);
     }

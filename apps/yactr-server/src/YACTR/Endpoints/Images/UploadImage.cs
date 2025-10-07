@@ -1,38 +1,24 @@
-using FastEndpoints;
 using YACTR.Data.Model;
 using YACTR.DI.Service;
 using YACTR.DI.Authorization.Permissions;
 using YACTR.Data.Model.Authorization.Permissions;
-using FastEndpoints.Security;
-using System.Security.Claims;
 
 namespace YACTR.Endpoints.Images;
 
-[PlatformPermissionRequired(Permission.ImagesWrite)]
-public class UploadImage : Endpoint<ImageUploadRequest, Image>
+public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, Image>
 {
-    private readonly IImageStorageService _imageStorageService;
-
-    public UploadImage(IImageStorageService imageStorageService)
-    {
-        _imageStorageService = imageStorageService;
-    }
+    public required IImageStorageService ImageStorageService { get; init; }
 
     public override void Configure()
     {
         Post("/");
         Group<ImagesEndpointGroup>();
         AllowFileUploads();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.ImagesWrite)));
     }
 
     public override async Task HandleAsync(ImageUploadRequest req, CancellationToken ct)
     {
-        if (!Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId))
-        {
-            await SendUnauthorizedAsync(ct);
-            return;
-        }
-
         if (req.Image is null)
         {
             await SendErrorsAsync(cancellation: ct);
@@ -41,9 +27,9 @@ public class UploadImage : Endpoint<ImageUploadRequest, Image>
 
         try
         {
-            var uploadedImage = await _imageStorageService.UploadImageAsync(
+            var uploadedImage = await ImageStorageService.UploadImageAsync(
                 req.Image.OpenReadStream(),
-                userId,
+                CurrentUserId,
                 req.RelatedEntityId, ct);
 
             await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, uploadedImage, cancellation: ct);

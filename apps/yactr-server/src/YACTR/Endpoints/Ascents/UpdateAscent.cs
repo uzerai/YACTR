@@ -3,9 +3,6 @@ using NodaTime;
 using YACTR.Data.Model.Achievement;
 using YACTR.Data.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
-using FastEndpoints.Security;
-using System.Security.Claims;
-
 namespace YACTR.Endpoints.Ascents;
 
 public record UpdateAscentRequest(
@@ -14,14 +11,9 @@ public record UpdateAscentRequest(
     Instant CompletedAt
 );
 
-public class UpdateAscent : Endpoint<UpdateAscentRequest, EmptyResponse>
+public class UpdateAscent : AuthenticatedEndpoint<UpdateAscentRequest, EmptyResponse>
 {
-    private readonly IRepository<Ascent> _ascentRepository;
-
-    public UpdateAscent(IRepository<Ascent> ascentRepository)
-    {
-        _ascentRepository = ascentRepository;
-    }
+    public required IRepository<Ascent> AscentRepository { get; init; }
 
     public override void Configure()
     {
@@ -31,12 +23,7 @@ public class UpdateAscent : Endpoint<UpdateAscentRequest, EmptyResponse>
 
     public override async Task HandleAsync(UpdateAscentRequest req, CancellationToken ct)
     {
-        if (!Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId))
-        {
-            await SendUnauthorizedAsync(ct);
-        }
-
-        var ascent = await _ascentRepository.BuildTrackedQuery()
+        var ascent = await AscentRepository.BuildTrackedQuery()
             .FirstOrDefaultAsync(a => a.Id == req.AscentId, ct);
 
         if (ascent == null)
@@ -46,7 +33,7 @@ public class UpdateAscent : Endpoint<UpdateAscentRequest, EmptyResponse>
         }
 
         // Ensure the user owns this ascent
-        if (ascent.UserId != userId)
+        if (ascent.UserId != CurrentUserId)
         {
             await SendForbiddenAsync(ct);
             return;
@@ -54,7 +41,7 @@ public class UpdateAscent : Endpoint<UpdateAscentRequest, EmptyResponse>
 
         ascent.Type = req.Type;
         ascent.CompletedAt = req.CompletedAt;
-        await _ascentRepository.UpdateAsync(ascent, ct);
+        await AscentRepository.UpdateAsync(ascent, ct);
         await SendNoContentAsync(ct);
     }
 }
