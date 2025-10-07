@@ -15,7 +15,6 @@ namespace YACTR.Tests.Endpoints;
 [Collection("IntegrationTests")]
 public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
 {
-
     public User TestUserWithImagePermissions = new()
     {
         Username = "test_user_with_image_permissions",
@@ -75,7 +74,6 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     [Fact]
     public async Task UploadImage_WithoutPermissions_ReturnsForbidden()
     {
-
         // Arrange
         User userWithoutPermissions = new()
         {

@@ -9,12 +9,7 @@ public record GetRouteByIdRequest(Guid RouteId);
 
 public class GetRouteById : Endpoint<GetRouteByIdRequest, Route>
 {
-    private readonly IEntityRepository<Route> _routeRepository;
-
-    public GetRouteById(IEntityRepository<Route> routeRepository)
-    {
-        _routeRepository = routeRepository;
-    }
+    public required IEntityRepository<Route> RouteRepository { get; init; }
 
     public override void Configure()
     {
@@ -24,7 +19,7 @@ public class GetRouteById : Endpoint<GetRouteByIdRequest, Route>
 
     public override async Task HandleAsync(GetRouteByIdRequest req, CancellationToken ct)
     {
-        var route = await _routeRepository.GetByIdAsync(req.RouteId, ct);
+        var route = await RouteRepository.GetByIdAsync(req.RouteId, ct);
 
         if (route == null)
         {

@@ -1,6 +1,7 @@
 using FastEndpoints;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Repository.Interface;
-using YACTR.Endpoints.Routes;
+using YACTR.DI.Authorization.Permissions;
 using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Endpoints.Routes;
@@ -13,24 +14,21 @@ public class UpdateRouteRequest
     public required RouteRequestData Route { get; set; }
 };
 
-public class UpdateRoute : Endpoint<UpdateRouteRequest, EmptyResponse>
+public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyResponse>
 {
-    private readonly IEntityRepository<Route> _routeRepository;
+    public required IEntityRepository<Route> RouteRepository { get; init; }
 
-    public UpdateRoute(IEntityRepository<Route> routeRepository)
-    {
-        _routeRepository = routeRepository;
-    }
 
     public override void Configure()
     {
         Put("/{RouteId}");
         Group<RoutesEndpointGroup>();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.RoutesWrite)));
     }
 
     public override async Task HandleAsync(UpdateRouteRequest req, CancellationToken ct)
     {
-        var existingRoute = await _routeRepository.GetByIdAsync(req.RouteId, ct);
+        var existingRoute = await RouteRepository.GetByIdAsync(req.RouteId, ct);
         if (existingRoute == null)
         {
             await SendNotFoundAsync(ct);
@@ -39,7 +37,7 @@ public class UpdateRoute : Endpoint<UpdateRouteRequest, EmptyResponse>
 
         // Note: This would need to be implemented with proper request body handling
         // The original controller had incomplete update logic
-        await _routeRepository.UpdateAsync(existingRoute, ct);
+        await RouteRepository.UpdateAsync(existingRoute, ct);
 
         await SendNoContentAsync(ct);
     }

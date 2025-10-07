@@ -1,27 +1,24 @@
-using FastEndpoints;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
+using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Sectors;
 
-public class CreateSector : Endpoint<SectorRequestData, Sector>
+public class CreateSector : AuthenticatedEndpoint<SectorRequestData, Sector>
 {
-    private readonly IEntityRepository<Sector> _sectorRepository;
-
-    public CreateSector(IEntityRepository<Sector> sectorRepository)
-    {
-        _sectorRepository = sectorRepository;
-    }
+    public required IEntityRepository<Sector> SectorRepository { get; init; }
 
     public override void Configure()
     {
         Post("/");
         Group<SectorsEndpointGroup>();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.SectorsWrite)));
     }
 
     public override async Task HandleAsync(SectorRequestData req, CancellationToken ct)
     {
-        var createdSector = await _sectorRepository.CreateAsync(new()
+        var createdSector = await SectorRepository.CreateAsync(new()
         {
             Name = req.Name,
             SectorArea = req.SectorArea,

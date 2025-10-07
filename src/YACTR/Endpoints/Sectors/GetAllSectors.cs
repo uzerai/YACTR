@@ -6,12 +6,7 @@ namespace YACTR.Endpoints.Sectors;
 
 public class GetAllSectors : Endpoint<EmptyRequest, List<Sector>>
 {
-    private readonly IEntityRepository<Sector> _sectorRepository;
-
-    public GetAllSectors(IEntityRepository<Sector> sectorRepository)
-    {
-        _sectorRepository = sectorRepository;
-    }
+    public required IEntityRepository<Sector> SectorRepository { get; init; }
 
     public override void Configure()
     {
@@ -21,7 +16,7 @@ public class GetAllSectors : Endpoint<EmptyRequest, List<Sector>>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var sectors = await _sectorRepository.GetAllAsync(ct);
+        var sectors = await SectorRepository.GetAllAsync(ct);
         await SendAsync([.. sectors], cancellation: ct);
     }
 }

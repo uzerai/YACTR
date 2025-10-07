@@ -2,6 +2,7 @@ using System.Net;
 using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
+using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints.Areas;
 
@@ -53,6 +54,36 @@ public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fix
         result.ShouldNotBeNull();
         result.Name.ShouldBe(createRequest.Name);
         result.Description.ShouldBe(createRequest.Description);
+    }
+
+    [Fact]
+    public async Task Create_WithoutPermissions_ReturnsUnauthorized()
+    {
+        User user = new()
+        {
+            Auth0UserId = "test|test|",
+            Email = "test@userwithoutperms.com",
+            Username = "user_without_area_permissions",
+            PlatformPermissions = []
+        };
+        using var client = fixture.CreateAuthenticatedClient(user);
+
+        // Arrange
+        var location = fixture.TestDataSeeder.NewPoint();
+        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+
+        var createRequest = new AreaRequestData(
+            "Test Climbing Area",
+            "A beautiful climbing area for testing",
+            location,
+            boundary
+        );
+
+        // Act
+        var (response, result) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
     }
 
     [Fact]

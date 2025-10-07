@@ -6,12 +6,7 @@ namespace YACTR.Endpoints.Pitches;
 
 public class GetAllPitches : Endpoint<EmptyRequest, List<Pitch>>
 {
-    private readonly IEntityRepository<Pitch> _pitchRepository;
-
-    public GetAllPitches(IEntityRepository<Pitch> pitchRepository)
-    {
-        _pitchRepository = pitchRepository;
-    }
+    public required IEntityRepository<Pitch> PitchRepository { get; init; }
 
     public override void Configure()
     {
@@ -22,7 +17,7 @@ public class GetAllPitches : Endpoint<EmptyRequest, List<Pitch>>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var pitches = await _pitchRepository.GetAllAsync(ct);
+        var pitches = await PitchRepository.GetAllAsync(ct);
         await SendAsync([.. pitches], cancellation: ct);
     }
 }

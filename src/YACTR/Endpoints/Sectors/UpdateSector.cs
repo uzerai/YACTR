@@ -1,6 +1,8 @@
 using FastEndpoints;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
+using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Sectors;
 
@@ -13,24 +15,20 @@ public class UpdateSectorRequest
 
 }
 
-public class UpdateSector : Endpoint<UpdateSectorRequest, EmptyResponse>
+public class UpdateSector : AuthenticatedEndpoint<UpdateSectorRequest, EmptyResponse>
 {
-    private readonly IEntityRepository<Sector> _sectorRepository;
-
-    public UpdateSector(IEntityRepository<Sector> sectorRepository)
-    {
-        _sectorRepository = sectorRepository;
-    }
+    public required IEntityRepository<Sector> SectorRepository { get; init; }
 
     public override void Configure()
     {
         Put("/{SectorId}");
         Group<SectorsEndpointGroup>();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.SectorsWrite)));
     }
 
     public override async Task HandleAsync(UpdateSectorRequest req, CancellationToken ct)
     {
-        var existingSector = await _sectorRepository.GetByIdAsync(req.SectorId, ct);
+        var existingSector = await SectorRepository.GetByIdAsync(req.SectorId, ct);
         if (existingSector == null)
         {
             await SendNotFoundAsync(ct);
@@ -44,7 +42,7 @@ public class UpdateSector : Endpoint<UpdateSectorRequest, EmptyResponse>
         existingSector.ApproachPath = req.Data.ApproachPath;
         existingSector.AreaId = req.Data.AreaId;
 
-        await _sectorRepository.UpdateAsync(existingSector, ct);
+        await SectorRepository.UpdateAsync(existingSector, ct);
 
         await SendNoContentAsync(ct);
     }

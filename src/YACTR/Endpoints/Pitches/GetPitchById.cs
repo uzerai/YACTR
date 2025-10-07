@@ -8,12 +8,7 @@ public record GetPitchByIdRequest(Guid PitchId);
 
 public class GetPitchById : Endpoint<GetPitchByIdRequest, Pitch>
 {
-    private readonly IEntityRepository<Pitch> _pitchRepository;
-
-    public GetPitchById(IEntityRepository<Pitch> pitchRepository)
-    {
-        _pitchRepository = pitchRepository;
-    }
+    public required IEntityRepository<Pitch> PitchRepository { get; init; }
 
     public override void Configure()
     {
@@ -23,7 +18,7 @@ public class GetPitchById : Endpoint<GetPitchByIdRequest, Pitch>
 
     public override async Task HandleAsync(GetPitchByIdRequest req, CancellationToken ct)
     {
-        var pitch = await _pitchRepository.GetByIdAsync(req.PitchId, ct);
+        var pitch = await PitchRepository.GetByIdAsync(req.PitchId, ct);
 
         if (pitch == null)
         {

@@ -6,12 +6,7 @@ namespace YACTR.Endpoints.Areas;
 
 public class GetAllAreas : Endpoint<EmptyRequest, List<Area>>
 {
-    private readonly IEntityRepository<Area> _areaRepository;
-
-    public GetAllAreas(IEntityRepository<Area> areaRepository)
-    {
-        _areaRepository = areaRepository;
-    }
+    public required IEntityRepository<Area> AreaRepository { get; init; }
 
     public override void Configure()
     {
@@ -22,7 +17,7 @@ public class GetAllAreas : Endpoint<EmptyRequest, List<Area>>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var areas = await _areaRepository.GetAllAvailableAsync(ct);
+        var areas = await AreaRepository.GetAllAvailableAsync(ct);
         await SendAsync([.. areas], cancellation: ct);
     }
 }

@@ -1,29 +1,27 @@
 using FastEndpoints;
+using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.Interface;
+using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Areas;
 
 public record DeleteAreaRequest(Guid AreaId);
 
-public class DeleteArea : Endpoint<DeleteAreaRequest, EmptyResponse>
+public class DeleteArea : AuthenticatedEndpoint<DeleteAreaRequest, EmptyResponse>
 {
-    private readonly IEntityRepository<Area> _areaRepository;
-
-    public DeleteArea(IEntityRepository<Area> areaRepository)
-    {
-        _areaRepository = areaRepository;
-    }
+    public required IEntityRepository<Area> AreaRepository { get; init; }
 
     public override void Configure()
     {
         Delete("/{AreaId}");
         Group<AreasEndpointGroup>();
+        Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.AreasWrite)));
     }
 
     public override async Task HandleAsync(DeleteAreaRequest req, CancellationToken ct)
     {
-        var area = await _areaRepository.GetByIdAsync(req.AreaId, ct);
+        var area = await AreaRepository.GetByIdAsync(req.AreaId, ct);
 
         if (area == null)
         {
@@ -31,7 +29,7 @@ public class DeleteArea : Endpoint<DeleteAreaRequest, EmptyResponse>
             return;
         }
 
-        await _areaRepository.DeleteAsync(area, ct);
+        await AreaRepository.DeleteAsync(area, ct);
         await SendNoContentAsync(ct);
     }
 }

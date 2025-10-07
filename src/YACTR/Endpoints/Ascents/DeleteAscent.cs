@@ -9,15 +9,9 @@ namespace YACTR.Endpoints.Ascents;
 
 public record DeleteAscentRequest(Guid AscentId);
 
-public class DeleteAscent : Endpoint<DeleteAscentRequest, AscentResponse>
+public class DeleteAscent : AuthenticatedEndpoint<DeleteAscentRequest, AscentResponse>
 {
-    private readonly IRepository<Ascent> _ascentRepository;
-
-    public DeleteAscent(
-        IRepository<Ascent> ascentRepository)
-    {
-        _ascentRepository = ascentRepository;
-    }
+    public required IRepository<Ascent> AscentRepository { get; init; }
 
     public override void Configure()
     {
@@ -33,7 +27,7 @@ public class DeleteAscent : Endpoint<DeleteAscentRequest, AscentResponse>
             return;
         }
 
-        var ascent = await _ascentRepository.BuildTrackedQuery()
+        var ascent = await AscentRepository.BuildTrackedQuery()
             .Include(a => a.Route)
             .FirstOrDefaultAsync(a => a.Id == req.AscentId, ct);
 
@@ -50,7 +44,7 @@ public class DeleteAscent : Endpoint<DeleteAscentRequest, AscentResponse>
             return;
         }
 
-        await _ascentRepository.DeleteAsync(ascent, ct);
+        await AscentRepository.DeleteAsync(ascent, ct);
         await SendAsync(new AscentResponse(
             Id: ascent.Id,
             UserId: ascent.UserId,

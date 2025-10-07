@@ -7,12 +7,7 @@ namespace YACTR.Endpoints.Routes;
 
 public class GetAllRoutes : Endpoint<EmptyRequest, List<Route>>
 {
-    private readonly IEntityRepository<Route> _routeRepository;
-
-    public GetAllRoutes(IEntityRepository<Route> routeRepository)
-    {
-        _routeRepository = routeRepository;
-    }
+    public required IEntityRepository<Route> RouteRepository { get; init; }
 
     public override void Configure()
     {
@@ -22,7 +17,7 @@ public class GetAllRoutes : Endpoint<EmptyRequest, List<Route>>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var routes = await _routeRepository.GetAllAsync(ct);
+        var routes = await RouteRepository.GetAllAsync(ct);
         await SendAsync([.. routes], cancellation: ct);
     }
 }

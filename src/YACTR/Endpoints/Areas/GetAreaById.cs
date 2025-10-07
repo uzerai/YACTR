@@ -8,12 +8,7 @@ public record GetAreaByIdRequest(Guid AreaId);
 
 public class GetAreaById : Endpoint<GetAreaByIdRequest, Area>
 {
-    private readonly IEntityRepository<Area> _areaRepository;
-
-    public GetAreaById(IEntityRepository<Area> areaRepository)
-    {
-        _areaRepository = areaRepository;
-    }
+    public required IEntityRepository<Area> AreaRepository { get; init; }
 
     public override void Configure()
     {
@@ -23,7 +18,7 @@ public class GetAreaById : Endpoint<GetAreaByIdRequest, Area>
 
     public override async Task HandleAsync(GetAreaByIdRequest req, CancellationToken ct)
     {
-        var area = await _areaRepository.GetByIdAsync(req.AreaId, ct);
+        var area = await AreaRepository.GetByIdAsync(req.AreaId, ct);
 
         if (area == null)
         {

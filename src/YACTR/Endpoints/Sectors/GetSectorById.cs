@@ -8,12 +8,7 @@ public record GetSectorByIdRequest(Guid SectorId);
 
 public class GetSectorById : Endpoint<GetSectorByIdRequest, Sector>
 {
-    private readonly IEntityRepository<Sector> _sectorRepository;
-
-    public GetSectorById(IEntityRepository<Sector> sectorRepository)
-    {
-        _sectorRepository = sectorRepository;
-    }
+    public required IEntityRepository<Sector> SectorRepository { get; init; }
 
     public override void Configure()
     {
@@ -23,7 +18,7 @@ public class GetSectorById : Endpoint<GetSectorByIdRequest, Sector>
 
     public override async Task HandleAsync(GetSectorByIdRequest req, CancellationToken ct)
     {
-        var sector = await _sectorRepository.GetByIdAsync(req.SectorId, ct);
+        var sector = await SectorRepository.GetByIdAsync(req.SectorId, ct);
 
         if (sector == null)
         {
