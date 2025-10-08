@@ -19,13 +19,15 @@ public class Route : BaseEntity
     public string? BolterName { get; set; }
     public ClimbingType Type { get; set; }
 
-    public Guid SectorId { get; init; }
+    public Guid SectorId { get; set; }
     [ForeignKey("SectorId")]
     public virtual Sector Sector { get; set; } = null!;
+    public string? SectorImageOverlaySVG { get; set; }
 
     public Guid? TopoImageId { get; set; }
     [ForeignKey("TopoImageId")]
     public virtual Image? TopoImage { get; set; }
+    public string? TopoImageOverlaySVG { get; set; }
 
     public virtual ICollection<Pitch> Pitches { get; set; } = [];
     public virtual ICollection<RouteRating> RouteRatings { get; set; } = [];

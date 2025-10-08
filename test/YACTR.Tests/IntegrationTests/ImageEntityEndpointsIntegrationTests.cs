@@ -128,8 +128,6 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         result.ShouldNotBeNull();
         var imageFromDatabase = await fixture.GetEntityRepository<Image>()
             .GetByIdAsync(result.Id, TestContext.Current.CancellationToken);
-
-        imageFromDatabase!.RelatedEntityId.ShouldBeEquivalentTo(area.Id);
     }
 
     [Fact]

@@ -17,7 +17,8 @@ public record PitchRequestData(
     string Name,
     ClimbingType Type,
     string? Description,
-    string? Grade);
+    string? Grade,
+    ushort? PitchOrder = null);
 
 public class PitchesEndpointGroup : Group
 {

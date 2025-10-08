@@ -30,7 +30,7 @@ public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, Image>
             var uploadedImage = await ImageStorageService.UploadImageAsync(
                 req.Image.OpenReadStream(),
                 CurrentUserId,
-                req.RelatedEntityId, ct);
+                ct);
 
             await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, uploadedImage, cancellation: ct);
         }

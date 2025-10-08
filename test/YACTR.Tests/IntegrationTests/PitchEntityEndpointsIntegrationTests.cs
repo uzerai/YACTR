@@ -157,8 +157,17 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
+        var updateRequestData = new PitchRequestData(
+            sector.Id,
+            route.Id,
+            "Updated Pitch Name",
+            ClimbingType.Sport,
+            "Updated description",
+            "5.8"
+        );
+
         // Act
-        var updateRequest = new UpdatePitchRequest(createdPitch.Id);
+        var updateRequest = new UpdatePitchRequest(createdPitch.Id, updateRequestData);
         var (response, _) = await client.PUTAsync<UpdatePitch, UpdatePitchRequest, EmptyResponse>(updateRequest);
 
         // Assert
@@ -171,8 +180,17 @@ public class PitchEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         using var client = fixture.CreateAuthenticatedClient();
         var invalidId = Guid.NewGuid();
 
+        var updateRequestData = new PitchRequestData(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Updated Pitch Name",
+            ClimbingType.Sport,
+            "Updated description",
+            "5.8"
+        );
+
         // Act
-        var updateRequest = new UpdatePitchRequest(invalidId);
+        var updateRequest = new UpdatePitchRequest(invalidId, updateRequestData);
         var (response, _) = await client.PUTAsync<UpdatePitch, UpdatePitchRequest, EmptyResponse>(updateRequest);
 
         // Assert

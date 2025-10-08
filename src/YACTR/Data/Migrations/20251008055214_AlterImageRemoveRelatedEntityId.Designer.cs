@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using NodaTime;
@@ -16,9 +17,11 @@ using YACTR.Data.Model.Climbing;
 namespace YACTR.Data.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251008055214_AlterImageRemoveRelatedEntityId")]
+    partial class AlterImageRemoveRelatedEntityId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -343,17 +346,9 @@ namespace YACTR.Data.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("sector_id");
 
-                    b.Property<string>("SectorImageOverlaySVG")
-                        .HasColumnType("text")
-                        .HasColumnName("sector_image_overlay_svg");
-
                     b.Property<Guid?>("TopoImageId")
                         .HasColumnType("uuid")
                         .HasColumnName("topo_image_id");
-
-                    b.Property<string>("TopoImageOverlaySVG")
-                        .HasColumnType("text")
-                        .HasColumnName("topo_image_overlay_svg");
 
                     b.Property<ClimbingType>("Type")
                         .HasColumnType("climbing_type")

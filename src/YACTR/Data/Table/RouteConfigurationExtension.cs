@@ -20,7 +20,7 @@ public static class RouteConfigurationExtension
 
         modelBuilder.Entity<Route>()
             .HasOne(e => e.TopoImage)
-            .WithOne(e => e.RelatedEntity as Route)
+            .WithOne()
             .HasForeignKey<Route>(e => e.TopoImageId);
 
         modelBuilder.Entity<Route>()
