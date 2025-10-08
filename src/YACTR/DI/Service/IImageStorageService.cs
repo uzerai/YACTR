@@ -8,4 +8,5 @@ public interface IImageStorageService
 {
     Task<Image> UploadImageAsync(Stream image, Guid userId, CancellationToken ct);
     Task<Image> RemoveImage(Guid imageId, CancellationToken ct);
+    Task<string> GetImageUrl(Guid imageId, CancellationToken ct);
 }
