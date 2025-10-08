@@ -5,7 +5,7 @@ using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Sectors;
 
-public class CreateSector : AuthenticatedEndpoint<SectorRequestData, Sector>
+public class CreateSector : AuthenticatedEndpoint<SectorRequestData, SectorResponse, SectorDataMapper>
 {
     public required IEntityRepository<Sector> SectorRepository { get; init; }
 
@@ -18,16 +18,9 @@ public class CreateSector : AuthenticatedEndpoint<SectorRequestData, Sector>
 
     public override async Task HandleAsync(SectorRequestData req, CancellationToken ct)
     {
-        var createdSector = await SectorRepository.CreateAsync(new()
-        {
-            Name = req.Name,
-            SectorArea = req.SectorArea,
-            EntryPoint = req.EntryPoint,
-            AreaId = req.AreaId,
-            RecommendedParkingLocation = req.RecommendedParkingLocation,
-            ApproachPath = req.ApproachPath,
-        }, ct);
+        var sector = Map.ToEntity(req);
+        var createdSector = await SectorRepository.CreateAsync(sector, ct);
 
-        await SendCreatedAtAsync<GetSectorById>(createdSector.Id, createdSector, cancellation: ct);
+        await SendCreatedAtAsync<GetSectorById>(createdSector.Id, await Map.FromEntityAsync(createdSector, ct), cancellation: ct);
     }
 }

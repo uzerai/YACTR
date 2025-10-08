@@ -6,7 +6,7 @@ namespace YACTR.Endpoints.Sectors;
 
 public record GetSectorByIdRequest(Guid SectorId);
 
-public class GetSectorById : Endpoint<GetSectorByIdRequest, Sector>
+public class GetSectorById : Endpoint<GetSectorByIdRequest, SectorResponse, SectorDataMapper>
 {
     public required IEntityRepository<Sector> SectorRepository { get; init; }
 
@@ -26,6 +26,6 @@ public class GetSectorById : Endpoint<GetSectorByIdRequest, Sector>
             return;
         }
 
-        await SendAsync(sector, cancellation: ct);
+        await SendAsync(await Map.FromEntityAsync(sector, ct), cancellation: ct);
     }
 }

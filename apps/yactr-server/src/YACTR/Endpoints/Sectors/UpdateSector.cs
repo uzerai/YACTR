@@ -15,7 +15,7 @@ public class UpdateSectorRequest
 
 }
 
-public class UpdateSector : AuthenticatedEndpoint<UpdateSectorRequest, EmptyResponse>
+public class UpdateSector : AuthenticatedEndpoint<UpdateSectorRequest, EmptyResponse, SectorDataMapper>
 {
     public required IEntityRepository<Sector> SectorRepository { get; init; }
 
@@ -35,12 +35,7 @@ public class UpdateSector : AuthenticatedEndpoint<UpdateSectorRequest, EmptyResp
             return;
         }
 
-        existingSector.Name = req.Data.Name;
-        existingSector.SectorArea = req.Data.SectorArea;
-        existingSector.EntryPoint = req.Data.EntryPoint;
-        existingSector.RecommendedParkingLocation = req.Data.RecommendedParkingLocation;
-        existingSector.ApproachPath = req.Data.ApproachPath;
-        existingSector.AreaId = req.Data.AreaId;
+        Map.UpdateEntity(req.Data, existingSector);
 
         await SectorRepository.UpdateAsync(existingSector, ct);
 

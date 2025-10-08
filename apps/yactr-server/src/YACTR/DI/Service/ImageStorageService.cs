@@ -4,9 +4,7 @@ using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 using FileSignatures;
-using NodaTime;
 using Humanizer;
-using NodaTime.Extensions;
 
 namespace YACTR.DI.Service;
 
@@ -95,7 +93,7 @@ public class ImageStorageService : IImageStorageService
         return await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
             .WithBucket(image.Bucket)
             .WithObject(image.Key)
-            .WithExpiry(1.Days().Seconds));
+            .WithExpiry(double.ConvertToInteger<int>(TimeSpan.FromDays(1).TotalSeconds)));
     }
 
     public async Task<Image> RemoveImage(Guid imageId, CancellationToken ct)
