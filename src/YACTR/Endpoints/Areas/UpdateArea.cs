@@ -14,7 +14,7 @@ public class UpdateAreaRequest
     public required AreaRequestData Data { get; set; }
 }
 
-public class UpdateArea : AuthenticatedEndpoint<UpdateAreaRequest, EmptyResponse>
+public class UpdateArea : AuthenticatedEndpoint<UpdateAreaRequest, EmptyResponse, AreaDataMapper>
 {
     public required IEntityRepository<Area> AreaRepository { get; init; }
 
@@ -35,10 +35,7 @@ public class UpdateArea : AuthenticatedEndpoint<UpdateAreaRequest, EmptyResponse
             return;
         }
 
-        area.Name = req.Data.Name;
-        area.Description = req.Data.Description;
-        area.Location = req.Data.Location;
-        area.Boundary = req.Data.Boundary;
+        Map.UpdateEntity(req.Data, area);
 
         await AreaRepository.UpdateAsync(area, ct);
 

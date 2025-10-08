@@ -4,7 +4,7 @@ using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Endpoints.Areas;
 
-public class GetAllAreas : Endpoint<EmptyRequest, List<Area>>
+public class GetAllAreas : Endpoint<EmptyRequest, List<AreaResponse>, AreaDataMapper>
 {
     public required IEntityRepository<Area> AreaRepository { get; init; }
 
@@ -18,6 +18,6 @@ public class GetAllAreas : Endpoint<EmptyRequest, List<Area>>
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
         var areas = await AreaRepository.GetAllAvailableAsync(ct);
-        await SendAsync([.. areas], cancellation: ct);
+        await SendAsync([.. areas.Select(Map.FromEntity)], cancellation: ct);
     }
 }
