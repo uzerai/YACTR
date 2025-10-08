@@ -40,7 +40,7 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     {
         AnonymousClient = CreateClient();
         DatabaseContext = Services.GetRequiredService<DatabaseContext>();
-        TestDataSeeder = new TestDataSeeder(DatabaseContext);
+        TestDataSeeder = new TestDataSeeder(DatabaseContext, Services);
 
         await DatabaseContext.Database.EnsureCreatedAsync();
     }
