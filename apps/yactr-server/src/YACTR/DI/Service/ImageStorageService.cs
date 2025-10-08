@@ -4,6 +4,9 @@ using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 using FileSignatures;
+using NodaTime;
+using Humanizer;
+using NodaTime.Extensions;
 
 namespace YACTR.DI.Service;
 
@@ -82,6 +85,17 @@ public class ImageStorageService : IImageStorageService
             _logger.LogError(ex, "Error occurred while uploading image to MinIO");
             throw;
         }
+    }
+
+    public async Task<string> GetImageUrl(Guid imageId, CancellationToken ct)
+    {
+        var image = await _imageRepository.GetByIdAsync(imageId, ct)
+            ?? throw new ObjectNotFoundException($"image with ID {imageId} not found");
+
+        return await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
+            .WithBucket(image.Bucket)
+            .WithObject(image.Key)
+            .WithExpiry(1.Days().Seconds));
     }
 
     public async Task<Image> RemoveImage(Guid imageId, CancellationToken ct)
