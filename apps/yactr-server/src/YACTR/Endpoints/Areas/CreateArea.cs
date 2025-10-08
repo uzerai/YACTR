@@ -5,7 +5,7 @@ using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Areas;
 
-public class CreateArea : AuthenticatedEndpoint<AreaRequestData, Area>
+public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, AreaDataMapper>
 {
     public required IEntityRepository<Area> AreaRepository { get; init; }
 
@@ -18,14 +18,8 @@ public class CreateArea : AuthenticatedEndpoint<AreaRequestData, Area>
 
     public override async Task HandleAsync(AreaRequestData req, CancellationToken ct)
     {
-        var createdArea = await AreaRepository.CreateAsync(new()
-        {
-            Name = req.Name,
-            Description = req.Description,
-            Location = req.Location,
-            Boundary = req.Boundary,
-        }, ct);
+        var createdArea = await AreaRepository.CreateAsync(Map.ToEntity(req), ct);
 
-        await SendCreatedAtAsync<GetAreaById>(createdArea.Id, createdArea, cancellation: ct);
+        await SendCreatedAtAsync<GetAreaById>(createdArea.Id, Map.FromEntity(createdArea), FastEndpoints.Http.GET, cancellation: ct);
     }
 }

@@ -6,7 +6,7 @@ namespace YACTR.Endpoints.Areas;
 
 public record GetAreaByIdRequest(Guid AreaId);
 
-public class GetAreaById : Endpoint<GetAreaByIdRequest, Area>
+public class GetAreaById : Endpoint<GetAreaByIdRequest, AreaResponse, AreaDataMapper>
 {
     public required IEntityRepository<Area> AreaRepository { get; init; }
 
@@ -26,6 +26,6 @@ public class GetAreaById : Endpoint<GetAreaByIdRequest, Area>
             return;
         }
 
-        await SendAsync(area, cancellation: ct);
+        await SendAsync(Map.FromEntity(area), cancellation: ct);
     }
 }
