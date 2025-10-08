@@ -1,11 +1,9 @@
 using YACTR.Data.Repository.Interface;
 using YACTR.Data.Model;
-using YACTR.Data.Model.Authentication;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 using FileSignatures;
-using System.Security.Claims;
 
 namespace YACTR.DI.Service;
 
@@ -37,7 +35,7 @@ public class ImageStorageService : IImageStorageService
         return _uploadedFileFormat is FileSignatures.Formats.Image;
     }
 
-    public async Task<Image> UploadImageAsync(Stream image, Guid userId, Guid? relatedEntityId, CancellationToken ct = default)
+    public async Task<Image> UploadImageAsync(Stream image, Guid userId, CancellationToken ct = default)
     {
         if (!IsImageFile(image))
         {
@@ -75,7 +73,6 @@ public class ImageStorageService : IImageStorageService
                 Key = objectName,
                 Bucket = BUCKET_NAME,
                 UploaderId = userId,
-                RelatedEntityId = relatedEntityId,
             }, ct);
 
             return imageEntity;

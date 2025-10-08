@@ -6,7 +6,7 @@ using YACTR.DI.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Pitches;
 
-public record UpdatePitchRequest(Guid PitchId);
+public record UpdatePitchRequest(Guid PitchId, PitchRequestData Pitch);
 
 public class UpdatePitch : AuthenticatedEndpoint<UpdatePitchRequest, EmptyResponse>
 {
@@ -28,8 +28,11 @@ public class UpdatePitch : AuthenticatedEndpoint<UpdatePitchRequest, EmptyRespon
             return;
         }
 
-        // Note: This would need to be implemented with proper request body handling
-        // The original controller had incomplete update logic
+        existingPitch.Name = req.Pitch.Name;
+        existingPitch.Description = req.Pitch.Description;
+        existingPitch.Type = req.Pitch.Type;
+        existingPitch.PitchOrder = req.Pitch.PitchOrder ?? existingPitch.PitchOrder;
+
         await PitchRepository.UpdateAsync(existingPitch, ct);
 
         await SendNoContentAsync(ct);

@@ -1,5 +1,4 @@
 using YACTR.Data.Model;
-using YACTR.Data.Model.Authentication;
 
 namespace YACTR.DI.Service;
 
@@ -7,6 +6,6 @@ namespace YACTR.DI.Service;
 // handle the minio-specific logic and the database image entity logic separately later.
 public interface IImageStorageService
 {
-    Task<Image> UploadImageAsync(Stream image, Guid userId, Guid? relatedEntityId, CancellationToken ct);
+    Task<Image> UploadImageAsync(Stream image, Guid userId, CancellationToken ct);
     Task<Image> RemoveImage(Guid imageId, CancellationToken ct);
 }

@@ -11,13 +11,18 @@ public class Sector : BaseEntity
 {
     public required string Name { get; set; }
 
-    // Geospatial data for the sector
     public required Polygon SectorArea { get; set; }
     public required Point EntryPoint { get; set; }
     public Point? RecommendedParkingLocation { get; set; }
     public LineString? ApproachPath { get; set; }
+
     [ForeignKey("Area")]
     public required Guid AreaId { get; set; }
     public virtual Area Area { get; set; } = null!;
+
+    [ForeignKey("SectorImage")]
+    public Guid? SectorImageId { get; set; }
+    public virtual Image? SectorImage { get; set; }
+
     public virtual ICollection<Route> Routes { get; set; } = [];
 }
