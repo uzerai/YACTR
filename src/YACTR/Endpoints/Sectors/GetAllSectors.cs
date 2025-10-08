@@ -4,7 +4,7 @@ using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Endpoints.Sectors;
 
-public class GetAllSectors : Endpoint<EmptyRequest, List<Sector>>
+public class GetAllSectors : Endpoint<EmptyRequest, List<SectorResponse>, SectorDataMapper>
 {
     public required IEntityRepository<Sector> SectorRepository { get; init; }
 
@@ -17,6 +17,9 @@ public class GetAllSectors : Endpoint<EmptyRequest, List<Sector>>
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
         var sectors = await SectorRepository.GetAllAsync(ct);
-        await SendAsync([.. sectors], cancellation: ct);
+        var response = sectors.Select(async (e) => await Map.FromEntityAsync(e, ct));
+
+        await Task.WhenAll(response);
+        await SendAsync([.. response.Select(r => r.Result)], cancellation: ct);
     }
 }
