@@ -28,7 +28,7 @@ public class DeleteImage : AuthenticatedEndpoint<ImageDeleteRequest, Image>
     {
         try
         {
-            var image = await ImageStorageService.RemoveImage(req.ImageId, ct);
+            var image = await ImageStorageService.RemoveImageAsync(req.ImageId, ct);
             await SendOkAsync(image, cancellation: ct);
         }
         catch (ObjectNotFoundException)

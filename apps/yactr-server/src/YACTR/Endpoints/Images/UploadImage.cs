@@ -1,11 +1,10 @@
-using YACTR.Data.Model;
 using YACTR.DI.Service;
 using YACTR.DI.Authorization.Permissions;
 using YACTR.Data.Model.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Images;
 
-public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, Image>
+public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, ImageResponse>
 {
     public required IImageStorageService ImageStorageService { get; init; }
 
@@ -32,7 +31,9 @@ public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, Image>
                 CurrentUserId,
                 ct);
 
-            await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, uploadedImage, cancellation: ct);
+            var uploadedImageUrl = await ImageStorageService.GetImageUrlAsync(uploadedImage.Key, uploadedImage.Bucket, ct);
+
+            await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, new(uploadedImage.Id, uploadedImageUrl), cancellation: ct);
         }
         catch
         {
