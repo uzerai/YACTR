@@ -2,12 +2,10 @@ using System.Net;
 using FastEndpoints;
 using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Http;
-using NetTopologySuite.Geometries;
 using Shouldly;
 using YACTR.Data.Model;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Authorization.Permissions;
-using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints.Images;
 using YACTR.Tests.TestData;
 
@@ -55,12 +53,14 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         };
 
         // Act
-        var (response, result) = await client.POSTAsync<UploadImage, ImageUploadRequest, Image>(request, true);
+        var (response, result) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         result.ShouldNotBeNull();
+        result.ImageId.ShouldNotBe(Guid.Empty);
+        result.ImageUrl.ShouldNotBeNullOrEmpty();
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         };
 
         // Act
-        var (response, _) = await client.POSTAsync<UploadImage, ImageUploadRequest, Image>(request, true);
+        var (response, _) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -90,36 +90,25 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     }
 
     [Fact]
-    public async Task UploadImage_WithRelatedEntityId_ReturnsCreatedImage()
+    public async Task UploadImage_WithValidImageData_ReturnsImageResponseWithUrl()
     {
         // Arrange
         using var client = fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
-
-        var area = new Area()
-        {
-            Name = "Test Area",
-            Description = "Test Area Description",
-            Location = new Point(0, 0),
-            Boundary = new MultiPolygon([new(new LinearRing([new(0, 0), new(1, 0), new(1, 1), new(0, 1), new(0, 0)]))])
-        };
-
-        area = await fixture.GetEntityRepository<Area>().CreateAsync(area, TestContext.Current.CancellationToken);
-
         var request = new ImageUploadRequest()
         {
-            Image = TEST_FILE,
-            RelatedEntityId = area.Id
+            Image = TEST_FILE
         };
 
         // Act
-        var (response, result) = await client.POSTAsync<UploadImage, ImageUploadRequest, Image>(request, true);
+        var (response, result) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         result.ShouldNotBeNull();
-        var imageFromDatabase = await fixture.GetEntityRepository<Image>()
-            .GetByIdAsync(result.Id, TestContext.Current.CancellationToken);
+        result.ImageId.ShouldNotBe(Guid.Empty);
+        result.ImageUrl.ShouldNotBeNullOrEmpty();
+        result.ImageUrl.ShouldStartWith("http"); // Should be a valid URL
     }
 
     [Fact]
@@ -132,7 +121,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         };
 
         // Act
-        var (response, _) = await fixture.AnonymousClient.POSTAsync<UploadImage, ImageUploadRequest, Image>(request, true);
+        var (response, _) = await fixture.AnonymousClient.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -150,23 +139,19 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         {
             Image = TEST_FILE
         };
-        var (uploadResponse, uploadedImage) = await client.POSTAsync<UploadImage, ImageUploadRequest, Image>(uploadRequest, true);
+        var (uploadResponse, uploadedImage) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(uploadRequest, true);
         uploadResponse.IsSuccessStatusCode.ShouldBeTrue();
         uploadedImage.ShouldNotBeNull();
 
-        var deleteRequest = new ImageDeleteRequest()
-        {
-            ImageId = uploadedImage.Id
-        };
-
-        // Act
-        var (response, result) = await client.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(deleteRequest, true);
+        // Act - Delete using route parameter
+        var (response, result) = await client.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(
+            new ImageDeleteRequest { ImageId = uploadedImage.ImageId }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         result.ShouldNotBeNull();
-        result.Id.ShouldBe(uploadedImage.Id);
+        result.Id.ShouldBe(uploadedImage.ImageId);
     }
 
     [Fact]
@@ -189,16 +174,12 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         {
             Image = TEST_FILE
         };
-        var (uploadResponse, uploadedImage) = await clientWithPermissions.POSTAsync<UploadImage, ImageUploadRequest, Image>(uploadRequest, true);
+        var (uploadResponse, uploadedImage) = await clientWithPermissions.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(uploadRequest, true);
         uploadResponse.IsSuccessStatusCode.ShouldBeTrue();
 
-        var deleteRequest = new ImageDeleteRequest()
-        {
-            ImageId = uploadedImage.Id
-        };
-
-        // Act - try to delete with user without permissions
-        var (response, _) = await clientWithoutPermissions.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(deleteRequest, true);
+        // Act - try to delete with user without permissions using route parameter
+        var (response, _) = await clientWithoutPermissions.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(
+            new ImageDeleteRequest { ImageId = uploadedImage.ImageId }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -208,14 +189,9 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     [Fact]
     public async Task DeleteImage_WithoutAuthentication_ReturnsUnauthorized()
     {
-        // Arrange
-        var deleteRequest = new ImageDeleteRequest()
-        {
-            ImageId = Guid.NewGuid()
-        };
-
         // Act
-        var (response, _) = await fixture.AnonymousClient.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(deleteRequest, true);
+        var (response, _) = await fixture.AnonymousClient.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(
+            new ImageDeleteRequest { ImageId = Guid.NewGuid() }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -227,13 +203,10 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     {
         // Arrange
         using var client = fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
-        var deleteRequest = new ImageDeleteRequest()
-        {
-            ImageId = Guid.NewGuid() // Non-existent image ID
-        };
 
         // Act
-        var (response, _) = await client.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(deleteRequest, true);
+        var (response, _) = await client.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(
+            new ImageDeleteRequest { ImageId = Guid.NewGuid() }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -241,42 +214,28 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     }
 
     [Fact]
-    public async Task DeleteImage_WithRelatedEntityId_ReturnsDeletedImage()
+    public async Task DeleteImage_WithValidImageId_ReturnsDeletedImageWithCorrectId()
     {
         // Arrange
         using var client = fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
 
-        // Create an area to associate with the image
-        var area = new Area()
-        {
-            Name = "Test Area for Delete",
-            Description = "Test Area Description",
-            Location = new Point(0, 0),
-            Boundary = new MultiPolygon([new(new LinearRing([new(0, 0), new(1, 0), new(1, 1), new(0, 1), new(0, 0)]))])
-        };
-        area = await fixture.GetEntityRepository<Area>().CreateAsync(area, TestContext.Current.CancellationToken);
-
-        // Create an image with related entity
+        // Create an image to delete
         var uploadRequest = new ImageUploadRequest()
         {
-            Image = TEST_FILE,
-            RelatedEntityId = area.Id
+            Image = TEST_FILE
         };
-        var (uploadResponse, uploadedImage) = await client.POSTAsync<UploadImage, ImageUploadRequest, Image>(uploadRequest, true);
+        var (uploadResponse, uploadedImage) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(uploadRequest, true);
         uploadResponse.IsSuccessStatusCode.ShouldBeTrue();
-
-        var deleteRequest = new ImageDeleteRequest()
-        {
-            ImageId = uploadedImage.Id
-        };
+        uploadedImage.ShouldNotBeNull();
 
         // Act
-        var (response, result) = await client.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(deleteRequest, true);
+        var (response, result) = await client.DELETEAsync<DeleteImage, ImageDeleteRequest, Image>(
+            new ImageDeleteRequest { ImageId = uploadedImage.ImageId }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         result.ShouldNotBeNull();
-        result.Id.ShouldBe(uploadedImage.Id);
+        result.Id.ShouldBe(uploadedImage.ImageId);
     }
 }

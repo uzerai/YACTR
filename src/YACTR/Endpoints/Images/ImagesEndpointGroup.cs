@@ -5,8 +5,9 @@ namespace YACTR.Endpoints.Images;
 public class ImageUploadRequest
 {
     public required IFormFile? Image { get; init; }
-    public Guid? RelatedEntityId { get; init; }
 };
+
+public record ImageResponse(Guid ImageId, string ImageUrl);
 
 public class ImagesEndpointGroup : Group
 {

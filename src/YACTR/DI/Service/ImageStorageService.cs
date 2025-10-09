@@ -85,18 +85,23 @@ public class ImageStorageService : IImageStorageService
         }
     }
 
-    public async Task<string> GetImageUrl(Guid imageId, CancellationToken ct)
+    public async Task<string> GetImageUrlAsync(Guid imageId, CancellationToken ct = default)
     {
         var image = await _imageRepository.GetByIdAsync(imageId, ct)
             ?? throw new ObjectNotFoundException($"image with ID {imageId} not found");
 
+        return await GetImageUrlAsync(image.Key, image.Bucket, ct);
+    }
+
+    public async Task<string> GetImageUrlAsync(string key, string bucket, CancellationToken ct = default)
+    {
         return await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
-            .WithBucket(image.Bucket)
-            .WithObject(image.Key)
+            .WithBucket(bucket)
+            .WithObject(key)
             .WithExpiry(double.ConvertToInteger<int>(TimeSpan.FromDays(1).TotalSeconds)));
     }
 
-    public async Task<Image> RemoveImage(Guid imageId, CancellationToken ct)
+    public async Task<Image> RemoveImageAsync(Guid imageId, CancellationToken ct)
     {
         var image = await _imageRepository.GetByIdAsync(imageId, ct)
           ?? throw new ObjectNotFoundException($"Image with ID {imageId} not found");
@@ -107,4 +112,5 @@ public class ImageStorageService : IImageStorageService
 
         return image;
     }
+
 }

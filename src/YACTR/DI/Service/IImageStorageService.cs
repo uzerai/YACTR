@@ -7,6 +7,7 @@ namespace YACTR.DI.Service;
 public interface IImageStorageService
 {
     Task<Image> UploadImageAsync(Stream image, Guid userId, CancellationToken ct = default);
-    Task<Image> RemoveImage(Guid imageId, CancellationToken ct = default);
-    Task<string> GetImageUrl(Guid imageId, CancellationToken ct = default);
+    Task<Image> RemoveImageAsync(Guid imageId, CancellationToken ct = default);
+    Task<string> GetImageUrlAsync(Guid imageId, CancellationToken ct = default);
+    Task<string> GetImageUrlAsync(string key, string bucket, CancellationToken ct = default);
 }
