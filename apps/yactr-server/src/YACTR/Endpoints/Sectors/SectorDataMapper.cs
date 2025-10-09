@@ -51,7 +51,7 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
 
     public override async Task<SectorResponse> FromEntityAsync(Sector e, CancellationToken ct)
     {
-        // This enables multi-threaded mapping, technically.
+        // The creation of a new scope enables multi-threaded mapping (ie; we concurrently map all entities asynchronously)
         using var mappingScope = CreateScope();
         IImageStorageService service = mappingScope.Resolve<IImageStorageService>();
 
@@ -64,7 +64,7 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
             e.ApproachPath,
             e.AreaId,
             e.SectorImageId,
-            e.SectorImageId != null ? await service.GetImageUrl(e.SectorImageId.Value, ct) : null
+            e.SectorImageId.HasValue ? await service.GetImageUrlAsync(e.SectorImageId.Value, ct) : null
         );
     }
 
