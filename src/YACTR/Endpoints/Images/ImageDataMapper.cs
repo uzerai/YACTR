@@ -16,5 +16,5 @@ public class ImageDataMapper(IImageStorageService imageStorageService) : Mapper<
     private IImageStorageService ImageStorageService { get; set; } = imageStorageService;
 
     public override Image ToEntity(ImageUploadRequest r) => throw new NotImplementedException();
-    public override async Task<ImageResponse> FromEntityAsync(Image e, CancellationToken ct) => new(e.Id, await ImageStorageService.GetImageUrlAsync(e.Key, e.Bucket, ct));
+    public override async Task<ImageResponse> FromEntityAsync(Image e, CancellationToken ct) => new(e.Id, await ImageStorageService.GetImageUrlAsync(e.Id, ct));
 }
