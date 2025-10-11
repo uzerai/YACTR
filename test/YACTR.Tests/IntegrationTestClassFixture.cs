@@ -1,7 +1,5 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Bogus;
 using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -128,7 +126,7 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     /// <summary>
     /// Currently the test suite is ran against a single database which is on the host computer.
     /// This method truncates the database of the current database context to ensure that the test suite
-    /// can run with similar information without having to create a new database for each test.
+    /// can run with similar information without having to create a newly migrated database for each test.
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -143,7 +141,7 @@ public class IntegrationTestClassFixture : AppFixture<Program>
                 SET session_replication_role = replica;
                 
                 -- Loop through all tables in the public schema and truncate them
-                FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+                FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> 'migrations') LOOP
                     EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' CASCADE';
                 END LOOP;
                 
