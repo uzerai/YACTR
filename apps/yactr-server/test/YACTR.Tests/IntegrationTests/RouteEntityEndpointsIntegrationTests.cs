@@ -4,6 +4,7 @@ using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints.Routes;
+using YACTR.Tests.TestData;
 
 namespace YACTR.Tests.Endpoints;
 
@@ -29,6 +30,9 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
 
         var (_, sector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
+        var jpegImage = await fixture.TestDataSeeder.CreateImageAsync();
+        var svgOverlayImage = await fixture.TestDataSeeder.CreateImageAsync(TestDataConstants.MINIMAL_SVG);
+
         var routeReq = new RouteRequestData(
             SectorId: sector.Id,
             Type: ClimbingType.Sport,
@@ -44,16 +48,17 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
             Description: "A sample route",
             Grade: "5.10a",
             FirstAscentClimberName: null,
-            BolterName: null
+            BolterName: null,
+            TopoImageId: jpegImage.Id,
+            TopoImageOverlayId: svgOverlayImage.Id
         );
 
-        var (response, created) = await client.POSTAsync<CreateRoute, RouteRequestData, Route>(routeReq);
+        var (response, created) = await client.POSTAsync<CreateRoute, RouteRequestData, RouteResponse>(routeReq);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         created.ShouldNotBeNull();
         created.Id.ShouldNotBe(Guid.Empty);
         created.Name.ShouldBe("Test Route Create");
-        created.SectorId.ShouldBe(sector.Id);
     }
 
     [Fact]

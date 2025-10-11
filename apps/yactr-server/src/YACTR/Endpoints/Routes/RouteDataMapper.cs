@@ -18,6 +18,7 @@ public record RouteRequestData(
     string Name,
     ClimbingType Type,
     Guid? TopoImageId = null,
+    Guid? TopoImageOverlayId = null,
     string? Description = null,
     string? Grade = null,
     string? FirstAscentClimberName = null,
@@ -35,7 +36,7 @@ public record RouteResponse(
     string? BolterName,
     Guid? TopoImageId,
     string? TopoImageUrl,
-    string? TopoImageOverlaySVG
+    string? TopoImageOverlayUrl
 );
 
 public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
@@ -55,8 +56,8 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.FirstAscentClimberName,
             e.BolterName,
             e.TopoImageId,
-            e.TopoImage != null ? await service.GetImageUrlAsync(e.TopoImage.Key, e.TopoImage.Bucket, ct) : null,
-            e.TopoImageOverlaySVG
+            e.TopoImageId.HasValue ? await service.GetImageUrlAsync(e.TopoImageId.Value.ToString(), "images", ct) : null,
+            e.TopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.TopoImageOverlaySvgId.Value.ToString(), "images", ct) : null
         );
     }
 }
