@@ -16,12 +16,12 @@ public class Sector : BaseEntity
     public Point? RecommendedParkingLocation { get; set; }
     public LineString? ApproachPath { get; set; }
 
-    [ForeignKey("Area")]
     public required Guid AreaId { get; set; }
+    [ForeignKey("AreaId")]
     public virtual Area Area { get; set; } = null!;
 
-    [ForeignKey("SectorImage")]
     public Guid? SectorImageId { get; set; }
+    [ForeignKey("SectorImageId")]
     public virtual Image? SectorImage { get; set; }
 
     public virtual ICollection<Route> Routes { get; set; } = [];

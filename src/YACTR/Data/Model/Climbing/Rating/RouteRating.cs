@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using YACTR.Data.Model.Authentication;
 
 namespace YACTR.Data.Model.Climbing.Rating;
@@ -11,6 +12,7 @@ public class RouteRating : BaseEntity
     public virtual User User { get; set; } = null!;
 
     public required Guid RouteId { get; set; }
+    [ForeignKey("RouteId")]
     public virtual Route Route { get; set; } = null!;
 
     public required int Rating { get; set; }

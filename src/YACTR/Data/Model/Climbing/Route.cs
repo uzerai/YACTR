@@ -22,12 +22,18 @@ public class Route : BaseEntity
     public Guid SectorId { get; set; }
     [ForeignKey("SectorId")]
     public virtual Sector Sector { get; set; } = null!;
-    public string? SectorImageOverlaySVG { get; set; }
+
+    public Guid? SectorSvgOverlayId { get; set; }
+    [ForeignKey("SectorSvgOverlayId")]
+    public virtual Image? SectorSvgOverlay { get; set; }
 
     public Guid? TopoImageId { get; set; }
     [ForeignKey("TopoImageId")]
     public virtual Image? TopoImage { get; set; }
-    public string? TopoImageOverlaySVG { get; set; }
+
+    public Guid? TopoImageOverlaySvgId { get; set; }
+    [ForeignKey("TopoImageOverlaySvgId")]
+    public Image? TopoImageOverlaySvg { get; set; }
 
     public virtual ICollection<Pitch> Pitches { get; set; } = [];
     public virtual ICollection<RouteRating> RouteRatings { get; set; } = [];
