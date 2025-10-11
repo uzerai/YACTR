@@ -47,7 +47,8 @@ public class ImageStorageService(
                 await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(BUCKET_NAME));
             }
 
-            var objectName = Guid.NewGuid().ToString();
+            var imageId = Guid.CreateVersion7();
+            var objectName = imageId.ToString();
             var args = new PutObjectArgs()
                 .WithBucket(BUCKET_NAME)
                 .WithObject(objectName)
@@ -68,6 +69,7 @@ public class ImageStorageService(
 
             Image imageEntity = await _imageRepository.CreateAsync(new()
             {
+                Id = imageId,
                 Key = objectName,
                 Bucket = BUCKET_NAME,
                 UploaderId = userId,
