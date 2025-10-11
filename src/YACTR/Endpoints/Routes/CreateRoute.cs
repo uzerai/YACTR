@@ -6,7 +6,7 @@ using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Endpoints.Routes;
 
-public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, Route>
+public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, RouteResponse, RouteDataMapper>
 {
     public required IEntityRepository<Route> RouteRepository { get; init; }
 
@@ -51,9 +51,11 @@ public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, Route>
             SectorId = req.SectorId,
             FirstAscentClimberName = req.FirstAscentClimberName,
             BolterName = req.BolterName,
+            TopoImageId = req.TopoImageId,
+            TopoImageOverlaySvgId = req.TopoImageOverlayId,
             Pitches = pitches.ToList(),
         }, ct);
 
-        await SendCreatedAtAsync<GetRouteById>(createdRoute.Id, createdRoute, cancellation: ct);
+        await SendCreatedAtAsync<GetRouteById>(createdRoute.Id, await Map.FromEntityAsync(createdRoute, ct), cancellation: ct);
     }
 }
