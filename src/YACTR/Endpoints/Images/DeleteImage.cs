@@ -1,8 +1,8 @@
-using YACTR.DI.Service;
-using YACTR.DI.Authorization.Permissions;
-using YACTR.Data.Model.Authorization.Permissions;
-using Minio.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Minio.Exceptions;
+using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.DI.Authorization.Permissions;
+using YACTR.DI.Service;
 
 namespace YACTR.Endpoints.Images;
 

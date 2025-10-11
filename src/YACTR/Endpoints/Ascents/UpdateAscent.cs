@@ -1,8 +1,9 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using YACTR.Data.Model.Achievement;
 using YACTR.Data.Repository.Interface;
-using Microsoft.EntityFrameworkCore;
+
 namespace YACTR.Endpoints.Ascents;
 
 public record UpdateAscentRequest(

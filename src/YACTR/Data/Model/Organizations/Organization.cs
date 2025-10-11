@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using YACTR.Data.Model.Authentication;
 
 namespace YACTR.Data.Model.Organizations;
+
 public class Organization : BaseEntity
 {
     [Required]
