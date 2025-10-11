@@ -59,6 +59,8 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         created.ShouldNotBeNull();
         created.Id.ShouldNotBe(Guid.Empty);
         created.Name.ShouldBe("Test Route Create");
+        created.TopoImageUrl.ShouldNotBeNull();
+        created.TopoImageOverlayUrl.ShouldNotBeNull();
     }
 
     [Fact]
