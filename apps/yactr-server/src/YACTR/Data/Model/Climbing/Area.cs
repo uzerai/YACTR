@@ -20,8 +20,8 @@ public class Area : BaseEntity
     public required Point Location { get; set; }
     public required MultiPolygon Boundary { get; set; }
 
-    [ForeignKey("MaintainerOrganization")]
     public Guid? MaintainerOrganizationId { get; set; }
+    [ForeignKey("MaintainerOrganizationId")]
     public virtual Organization? MaintainerOrganization { get; set; }
     public virtual ICollection<Sector> Sectors { get; set; } = [];
 }

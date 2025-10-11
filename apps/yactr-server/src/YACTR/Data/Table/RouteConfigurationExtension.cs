@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Route = YACTR.Data.Model.Climbing.Route;
 
@@ -22,6 +21,16 @@ public static class RouteConfigurationExtension
             .HasOne(e => e.TopoImage)
             .WithOne()
             .HasForeignKey<Route>(e => e.TopoImageId);
+
+        modelBuilder.Entity<Route>()
+            .HasOne(e => e.SectorSvgOverlay)
+            .WithOne()
+            .HasForeignKey<Route>(e => e.SectorSvgOverlayId);
+
+        modelBuilder.Entity<Route>()
+            .HasOne(e => e.TopoImageOverlaySvg)
+            .WithOne()
+            .HasForeignKey<Route>(e => e.TopoImageOverlaySvgId);
 
         modelBuilder.Entity<Route>()
             .HasMany(e => e.RouteRatings)
