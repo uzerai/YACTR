@@ -1,10 +1,7 @@
 using FastEndpoints;
 using NodaTime;
-using YACTR.Data.Model;
 using YACTR.Data.Model.Climbing;
 using YACTR.DI.Service;
-using YACTR.Endpoints.Images;
-using YACTR.Endpoints.Sectors;
 using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Endpoints.Routes;

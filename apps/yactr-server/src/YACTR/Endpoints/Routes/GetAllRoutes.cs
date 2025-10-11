@@ -1,6 +1,5 @@
 using FastEndpoints;
 using YACTR.Data.Repository.Interface;
-
 using Route = YACTR.Data.Model.Climbing.Route;
 
 namespace YACTR.Endpoints.Routes;

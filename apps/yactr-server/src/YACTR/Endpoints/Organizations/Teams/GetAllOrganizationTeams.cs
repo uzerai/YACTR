@@ -2,8 +2,6 @@ using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using YACTR.Data.Model.Organizations;
 using YACTR.Data.Repository.Interface;
-using YACTR.DI.Authorization.Permissions;
-using YACTR.Data.Model.Authorization.Permissions;
 
 namespace YACTR.Endpoints.Organizations;
 

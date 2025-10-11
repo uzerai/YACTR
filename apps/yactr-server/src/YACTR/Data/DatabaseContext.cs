@@ -2,12 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using YACTR.Data.ConfigurationExtension;
 using YACTR.Data.Model;
+using YACTR.Data.Model.Achievement;
 using YACTR.Data.Model.Authentication;
+using YACTR.Data.Model.Climbing;
+using YACTR.Data.Model.Climbing.Rating;
 using YACTR.Data.Model.Organizations;
 using Route = YACTR.Data.Model.Climbing.Route;
-using YACTR.Data.Model.Climbing;
-using YACTR.Data.Model.Achievement;
-using YACTR.Data.Model.Climbing.Rating;
 
 namespace YACTR.Data;
 

@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using YACTR.Data.Model.Authorization.Permissions;
 

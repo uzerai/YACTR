@@ -2,7 +2,6 @@ using FastEndpoints;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.Permissions;
-
 using Permission = YACTR.Data.Model.Authorization.Permissions.Permission;
 
 namespace YACTR.Endpoints.Users;

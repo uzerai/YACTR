@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using YACTR.Data.Model.Organizations;
 using NetTopologySuite.Geometries;
+using YACTR.Data.Model.Organizations;
 
 namespace YACTR.Data.Model.Climbing;
 

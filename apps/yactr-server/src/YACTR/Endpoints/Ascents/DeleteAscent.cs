@@ -1,9 +1,8 @@
-using FastEndpoints;
+using System.Security.Claims;
+using FastEndpoints.Security;
+using Microsoft.EntityFrameworkCore;
 using YACTR.Data.Model.Achievement;
 using YACTR.Data.Repository.Interface;
-using Microsoft.EntityFrameworkCore;
-using FastEndpoints.Security;
-using System.Security.Claims;
 
 namespace YACTR.Endpoints.Ascents;
 
