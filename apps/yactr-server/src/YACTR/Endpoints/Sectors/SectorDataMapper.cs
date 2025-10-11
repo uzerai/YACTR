@@ -37,8 +37,6 @@ public record SectorResponse(
 
 public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector>
 {
-    public required IImageStorageService ImageService { get; set; }
-
     public override Sector ToEntity(SectorRequestData r) => new()
     {
         Name = r.Name,
@@ -64,7 +62,7 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
             e.ApproachPath,
             e.AreaId,
             e.SectorImageId,
-            e.SectorImageId.HasValue ? await service.GetImageUrlAsync(e.SectorImageId.Value, ct) : null
+            e.SectorImage != null ? await service.GetImageUrlAsync(e.SectorImage.Key, e.SectorImage.Bucket, ct) : null
         );
     }
 

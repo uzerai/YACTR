@@ -1,4 +1,3 @@
-using YACTR.Data.Model;
 using YACTR.DI.Service;
 using YACTR.DI.Authorization.Permissions;
 using YACTR.Data.Model.Authorization.Permissions;
@@ -13,7 +12,7 @@ public class ImageDeleteRequest
     public Guid ImageId { get; set; }
 }
 
-public class DeleteImage : AuthenticatedEndpoint<ImageDeleteRequest, Image>
+public class DeleteImage : AuthenticatedEndpoint<ImageDeleteRequest, ImageResponse, ImageDataMapper>
 {
     public required IImageStorageService ImageStorageService { get; init; }
 
@@ -29,7 +28,7 @@ public class DeleteImage : AuthenticatedEndpoint<ImageDeleteRequest, Image>
         try
         {
             var image = await ImageStorageService.RemoveImageAsync(req.ImageId, ct);
-            await SendOkAsync(image, cancellation: ct);
+            await SendOkAsync(await Map.FromEntityAsync(image, ct), cancellation: ct);
         }
         catch (ObjectNotFoundException)
         {

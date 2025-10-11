@@ -7,7 +7,7 @@ namespace YACTR.Endpoints.Routes;
 
 public record GetRouteByIdRequest(Guid RouteId);
 
-public class GetRouteById : Endpoint<GetRouteByIdRequest, Route>
+public class GetRouteById : Endpoint<GetRouteByIdRequest, RouteResponse, RouteDataMapper>
 {
     public required IEntityRepository<Route> RouteRepository { get; init; }
 
@@ -27,6 +27,6 @@ public class GetRouteById : Endpoint<GetRouteByIdRequest, Route>
             return;
         }
 
-        await SendAsync(route, cancellation: ct);
+        await SendAsync(await Map.FromEntityAsync(route, ct), cancellation: ct);
     }
 }
