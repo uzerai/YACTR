@@ -125,6 +125,11 @@ public class TestDataSeeder
 
     public async Task<Image> CreateImageAsync()
     {
-        return await _imageStorageService.UploadImageAsync(new MemoryStream(TestDataConstants.MINIMAL_JPEG), _context.Users.First().Id, CancellationToken.None);
+        return await CreateImageAsync(TestDataConstants.MINIMAL_JPEG);
+    }
+
+    public async Task<Image> CreateImageAsync(byte[] image)
+    {
+        return await _imageStorageService.UploadImageAsync(new MemoryStream(image), _context.Users.First().Id, CancellationToken.None);
     }
 }
