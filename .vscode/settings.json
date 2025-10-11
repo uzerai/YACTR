@@ -6,5 +6,4 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit"
     },
-    "json.schemas": []
 }
