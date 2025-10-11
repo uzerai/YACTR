@@ -3,6 +3,7 @@ using System.Text.Json;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FileSignatures;
+using FileSignatures.Formats;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ using YACTR.Data.Model.Climbing;
 using YACTR.Data.Repository.ConfigurationExtension;
 using YACTR.DI.Authorization.ConfigurationExtension;
 using YACTR.DI.Authorization.Permissions;
+using YACTR.DI.FileFormatExtensions;
 using YACTR.DI.Service;
 using YACTR.Swagger;
 
@@ -153,8 +155,12 @@ builder.Services.AddMinio(configureClient => configureClient
     .WithSSL(false)  // Set to true if your MinIO server uses HTTPS
     .Build());
 
-// Add FileSignatures inspector service.
-builder.Services.AddSingleton<IFileFormatInspector>(new FileFormatInspector());
+// Add FileSignatures inspector service with specific getting of `Image` child-formats across the whole assembly.
+// This is specifically to pick up the YACTR.DI.FileFormatExtensions.SvgFileFormat detection and handling.
+var recognised = FileFormatLocator.GetFormats().OfType<Image>();
+recognised = recognised.Append(new Svg());
+var inspector = new FileFormatInspector(recognised);
+builder.Services.AddSingleton<IFileFormatInspector>(new FileFormatInspector(recognised));
 
 // Add main application database context.
 // Will contain references to all entities in the application.

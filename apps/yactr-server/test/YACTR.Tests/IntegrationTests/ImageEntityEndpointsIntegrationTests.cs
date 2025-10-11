@@ -33,6 +33,18 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         ContentType = "image/jpeg"
     };
 
+    private readonly IFormFile TEST_SVG_FILE = new FormFile(
+        baseStream: new MemoryStream(TestDataConstants.MINIMAL_SVG),
+        baseStreamOffset: 0,
+        length: TestDataConstants.MINIMAL_SVG.Length,
+        name: "image",
+        fileName: "test.svg"
+    )
+    {
+        Headers = new HeaderDictionary(),
+        ContentType = "image/svg+xml"
+    };
+
     // Let's just provide the test user with image permissions as a basis for all the tests.
     protected override async ValueTask SetupAsync()
     {
@@ -61,6 +73,28 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         result.ImageId.ShouldNotBe(Guid.Empty);
         result.ImageUrl.ShouldNotBeNullOrEmpty();
     }
+
+    [Fact]
+    public async Task UploadImage_WithValidSvgData_ReturnsCreatedImage()
+    {
+        // Arrange
+        using var client = fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
+        var request = new ImageUploadRequest()
+        {
+            Image = TEST_SVG_FILE
+        };
+
+        // Act
+        var (response, result) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
+
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        result.ShouldNotBeNull();
+        result.ImageId.ShouldNotBe(Guid.Empty);
+        result.ImageUrl.ShouldNotBeNullOrEmpty();
+    }
+
 
     [Fact]
     public async Task UploadImage_WithoutPermissions_ReturnsForbidden()
