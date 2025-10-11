@@ -74,7 +74,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         // Create a route first
         // Fetch it
         var getReq = new GetRouteByIdRequest(created.Id);
-        var (response, result) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, Route>(getReq);
+        var (response, result) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(getReq);
 
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
@@ -87,7 +87,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     {
         using var client = fixture.CreateAuthenticatedClient();
         var getReq = new GetRouteByIdRequest(Guid.NewGuid());
-        var (response, _) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, Route>(getReq);
+        var (response, _) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(getReq);
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -142,7 +142,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
 
         // Verify
         var getReq = new GetRouteByIdRequest(created.Id);
-        var (getResp, _) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, Route>(getReq);
+        var (getResp, _) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(getReq);
         getResp.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 

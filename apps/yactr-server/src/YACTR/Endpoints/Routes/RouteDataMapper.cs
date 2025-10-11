@@ -56,8 +56,8 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.FirstAscentClimberName,
             e.BolterName,
             e.TopoImageId,
-            e.TopoImageId.HasValue ? await service.GetImageUrlAsync(e.TopoImageId.Value.ToString(), "images", ct) : null,
-            e.TopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.TopoImageOverlaySvgId.Value.ToString(), "images", ct) : null
+            e.TopoImageId.HasValue ? await service.GetImageUrlAsync(e.TopoImageId.Value, ct) : null,
+            e.TopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.TopoImageOverlaySvgId.Value, ct) : null
         );
     }
 }

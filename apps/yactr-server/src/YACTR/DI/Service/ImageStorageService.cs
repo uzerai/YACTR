@@ -70,8 +70,6 @@ public class ImageStorageService(
             Image imageEntity = await _imageRepository.CreateAsync(new()
             {
                 Id = imageId,
-                Key = objectName,
-                Bucket = BUCKET_NAME,
                 UploaderId = userId,
             }, ct);
 
@@ -86,17 +84,9 @@ public class ImageStorageService(
 
     public async Task<string> GetImageUrlAsync(Guid imageId, CancellationToken ct = default)
     {
-        var image = await _imageRepository.GetByIdAsync(imageId, ct)
-            ?? throw new ObjectNotFoundException($"image with ID {imageId} not found");
-
-        return await GetImageUrlAsync(image.Key, image.Bucket, ct);
-    }
-
-    public async Task<string> GetImageUrlAsync(string key, string bucket, CancellationToken ct = default)
-    {
         return await _minioClient.PresignedGetObjectAsync(new PresignedGetObjectArgs()
-            .WithBucket(bucket)
-            .WithObject(key)
+            .WithBucket(BUCKET_NAME)
+            .WithObject(imageId.ToString())
             .WithExpiry(double.ConvertToInteger<int>(TimeSpan.FromDays(1).TotalSeconds)));
     }
 
@@ -106,8 +96,8 @@ public class ImageStorageService(
           ?? throw new ObjectNotFoundException($"Image with ID {imageId} not found");
 
         await _minioClient.RemoveObjectAsync(new RemoveObjectArgs()
-            .WithBucket(image.Bucket)
-            .WithObject(image.Key), ct);
+            .WithBucket(BUCKET_NAME)
+            .WithObject(image.Id.ToString()), ct);
 
         return image;
     }

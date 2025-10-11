@@ -62,7 +62,7 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
             e.ApproachPath,
             e.AreaId,
             e.SectorImageId,
-            e.SectorImage != null ? await service.GetImageUrlAsync(e.SectorImage.Key, e.SectorImage.Bucket, ct) : null
+            e.SectorImageId.HasValue ? await service.GetImageUrlAsync(e.SectorImageId.Value, ct) : null
         );
     }
 
