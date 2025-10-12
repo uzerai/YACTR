@@ -2,6 +2,7 @@ using System.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using NodaTime;
 using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Authorization.Permissions;
@@ -64,14 +65,29 @@ namespace YACTR.DI.Authorization.Permissions;
 sealed class DatabaseUserPermissionClaimsTransformer(
     IEntityRepository<User> userRepository,
     IClock clock,
+    IMemoryCache transformerCache,
     ILogger<DatabaseUserPermissionClaimsTransformer> logger) : IClaimsTransformation
 {
+    private string TransformerCacheKey(string nameIdentifier) => $"DatabaseUserPermissionClaimsTransformer:{nameIdentifier}";
+
     public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
     {
+        logger.BeginScope("Transforming claims for user {NameIdentifier}", principal.Identity?.Name);
         // This is going to match the ID of the IDP user.
         string? nameIdentifier = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         ArgumentNullException.ThrowIfNull(nameIdentifier);
+
+
+        logger.LogInformation("User {NameIdentifier} token used.", nameIdentifier);
+        if (transformerCache.TryGetValue(TransformerCacheKey(nameIdentifier), out ClaimsPrincipal? cachedPrincipal))
+        {
+            if (cachedPrincipal != null)
+            {
+                logger.LogDebug("Returning cached claims for user {NameIdentifier}", nameIdentifier);
+                return cachedPrincipal;
+            }
+        }
 
         string? email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         string? username = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
@@ -86,7 +102,7 @@ sealed class DatabaseUserPermissionClaimsTransformer(
 
         if (user == null)
         {
-            logger.LogWarning("First time login for user {NameIdentifier}. Creating local user.", nameIdentifier);
+            logger.LogInformation("First time login for user {NameIdentifier}. Creating local user.", nameIdentifier);
             user = await userRepository.CreateAsync(new User()
             {
                 Auth0UserId = nameIdentifier,
@@ -94,7 +110,7 @@ sealed class DatabaseUserPermissionClaimsTransformer(
                 Username = username ?? email,
                 LastLogin = clock.GetCurrentInstant(),
             });
-            logger.LogDebug("Created local user {NameIdentifier}. User: {User}", nameIdentifier, user);
+            logger.LogDebug("Created local user {NameIdentifier}.", nameIdentifier);
         }
         else
         {
@@ -102,7 +118,6 @@ sealed class DatabaseUserPermissionClaimsTransformer(
             await userRepository.SaveAsync();
         }
 
-        logger.LogInformation("User {NameIdentifier} logged in. User: {User}", nameIdentifier, user);
         ClaimsIdentity localDbUserClaimsIdentity = CreatePlatformClaimsIdentity(user);
 
         principal.AddIdentity(localDbUserClaimsIdentity);
@@ -119,6 +134,8 @@ sealed class DatabaseUserPermissionClaimsTransformer(
                     permission => new Claim(LocalClaimTypes.OrganizationPermission, permission.ToString()!)
                 )], ClaimTypes.AuthenticationMethod, ClaimTypes.NameIdentifier, ClaimTypes.Role));
         }
+
+        transformerCache.Set(TransformerCacheKey(nameIdentifier), principal, TimeSpan.FromMinutes(1));
 
         return principal;
     }
