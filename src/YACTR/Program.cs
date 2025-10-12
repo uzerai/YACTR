@@ -45,6 +45,8 @@ var builder = WebApplication.CreateBuilder(args);
 /// instead of adding them here.
 /// 
 builder.Services.AddRepositories();
+/// TODO: Move to using an interface for caching which _doesn't_ specify in-memory or distributed -- leave it as config at some later stage
+builder.Services.AddMemoryCache();
 // The claims transformation is what provides the user permissions to our custom local
 // authorization handling that checks the database user _post_ validating authentication with
 // our third party IDP.
