@@ -17,9 +17,14 @@ public static class SectorConfigurationExtension
             .WithOne(e => e.Sector);
 
         modelBuilder.Entity<Sector>()
-            .HasOne(e => e.SectorImage)
+            .HasOne(e => e.PrimarySectorImage)
             .WithOne()
-            .HasForeignKey<Sector>(e => e.SectorImageId);
+            .HasForeignKey<Sector>(e => e.PrimarySectorImageId);
+
+        modelBuilder.Entity<Sector>()
+            .HasMany(e => e.SectorImages)
+            .WithOne(e => e.Sector)
+            .HasForeignKey(e => e.SectorId);
 
         return modelBuilder;
     }

@@ -102,7 +102,7 @@ public class TestDataSeeder
             EntryPoint = NewPoint(),
             RecommendedParkingLocation = NewPoint(),
             ApproachPath = NewLineString(),
-            SectorImageId = image.Id,
+            PrimarySectorImageId = image.Id,
         };
 
         await _context.AddAsync(sector);
