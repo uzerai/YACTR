@@ -17,6 +17,8 @@ public record RouteRequestData(
     RoutePitchRequestData[] Pitches,
     string Name,
     ClimbingType Type,
+    Guid? SectorTopoImageId = null,
+    Guid? SectorTopoImageOverlaySvgId = null,
     Guid? TopoImageId = null,
     Guid? TopoImageOverlayId = null,
     string? Description = null,
@@ -30,13 +32,16 @@ public record RouteResponse(
     string Name,
     string? Description,
     ClimbingType Type,
-    string? Grade,
-    Instant? FirstAscentDate,
-    string? FirstAscentClimberName,
-    string? BolterName,
-    Guid? TopoImageId,
-    string? TopoImageUrl,
-    string? TopoImageOverlayUrl
+    string? Grade = null,
+    Instant? FirstAscentDate = null,
+    string? FirstAscentClimberName = null,
+    string? BolterName = null,
+    Guid? TopoImageId = null,
+    string? TopoImageUrl = null,
+    string? TopoImageOverlayUrl = null,
+    Guid? SectorTopoImageId = null,
+    string? SectorTopoImageUrl = null,
+    string? SectorTopoImageOverlayUrl = null
 );
 
 public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
@@ -57,7 +62,10 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.BolterName,
             e.TopoImageId,
             e.TopoImageId.HasValue ? await service.GetImageUrlAsync(e.TopoImageId.Value, ct) : null,
-            e.TopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.TopoImageOverlaySvgId.Value, ct) : null
+            e.TopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.TopoImageOverlaySvgId.Value, ct) : null,
+            e.SectorTopoImageId,
+            e.SectorTopoImageId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageId.Value, ct) : null,
+            e.SectorTopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageOverlaySvgId.Value, ct) : null
         );
     }
 }
