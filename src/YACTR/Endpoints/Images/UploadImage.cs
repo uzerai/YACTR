@@ -7,12 +7,12 @@ namespace YACTR.Endpoints.Images;
 public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, ImageResponse, ImageDataMapper>
 {
     public required IImageStorageService ImageStorageService { get; init; }
-
     public override void Configure()
     {
         Post("/");
         Group<ImagesEndpointGroup>();
         AllowFileUploads();
+        Description(b => b.Accepts<ImageUploadRequest>("multipart/form-data"));
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.ImagesWrite)));
     }
 

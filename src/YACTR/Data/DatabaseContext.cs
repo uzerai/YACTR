@@ -55,6 +55,7 @@ public class DatabaseContext : DbContext
 
         modelBuilder.ConfigureAreaModel();
         modelBuilder.ConfigureSectorModel();
+        modelBuilder.ConfigureSectorImageModel();
         modelBuilder.ConfigureRouteModel();
         modelBuilder.ConfigurePitchModel();
         modelBuilder.ConfigureRouteRatingModel();

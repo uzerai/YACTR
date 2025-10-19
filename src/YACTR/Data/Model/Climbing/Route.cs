@@ -23,9 +23,13 @@ public class Route : BaseEntity
     [ForeignKey("SectorId")]
     public virtual Sector Sector { get; set; } = null!;
 
-    public Guid? SectorSvgOverlayId { get; set; }
-    [ForeignKey("SectorSvgOverlayId")]
-    public virtual Image? SectorSvgOverlay { get; set; }
+    public Guid? SectorTopoImageId { get; set; }
+    [ForeignKey("SectorTopoImageId")]
+    public virtual Image? SectorTopoImage { get; set; }
+
+    public Guid? SectorTopoImageOverlaySvgId { get; set; }
+    [ForeignKey("SectorTopoImageOverlaySvgId")]
+    public virtual Image? SectorTopoImageOverlaySvg { get; set; }
 
     public Guid? TopoImageId { get; set; }
     [ForeignKey("TopoImageId")]

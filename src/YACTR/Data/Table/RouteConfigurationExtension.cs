@@ -19,13 +19,18 @@ public static class RouteConfigurationExtension
 
         modelBuilder.Entity<Route>()
             .HasOne(e => e.TopoImage)
-            .WithOne()
-            .HasForeignKey<Route>(e => e.TopoImageId);
+            .WithMany()
+            .HasForeignKey(e => e.TopoImageId);
 
         modelBuilder.Entity<Route>()
-            .HasOne(e => e.SectorSvgOverlay)
+            .HasOne(e => e.SectorTopoImage)
+            .WithMany()
+            .HasForeignKey(e => e.SectorTopoImageId);
+
+        modelBuilder.Entity<Route>()
+            .HasOne(e => e.SectorTopoImageOverlaySvg)
             .WithOne()
-            .HasForeignKey<Route>(e => e.SectorSvgOverlayId);
+            .HasForeignKey<Route>(e => e.SectorTopoImageOverlaySvgId);
 
         modelBuilder.Entity<Route>()
             .HasOne(e => e.TopoImageOverlaySvg)

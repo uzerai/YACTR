@@ -20,9 +20,11 @@ public class Sector : BaseEntity
     [ForeignKey("AreaId")]
     public virtual Area Area { get; set; } = null!;
 
-    public Guid? SectorImageId { get; set; }
+    public Guid? PrimarySectorImageId { get; set; }
     [ForeignKey("SectorImageId")]
-    public virtual Image? SectorImage { get; set; }
+    public virtual Image? PrimarySectorImage { get; set; }
+
+    public virtual ICollection<SectorImage> SectorImages { get; set; } = [];
 
     public virtual ICollection<Route> Routes { get; set; } = [];
 }
