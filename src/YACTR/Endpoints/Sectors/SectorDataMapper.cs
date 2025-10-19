@@ -1,5 +1,7 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using YACTR.Data.Model;
 using YACTR.Data.Model.Climbing;
 using YACTR.DI.Service;
 
@@ -18,9 +20,22 @@ public record SectorRequestData(
     string Name,
     Polygon SectorArea,
     Point EntryPoint,
+    Guid AreaId,
     Point? RecommendedParkingLocation,
     LineString? ApproachPath,
-    Guid AreaId
+    IEnumerable<SectorImageRequestData>? SectorImages,
+    Guid? PrimarySectorImageId
+);
+
+public record SectorImageRequestData(
+    Guid ImageId,
+    int Order
+);
+
+public record SectorImageResponseData(
+    Guid ImageId,
+    int Order,
+    string? ImageUrl
 );
 
 public record SectorResponse(
@@ -31,8 +46,9 @@ public record SectorResponse(
     Point? RecommendedParkingLocation,
     LineString? ApproachPath,
     Guid AreaId,
-    Guid? SectorImageId,
-    string? SectorImageUrl
+    Guid? PrimarySectorImageId,
+    string? PrimarySectorImageUrl,
+    IEnumerable<SectorImageResponseData> SectorImages
 );
 
 public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector>
@@ -45,9 +61,15 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
         RecommendedParkingLocation = r.RecommendedParkingLocation,
         ApproachPath = r.ApproachPath,
         AreaId = r.AreaId,
+        PrimarySectorImageId = r.PrimarySectorImageId ?? r.SectorImages?.FirstOrDefault()?.ImageId ?? null,
+        SectorImages = r.SectorImages?.Select(s => new SectorImage()
+        {
+            ImageId = s.ImageId,
+            Order = s.Order
+        }).ToList() ?? [],
     };
 
-    public override async Task<SectorResponse> FromEntityAsync(Sector e, CancellationToken ct)
+    public override async Task<SectorResponse> FromEntityAsync(Sector e, CancellationToken ct = default)
     {
         // The creation of a new scope enables multi-threaded mapping (ie; we concurrently map all entities asynchronously)
         using var mappingScope = CreateScope();
@@ -62,7 +84,8 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
             e.ApproachPath,
             e.AreaId,
             e.PrimarySectorImageId,
-            e.PrimarySectorImageId.HasValue ? await service.GetImageUrlAsync(e.PrimarySectorImageId.Value, ct) : null
+            e.PrimarySectorImageId.HasValue ? await service.GetImageUrlAsync(e.PrimarySectorImageId.Value, ct) : null,
+            await Task.WhenAll(e.SectorImages.Select(async sI => new SectorImageResponseData(sI.ImageId, sI.Order, await service.GetImageUrlAsync(sI.ImageId, ct))))
         );
     }
 
