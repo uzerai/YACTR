@@ -1,4 +1,6 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
+using YACTR.Data.QueryExtensions;
 using YACTR.Data.Repository.Interface;
 using Route = YACTR.Data.Model.Climbing.Route;
 
@@ -18,7 +20,14 @@ public class GetRouteById : Endpoint<GetRouteByIdRequest, RouteResponse, RouteDa
 
     public override async Task HandleAsync(GetRouteByIdRequest req, CancellationToken ct)
     {
-        var route = await RouteRepository.GetByIdAsync(req.RouteId, ct);
+        var route = await RouteRepository.BuildReadonlyQuery()
+            .Where(e => e.Id == req.RouteId)
+            .WhereAvailable()
+            .Include("TopoImage")
+            .Include("TopoImageOverlaySvg")
+            .Include("SectorTopoImage")
+            .Include("SectorTopoImageOverlaySvg")
+            .FirstOrDefaultAsync(ct);
 
         if (route == null)
         {

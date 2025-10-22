@@ -23,7 +23,7 @@ public class AdminPermissionsAuthorizationHandler : AuthorizationHandler<AdminPe
             return Task.CompletedTask;
         }
 
-        context.Fail();
+        context.Fail(new AuthorizationFailureReason(this, $"Authenticated user does not have '{requirement.Permission}' administrative permissions."));
         return Task.CompletedTask;
     }
 }

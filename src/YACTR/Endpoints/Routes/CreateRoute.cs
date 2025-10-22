@@ -47,12 +47,15 @@ public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, RouteResponse
         {
             Name = req.Name,
             Description = req.Description,
+            Type = req.Type,
             Grade = req.Grade,
             SectorId = req.SectorId,
             FirstAscentClimberName = req.FirstAscentClimberName,
             BolterName = req.BolterName,
             TopoImageId = req.TopoImageId,
             TopoImageOverlaySvgId = req.TopoImageOverlayId,
+            SectorTopoImageId = req.SectorTopoImageId,
+            SectorTopoImageOverlaySvgId = req.SectorTopoImageOverlaySvgId,
             Pitches = pitches.ToList(),
         }, ct);
 

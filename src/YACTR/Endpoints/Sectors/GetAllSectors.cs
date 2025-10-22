@@ -16,7 +16,7 @@ public class GetAllSectors : Endpoint<EmptyRequest, List<SectorResponse>, Sector
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var sectors = await SectorRepository.GetAllAsync(ct);
+        var sectors = await SectorRepository.GetAllAvailableAsync(ct);
         var response = sectors.Select(async (e) => await Map.FromEntityAsync(e, ct));
 
         await Task.WhenAll(response);

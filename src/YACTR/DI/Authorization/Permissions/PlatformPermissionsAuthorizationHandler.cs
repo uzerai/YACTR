@@ -23,7 +23,7 @@ public class PlatformPermissionsAuthorizationHandler : AuthorizationHandler<Plat
             return Task.CompletedTask;
         }
 
-        context.Fail();
+        context.Fail(new AuthorizationFailureReason(this, $"Authenticated user does not have '{requirement.Permission}' platform permissions."));
         return Task.CompletedTask;
     }
 }
