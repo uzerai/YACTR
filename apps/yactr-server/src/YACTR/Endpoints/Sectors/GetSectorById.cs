@@ -1,5 +1,7 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using YACTR.Data.Model.Climbing;
+using YACTR.Data.QueryExtensions;
 using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Endpoints.Sectors;
@@ -18,7 +20,12 @@ public class GetSectorById : Endpoint<GetSectorByIdRequest, SectorResponse, Sect
 
     public override async Task HandleAsync(GetSectorByIdRequest req, CancellationToken ct)
     {
-        var sector = await SectorRepository.GetByIdAsync(req.SectorId, ct);
+        var sector = await SectorRepository
+            .BuildReadonlyQuery()
+            .WhereAvailable()
+            .Where(e => e.Id == req.SectorId)
+            .Include("SectorImages")
+            .FirstOrDefaultAsync(ct);
 
         if (sector == null)
         {

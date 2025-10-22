@@ -32,6 +32,7 @@ public record RouteResponse(
     string Name,
     string? Description,
     ClimbingType Type,
+    Guid SectorId,
     string? Grade = null,
     Instant? FirstAscentDate = null,
     string? FirstAscentClimberName = null,
@@ -41,7 +42,8 @@ public record RouteResponse(
     string? TopoImageOverlayUrl = null,
     Guid? SectorTopoImageId = null,
     string? SectorTopoImageUrl = null,
-    string? SectorTopoImageOverlayUrl = null
+    string? SectorTopoImageOverlayUrl = null,
+    Pitch[]? pitches = null
 );
 
 public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
@@ -56,6 +58,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.Name,
             e.Description,
             e.Type,
+            e.SectorId,
             e.Grade,
             e.FirstAscentDate,
             e.FirstAscentClimberName,
@@ -65,7 +68,8 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.TopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.TopoImageOverlaySvgId.Value, ct) : null,
             e.SectorTopoImageId,
             e.SectorTopoImageId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageId.Value, ct) : null,
-            e.SectorTopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageOverlaySvgId.Value, ct) : null
+            e.SectorTopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageOverlaySvgId.Value, ct) : null,
+            []
         );
     }
 }
