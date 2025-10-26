@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
 using YACTR.Data.Model.Climbing.Rating;
+using YACTR.Data.Model.Climbing.Topo;
 
 namespace YACTR.Data.Model.Climbing;
 
@@ -17,12 +18,12 @@ public class Route : BaseEntity
     public Instant? FirstAscentDate { get; set; }
     public string? FirstAscentClimberName { get; set; }
     public string? BolterName { get; set; }
-    public ClimbingType Type { get; set; }
+    public required ClimbingType Type { get; set; }
 
-    public Guid SectorId { get; set; }
+    public required Guid SectorId { get; set; }
+    public virtual List<TopoLinePoint>? TopoLinePoints { get; set; }
     [ForeignKey("SectorId")]
     public virtual Sector Sector { get; set; } = null!;
-
     public Guid? SectorTopoImageId { get; set; }
     [ForeignKey("SectorTopoImageId")]
     public virtual Image? SectorTopoImage { get; set; }

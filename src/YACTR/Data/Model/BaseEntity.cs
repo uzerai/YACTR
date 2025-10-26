@@ -9,6 +9,7 @@ namespace YACTR.Data.Model;
 public abstract partial class BaseEntity
 {
     [JsonPropertyOrder(-1)]
+    [Required]
     public Guid Id { get; set; }
 
     [JsonPropertyOrder(2)]
