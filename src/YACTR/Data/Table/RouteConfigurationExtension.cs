@@ -54,6 +54,10 @@ public static class RouteConfigurationExtension
             .Property(route => route.TopoLinePoints)
             .HasColumnType("jsonb");
 
+        modelBuilder.Entity<Route>()
+            .Property(route => route.SectorTopoLinePoints)
+            .HasColumnType("jsonb");
+
         return modelBuilder;
     }
 }

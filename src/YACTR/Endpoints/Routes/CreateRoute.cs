@@ -57,6 +57,7 @@ public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, RouteResponse
             SectorTopoImageId = req.SectorTopoImageId,
             SectorTopoImageOverlaySvgId = req.SectorTopoImageOverlaySvgId,
             Pitches = pitches.ToList(),
+            TopoLinePoints = req.TopoLinePoints?.ToList() ?? []
         }, ct);
 
         await SendCreatedAtAsync<GetRouteById>(createdRoute.Id, await Map.FromEntityAsync(createdRoute, ct), cancellation: ct);
