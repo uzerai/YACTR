@@ -43,6 +43,7 @@ public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyRespon
         existingRoute.BolterName = req.Route.BolterName;
         existingRoute.FirstAscentClimberName = req.Route.FirstAscentClimberName;
         existingRoute.FirstAscentDate = req.Route.FirstAscentDate;
+        existingRoute.TopoLinePoints = req.Route.TopoLinePoints?.ToList() ?? [];
 
         if (req.Route.Pitches.Length != 0)
         {

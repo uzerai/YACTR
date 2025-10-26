@@ -1,6 +1,7 @@
 using FastEndpoints;
 using NodaTime;
 using YACTR.Data.Model.Climbing;
+using YACTR.Data.Model.Climbing.Topo;
 using YACTR.DI.Service;
 using Route = YACTR.Data.Model.Climbing.Route;
 
@@ -25,7 +26,9 @@ public record RouteRequestData(
     string? Grade = null,
     string? FirstAscentClimberName = null,
     Instant? FirstAscentDate = null,
-    string? BolterName = null);
+    string? BolterName = null,
+    TopoLinePoint[]? TopoLinePoints = default
+    );
 
 public record RouteResponse(
     Guid Id,
@@ -43,7 +46,8 @@ public record RouteResponse(
     Guid? SectorTopoImageId = null,
     string? SectorTopoImageUrl = null,
     string? SectorTopoImageOverlayUrl = null,
-    Pitch[]? pitches = null
+    Pitch[]? Pitches = default,
+    TopoLinePoint[]? TopoLinePoints = default
 );
 
 public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
@@ -69,7 +73,8 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.SectorTopoImageId,
             e.SectorTopoImageId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageId.Value, ct) : null,
             e.SectorTopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageOverlaySvgId.Value, ct) : null,
-            []
+            [],
+            e.TopoLinePoints?.ToArray()
         );
     }
 }

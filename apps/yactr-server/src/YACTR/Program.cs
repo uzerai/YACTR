@@ -23,6 +23,7 @@ using YACTR.DI.Authorization.Permissions;
 using YACTR.DI.FileFormatExtensions;
 using YACTR.DI.Service;
 using YACTR.Swagger;
+using YamlDotNet.Serialization;
 
 // ############################################################
 // ##########  APP BUILDING  ##################################
@@ -112,6 +113,7 @@ builder.Services
     {
         swaggerSettings.SerializerSettings = serializerSettings =>
         {
+            serializerSettings.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
             serializerSettings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
             serializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
             serializerSettings.Converters.Add(new GeoJsonConverterFactory());
@@ -135,6 +137,7 @@ builder.Services
     // This configures the serialization between Entity <-> JSON.
     .ConfigureHttpJsonOptions(options =>
     {
+        options.SerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
         options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
         options.SerializerOptions.Converters.Add(new GeoJsonConverterFactory());
         options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
