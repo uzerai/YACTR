@@ -50,6 +50,10 @@ public static class RouteConfigurationExtension
             .Property(e => e.Type)
             .HasColumnType("climbing_type");
 
+        modelBuilder.Entity<Route>()
+            .Property(route => route.TopoLinePoints)
+            .HasColumnType("jsonb");
+
         return modelBuilder;
     }
 }

@@ -17,7 +17,6 @@ public static class PitchConfigurationExtension
             .WithOne()
             .HasForeignKey<Pitch>(e => e.RouteSvgOverlayId);
 
-        // Configure ClimbingType enum for Pitch - will use PostgreSQL enum
         modelBuilder.Entity<Pitch>()
             .Property(e => e.Type)
             .HasColumnType("climbing_type");

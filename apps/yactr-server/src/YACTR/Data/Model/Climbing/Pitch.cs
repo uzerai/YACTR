@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Numerics;
 using System.Text.Json.Serialization;
 
 namespace YACTR.Data.Model.Climbing;
@@ -13,6 +14,7 @@ public class Pitch : BaseEntity
     public string? Name { get; set; }
     public required ClimbingType Type { get; set; } = ClimbingType.Sport;
     public string? Description { get; set; }
+    public int? Height { get; set; }
     public int PitchOrder { get; set; } = 0;
 
     public Guid? RouteSvgOverlayId { get; set; }
