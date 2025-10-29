@@ -14,7 +14,7 @@ public class UpdateRouteRequest
     public required RouteRequestData Route { get; set; }
 };
 
-public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyResponse>
+public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyResponse, RouteDataMapper>
 {
     public required IEntityRepository<Route> RouteRepository { get; init; }
 
@@ -34,16 +34,7 @@ public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyRespon
             return;
         }
 
-        existingRoute.Name = req.Route.Name;
-        existingRoute.Description = req.Route.Description;
-        existingRoute.Grade = req.Route.Grade;
-        existingRoute.Type = req.Route.Type;
-        existingRoute.SectorId = req.Route.SectorId;
-        existingRoute.TopoImageId = req.Route.TopoImageId;
-        existingRoute.BolterName = req.Route.BolterName;
-        existingRoute.FirstAscentClimberName = req.Route.FirstAscentClimberName;
-        existingRoute.FirstAscentDate = req.Route.FirstAscentDate;
-        existingRoute.TopoLinePoints = req.Route.TopoLinePoints?.ToList() ?? [];
+        Map.UpdateEntity(req.Route, existingRoute);
 
         if (req.Route.Pitches.Length != 0)
         {

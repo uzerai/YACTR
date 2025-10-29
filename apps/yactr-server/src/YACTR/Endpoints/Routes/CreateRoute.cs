@@ -20,7 +20,7 @@ public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, RouteResponse
     public override async Task HandleAsync(RouteRequestData req, CancellationToken ct)
     {
         IEnumerable<Pitch> pitches = [];
-        if (req.Pitches?.Count() < 1)
+        if (req.Pitches?.Length < 1)
         {
             pitches.Append(
                 new Pitch()
@@ -43,22 +43,7 @@ public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, RouteResponse
             });
         }
 
-        var createdRoute = await RouteRepository.CreateAsync(new()
-        {
-            Name = req.Name,
-            Description = req.Description,
-            Type = req.Type,
-            Grade = req.Grade,
-            SectorId = req.SectorId,
-            FirstAscentClimberName = req.FirstAscentClimberName,
-            BolterName = req.BolterName,
-            TopoImageId = req.TopoImageId,
-            TopoImageOverlaySvgId = req.TopoImageOverlayId,
-            SectorTopoImageId = req.SectorTopoImageId,
-            SectorTopoImageOverlaySvgId = req.SectorTopoImageOverlaySvgId,
-            Pitches = pitches.ToList(),
-            TopoLinePoints = req.TopoLinePoints?.ToList() ?? []
-        }, ct);
+        var createdRoute = await RouteRepository.CreateAsync(Map.ToEntity(req), ct);
 
         await SendCreatedAtAsync<GetRouteById>(createdRoute.Id, await Map.FromEntityAsync(createdRoute, ct), cancellation: ct);
     }
