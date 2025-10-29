@@ -69,12 +69,15 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         var updateRequest = new UpdateSectorRequest()
         {
             SectorId = sector.Id,
-            Data = new("Updated Sector",
-            fixture.TestDataSeeder.NewPolygon(),
-            fixture.TestDataSeeder.NewPoint(),
-            fixture.TestDataSeeder.NewPoint(),
-            fixture.TestDataSeeder.NewLineString(),
-            area.Id)
+            Data = new(
+                "Updated Sector",
+                fixture.TestDataSeeder.NewPolygon(),
+                fixture.TestDataSeeder.NewPoint(),
+                area.Id,
+                fixture.TestDataSeeder.NewPoint(),
+                fixture.TestDataSeeder.NewLineString(),
+                null,
+                null)
         };
         var (response, _) = await client.PUTAsync<UpdateSector, UpdateSectorRequest, EmptyResponse>(updateRequest);
 
@@ -93,12 +96,15 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         var updateRequest = new UpdateSectorRequest()
         {
             SectorId = invalidId,
-            Data = new("",
-            fixture.TestDataSeeder.NewPolygon(),
-            fixture.TestDataSeeder.NewPoint(),
-            fixture.TestDataSeeder.NewPoint(),
-            fixture.TestDataSeeder.NewLineString(),
-            Guid.NewGuid())
+            Data = new(
+                "",
+                fixture.TestDataSeeder.NewPolygon(),
+                fixture.TestDataSeeder.NewPoint(),
+                Guid.NewGuid(),
+                fixture.TestDataSeeder.NewPoint(),
+                fixture.TestDataSeeder.NewLineString(),
+                null,
+                null)
         };
         var (response, _) = await client.PUTAsync<UpdateSector, UpdateSectorRequest, EmptyResponse>(updateRequest);
 
