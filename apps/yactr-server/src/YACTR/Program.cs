@@ -23,7 +23,6 @@ using YACTR.DI.Authorization.Permissions;
 using YACTR.DI.FileFormatExtensions;
 using YACTR.DI.Service;
 using YACTR.Swagger;
-using YamlDotNet.Serialization;
 
 // ############################################################
 // ##########  APP BUILDING  ##################################
@@ -177,14 +176,14 @@ builder.Services.AddDbContext<DatabaseContext>(options =>
         // Such as, enum mappings:
         npgsqlSourceBuilder.MapEnum<ClimbingType>("climbing_type");
 
-        // Here used to enable NodaTime support.
+        // And enabling NodaTime support.
         npgsqlSourceBuilder.UseNodaTime();
         npgsqlSourceBuilder.MigrationsHistoryTable("migrations");
 
-        // Enable NetTopologySuite
+        // Enabling NetTopologySuite
         npgsqlSourceBuilder.UseNetTopologySuite();
 
-        // Enable dynamic JSON support, allowing JSON B columns.
+        // Enabling dynamic JSON support, allowing JSON B columns.
         npgsqlSourceBuilder.ConfigureDataSource(source => source.EnableDynamicJson());
 
     })

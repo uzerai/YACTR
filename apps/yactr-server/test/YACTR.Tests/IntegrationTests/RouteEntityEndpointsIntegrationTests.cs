@@ -41,7 +41,9 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
                     Name: "Test Pitch",
                     Type: ClimbingType.Sport,
                     Description: "A sample pitch",
-                    Grade: "5.10a"
+                    Grade: "5.10a",
+                    Height: 10,
+                    PitchOrder: 1
                 )
             ],
             Name: "Test Route Create",
