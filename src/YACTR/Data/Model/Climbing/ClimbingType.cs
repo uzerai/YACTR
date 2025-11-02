@@ -5,14 +5,14 @@ namespace YACTR.Data.Model.Climbing;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ClimbingType
 {
-    [JsonStringEnumMemberName("sport")]
+    [JsonStringEnumMemberName("Sport")]
     Sport,
-    [JsonStringEnumMemberName("traditional")]
+    [JsonStringEnumMemberName("Traditional")]
     Traditional,
-    [JsonStringEnumMemberName("boulder")]
+    [JsonStringEnumMemberName("Boulder")]
     Boulder,
-    [JsonStringEnumMemberName("mixed")]
+    [JsonStringEnumMemberName("Mixed")]
     Mixed,
-    [JsonStringEnumMemberName("aid")]
+    [JsonStringEnumMemberName("Aid")]
     Aid
 }
