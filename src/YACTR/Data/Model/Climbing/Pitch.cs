@@ -11,10 +11,29 @@ namespace YACTR.Data.Model.Climbing;
 /// </summary>
 public class Pitch : BaseEntity
 {
+    /// <summary>
+    /// The name of the pitch, if any.
+    /// <br/>
+    /// Ideally identical to the name of the route if the route is a single-pitch one.
+    /// </summary>
     public string? Name { get; set; }
     public required ClimbingType Type { get; set; } = ClimbingType.Sport;
     public string? Description { get; set; }
+    /// <summary>
+    /// An attempted measure of the difficulty of the climb.
+    /// </summary>
+    public int Grade { get; set; }
+    /// <summary>
+    /// The height of the pitch in meters.
+    /// </summary>
     public int? Height { get; set; }
+    /// <summary>
+    /// The number of pieces of gear (quickdraws or otherwise) required for the Pitch.
+    /// </summary>
+    public int? GearCount { get; set; }
+    /// <summary>
+    /// Which pitch number within a route this pitch is.
+    /// </summary>
     public int PitchOrder { get; set; } = 0;
 
     public Guid? RouteSvgOverlayId { get; set; }
