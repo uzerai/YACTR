@@ -23,10 +23,11 @@ public class GetRouteById : Endpoint<GetRouteByIdRequest, RouteResponse, RouteDa
         var route = await RouteRepository.BuildReadonlyQuery()
             .Where(e => e.Id == req.RouteId)
             .WhereAvailable()
-            .Include("TopoImage")
-            .Include("TopoImageOverlaySvg")
-            .Include("SectorTopoImage")
-            .Include("SectorTopoImageOverlaySvg")
+            .Include(e => e.Pitches.Where(x => x.DeletedAt == null))
+            .Include(e => e.TopoImage)
+            .Include(e => e.TopoImageOverlaySvg)
+            .Include(e => e.SectorTopoImage)
+            .Include(e => e.SectorTopoImageOverlaySvg)
             .FirstOrDefaultAsync(ct);
 
         if (route == null)

@@ -8,12 +8,13 @@ using Route = YACTR.Data.Model.Climbing.Route;
 namespace YACTR.Endpoints.Routes;
 
 public record RoutePitchRequestData(
-	string Name,
-	ClimbingType Type,
-	string? Description,
-	string? Grade,
-	int? Height,
-	int PitchOrder = 0
+    string Name,
+    ClimbingType Type,
+    Guid? Id,
+    string? Description,
+    string? Grade,
+    int? Height,
+    int PitchOrder = 0
 );
 
 public record RouteRequestData(
@@ -28,7 +29,7 @@ public record RouteRequestData(
     Guid? TopoImageId = null,
     Guid? TopoImageOverlayId = null,
     string? Description = null,
-    string? Grade = null,
+    int? Grade = null,
     string? FirstAscentClimberName = null,
     Instant? FirstAscentDate = null,
     string? BolterName = null,
@@ -52,7 +53,7 @@ public record RouteResponse(
     ClimbingType Type,
     Guid SectorId,
     int InSectorOrder,
-    string? Grade = null,
+    int? Grade = null,
     Instant? FirstAscentDate = null,
     string? FirstAscentClimberName = null,
     string? BolterName = null,
@@ -62,6 +63,7 @@ public record RouteResponse(
     string? TopoImageOverlayUrl = null,
     Guid? SectorTopoImageId = null,
     string? SectorTopoImageUrl = null,
+    Guid? SectorTopoImageOverlayId = null,
     string? SectorTopoImageOverlayUrl = null,
     RoutePitchResponse[]? Pitches = default,
     TopoLinePoint[]? TopoLinePoints = default,
@@ -73,7 +75,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
 	public override Route ToEntity(RouteRequestData r) => new Route()
     {
         Name = r.Name,
-        Type = r.Type,
+        Type = r.Pitches.Select(x => x.Type).Aggregate(r.Type, (total, next) => total == next ? total : ClimbingType.Mixed),
         Description = r.Description,
         Grade = r.Grade,
         FirstAscentClimberName = r.FirstAscentClimberName,
@@ -99,11 +101,12 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
     };
 
 	public override Route UpdateEntity(RouteRequestData r, Route e)
-	{
+    {
 		e.Name = r.Name;
 		e.Description = r.Description;
-		e.Grade = r.Grade;
-		e.Type = r.Type;
+        e.Grade = r.Grade;
+        // If all types of pitches are the same, set to the type of the route, otherwise, set to ClimbingType.Mixed
+		e.Type = r.Pitches.Select(x => x.Type).Aggregate(r.Type, (total, next) => total == next ? total : ClimbingType.Mixed);
 
 		e.BolterName = r.BolterName ?? e.BolterName;
 		e.FirstAscentClimberName = r.FirstAscentClimberName ?? e.FirstAscentClimberName;
@@ -116,7 +119,51 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
         e.SectorId = r.SectorId;
         e.InSectorOrder = r.InSectorOrder;
 		e.SectorTopoLinePoints = r.SectorTopoLinePoints?.ToList() ?? e.SectorTopoLinePoints;
-		e.SectorTopoImageOverlaySvgId = r.SectorTopoImageOverlaySvgId ?? e.TopoImageOverlaySvgId;
+        e.SectorTopoImageOverlaySvgId = r.SectorTopoImageOverlaySvgId;
+
+        // TODO: Fix synchronization of pitches -- not working atm.
+        if (e.Pitches.Count > 0)
+        {
+            e.Pitches = r.Pitches.Select(p =>
+            {
+                if (p.Id != null)
+                {
+                    return new Pitch()
+                    {
+                        Id = p.Id.Value,
+                        Type = p.Type,
+                        Name = p.Name,
+                        Height = p.Height,
+                        PitchOrder = p.PitchOrder,
+                        SectorId = r.SectorId,
+                        Description = p.Description
+                    };
+                }
+
+                return new Pitch()
+                {
+                    Type = p.Type,
+                    Name = p.Name,
+                    Height = p.Height,
+                    PitchOrder = p.PitchOrder,
+                    SectorId = r.SectorId,
+                    Description = p.Description
+                };
+            }).ToList();
+        }
+        else
+        {
+            e.Pitches = [
+                new Pitch()
+                {
+                    Name = r.Name,
+                    Type = r.Type,
+                    Description = r.Description,
+                    Height = r.Height,
+                    SectorId = r.SectorId
+                }
+            ];
+        }
 
 		return e;
 	}
@@ -143,6 +190,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.TopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.TopoImageOverlaySvgId.Value, ct) : null,
             e.SectorTopoImageId,
             e.SectorTopoImageId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageId.Value, ct) : null,
+            e.SectorTopoImageOverlaySvgId.HasValue ? e.SectorTopoImageOverlaySvgId.Value : null,
             e.SectorTopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageOverlaySvgId.Value, ct) : null,
             e.Pitches.Select(p => new RoutePitchResponse(p.Id, p.Name, p.PitchOrder, p.Type, p.Description, p.Height)).ToArray(),
             e.TopoLinePoints?.ToArray(),

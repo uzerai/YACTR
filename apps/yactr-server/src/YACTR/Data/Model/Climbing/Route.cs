@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Globalization;
 using NodaTime;
-using YACTR.Data.Migrations;
 using YACTR.Data.Model.Climbing.Rating;
 using YACTR.Data.Model.Climbing.Topo;
 
@@ -17,7 +15,7 @@ public class Route : BaseEntity
     public required string Name { get; set; }
     public string? Description { get; set; }
     public int InSectorOrder { get; set; } = 0;
-    public string? Grade { get; set; }
+    public int? Grade { get; set; }
     public Instant? FirstAscentDate { get; set; }
     public string? FirstAscentClimberName { get; set; }
     public string? BolterName { get; set; }

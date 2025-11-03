@@ -36,11 +36,6 @@ public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyRespon
 
         Map.UpdateEntity(req.Route, existingRoute);
 
-        if (req.Route.Pitches.Length != 0)
-        {
-            Logger.LogInformation("Pitches provided in route update request");
-        }
-
         await RouteRepository.UpdateAsync(existingRoute, ct);
 
         await SendNoContentAsync(ct);
