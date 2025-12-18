@@ -29,6 +29,6 @@ public class GetAllOrganizationTeams : Endpoint<GetAllOrganizationTeamsRequest, 
             .Where(e => e.OrganizationId == req.OrganizationId)
             .ToListAsync(ct);
 
-        await SendAsync(teams, cancellation: ct);
+        await Send.OkAsync(teams, cancellation: ct);
     }
 }

@@ -20,6 +20,6 @@ public class GetAllSectors : Endpoint<EmptyRequest, List<SectorResponse>, Sector
         var response = sectors.Select(async (e) => await Map.FromEntityAsync(e, ct));
 
         await Task.WhenAll(response);
-        await SendAsync([.. response.Select(r => r.Result)], cancellation: ct);
+        await Send.OkAsync([.. response.Select(r => r.Result)], cancellation: ct);
     }
 }

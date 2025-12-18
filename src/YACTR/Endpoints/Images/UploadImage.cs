@@ -20,7 +20,7 @@ public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, ImageRespon
     {
         if (req.Image is null)
         {
-            await SendErrorsAsync(cancellation: ct);
+            await Send.ErrorsAsync(cancellation: ct);
             return;
         }
 
@@ -31,11 +31,11 @@ public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, ImageRespon
                 CurrentUserId,
                 ct);
 
-            await SendCreatedAtAsync<UploadImage>(uploadedImage.Id, await Map.FromEntityAsync(uploadedImage, ct), cancellation: ct);
+            await Send.CreatedAtAsync<UploadImage>(uploadedImage.Id, await Map.FromEntityAsync(uploadedImage, ct), cancellation: ct);
         }
         catch
         {
-            await SendErrorsAsync(422, cancellation: ct);
+            await Send.ErrorsAsync(422, cancellation: ct);
             return;
         }
 

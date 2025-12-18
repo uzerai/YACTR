@@ -22,10 +22,10 @@ public class GetAreaById : Endpoint<GetAreaByIdRequest, AreaResponse, AreaDataMa
 
         if (area == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
-        await SendAsync(Map.FromEntity(area), cancellation: ct);
+        await Send.OkAsync(Map.FromEntity(area), cancellation: ct);
     }
 }

@@ -29,10 +29,10 @@ public class GetSectorById : Endpoint<GetSectorByIdRequest, SectorResponse, Sect
 
         if (sector == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
-        await SendAsync(await Map.FromEntityAsync(sector, ct), cancellation: ct);
+        await Send.OkAsync(await Map.FromEntityAsync(sector, ct), cancellation: ct);
     }
 }

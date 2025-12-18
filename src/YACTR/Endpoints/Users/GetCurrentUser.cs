@@ -16,6 +16,6 @@ public class GetCurrentUser : AuthenticatedEndpoint<EmptyRequest, User>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        await SendOkAsync((await UserRepository.GetByIdAsync(CurrentUserId, ct))!, ct);
+        await Send.OkAsync((await UserRepository.GetByIdAsync(CurrentUserId, ct))!, ct);
     }
 }

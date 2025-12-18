@@ -25,11 +25,11 @@ public class GetAscentById : Endpoint<GetAscentByIdRequest, AscentResponse>
 
         if (ascent == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
-        await SendAsync(new AscentResponse(
+        await Send.OkAsync(new AscentResponse(
             Id: ascent.Id,
             UserId: ascent.UserId,
             Type: ascent.Type,

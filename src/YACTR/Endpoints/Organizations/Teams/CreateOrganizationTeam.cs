@@ -32,6 +32,6 @@ public class CreateOrganizationTeam : Endpoint<CreateOrganizationTeamRequest, Or
 
         var createdTeam = await _organizationTeamRepository.CreateAsync(team, ct);
 
-        await SendAsync(createdTeam, cancellation: ct);
+        await Send.OkAsync(createdTeam, cancellation: ct);
     }
 }

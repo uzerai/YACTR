@@ -21,6 +21,6 @@ public class GetAllOrganizations : Endpoint<EmptyRequest, List<Organization>>
 
     public override async Task HandleAsync(EmptyRequest request, CancellationToken ct)
     {
-        await SendAsync([.. await _organizationRepository.GetAllAsync(ct)], cancellation: ct);
+        await Send.OkAsync([.. await _organizationRepository.GetAllAsync(ct)], cancellation: ct);
     }
 }

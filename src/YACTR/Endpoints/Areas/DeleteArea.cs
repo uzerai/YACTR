@@ -25,11 +25,11 @@ public class DeleteArea : AuthenticatedEndpoint<DeleteAreaRequest, EmptyResponse
 
         if (area == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
         await AreaRepository.DeleteAsync(area, ct);
-        await SendNoContentAsync(ct);
+        await Send.NoContentAsync(ct);
     }
 }

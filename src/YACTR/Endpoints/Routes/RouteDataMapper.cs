@@ -11,8 +11,9 @@ public record RoutePitchRequestData(
     string Name,
     ClimbingType Type,
     Guid? Id,
+    int? GearCount, 
     string? Description,
-    string? Grade,
+    int? Grade,
     int? Height,
     int PitchOrder = 0
 );
@@ -23,6 +24,7 @@ public record RouteRequestData(
     string Name,
     ClimbingType Type,
     int InSectorOrder = 0,
+    int? GearCount = null,
     int? Height = 0,
     Guid? SectorTopoImageId = null,
     Guid? SectorTopoImageOverlaySvgId = null,
@@ -43,6 +45,8 @@ public record RoutePitchResponse(
     int PitchOrder,
     ClimbingType Type,
     string? Description,
+    int? Grade,
+    int? GearCount,
     int? Height
 );
 
@@ -54,6 +58,7 @@ public record RouteResponse(
     Guid SectorId,
     int InSectorOrder,
     int? Grade = null,
+    int? GearCount = null,
     Instant? FirstAscentDate = null,
     string? FirstAscentClimberName = null,
     string? BolterName = null,
@@ -181,6 +186,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.SectorId,
             e.InSectorOrder,
             e.Grade,
+            0,
             e.FirstAscentDate,
             e.FirstAscentClimberName,
             e.BolterName,
@@ -192,7 +198,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.SectorTopoImageId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageId.Value, ct) : null,
             e.SectorTopoImageOverlaySvgId.HasValue ? e.SectorTopoImageOverlaySvgId.Value : null,
             e.SectorTopoImageOverlaySvgId.HasValue ? await service.GetImageUrlAsync(e.SectorTopoImageOverlaySvgId.Value, ct) : null,
-            e.Pitches.Select(p => new RoutePitchResponse(p.Id, p.Name, p.PitchOrder, p.Type, p.Description, p.Height)).ToArray(),
+            e.Pitches.Select(p => new RoutePitchResponse(p.Id, p.Name, p.PitchOrder, p.Type, p.Description, p.Grade, p.GearCount, p.Height)).ToArray(),
             e.TopoLinePoints?.ToArray(),
             e.SectorTopoLinePoints?.ToArray()
         );

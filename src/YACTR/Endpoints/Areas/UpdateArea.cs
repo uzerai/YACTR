@@ -31,7 +31,7 @@ public class UpdateArea : AuthenticatedEndpoint<UpdateAreaRequest, EmptyResponse
 
         if (area == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
@@ -39,6 +39,6 @@ public class UpdateArea : AuthenticatedEndpoint<UpdateAreaRequest, EmptyResponse
 
         await AreaRepository.UpdateAsync(area, ct);
 
-        await SendNoContentAsync(ct);
+        await Send.NoContentAsync(ct);
     }
 }

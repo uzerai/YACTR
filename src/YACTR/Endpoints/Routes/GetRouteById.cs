@@ -32,10 +32,10 @@ public class GetRouteById : Endpoint<GetRouteByIdRequest, RouteResponse, RouteDa
 
         if (route == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
-        await SendAsync(await Map.FromEntityAsync(route, ct), cancellation: ct);
+        await Send.OkAsync(await Map.FromEntityAsync(route, ct), cancellation: ct);
     }
 }

@@ -18,6 +18,6 @@ public class GetAllAreas : Endpoint<EmptyRequest, List<AreaResponse>, AreaDataMa
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
         var areas = await AreaRepository.GetAllAvailableAsync(ct);
-        await SendAsync([.. areas.Select(Map.FromEntity)], cancellation: ct);
+        await Send.OkAsync([.. areas.Select(Map.FromEntity)], cancellation: ct);
     }
 }

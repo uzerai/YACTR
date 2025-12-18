@@ -27,6 +27,6 @@ public class CreatePitch : AuthenticatedEndpoint<PitchRequestData, Pitch>
             RouteId = req.RouteId
         }, ct);
 
-        await SendCreatedAtAsync<GetPitchById>(createdPitch.Id, createdPitch, cancellation: ct);
+        await Send.CreatedAtAsync<GetPitchById>(createdPitch.Id, createdPitch, cancellation: ct);
     }
 }

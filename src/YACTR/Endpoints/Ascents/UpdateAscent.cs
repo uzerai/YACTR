@@ -29,20 +29,20 @@ public class UpdateAscent : AuthenticatedEndpoint<UpdateAscentRequest, EmptyResp
 
         if (ascent == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
         // Ensure the user owns this ascent
         if (ascent.UserId != CurrentUserId)
         {
-            await SendForbiddenAsync(ct);
+            await Send.ForbiddenAsync(ct);
             return;
         }
 
         ascent.Type = req.Type;
         ascent.CompletedAt = req.CompletedAt;
         await AscentRepository.UpdateAsync(ascent, ct);
-        await SendNoContentAsync(ct);
+        await Send.NoContentAsync(ct);
     }
 }

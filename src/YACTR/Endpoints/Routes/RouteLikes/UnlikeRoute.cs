@@ -38,7 +38,7 @@
 
 //         if (existingLike == null)
 //         {
-//             await SendNotFoundAsync(ct);
+//             await Send.NotFoundAsync(ct);
 //             return;
 //         }
 
