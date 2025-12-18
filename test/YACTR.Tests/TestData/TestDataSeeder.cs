@@ -113,7 +113,7 @@ public class TestDataSeeder
                 Name = "Test Route",
                 Description = "Test route for ascents",
                 Type = type,
-                Grade = "5.10a",
+                Grade = 500,
                 SectorId = sector.Id
             }).ToList();
 

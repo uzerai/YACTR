@@ -38,17 +38,19 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
             Type: ClimbingType.Sport,
             Pitches: [
                 new RoutePitchRequestData(
+                    Id: null,
                     Name: "Test Pitch",
                     Type: ClimbingType.Sport,
                     Description: "A sample pitch",
-                    Grade: "5.10a",
+                    Grade: 500,
+                    GearCount: 1,
                     Height: 10,
                     PitchOrder: 1
                 )
             ],
             Name: "Test Route Create",
             Description: "A sample route",
-            Grade: "5.10a",
+            Grade: 500,
             FirstAscentClimberName: null,
             BolterName: null,
             TopoImageId: jpegImage.Id,
@@ -109,7 +111,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
             Pitches: [],
             Name: "Test Route Update",
             Description: "Updated Test Route Description",
-            Grade: "",
+            Grade: 0,
             FirstAscentClimberName: "Updated Test Route First Ascent Climber Name",
             BolterName: "Updated Test Route Bolter Name"
         );
@@ -123,7 +125,7 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     public async Task Update_WithInvalidId_ReturnsNotFound()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var updateReq = new UpdateRouteRequest { RouteId = Guid.NewGuid(), Route = new RouteRequestData(Guid.NewGuid(), [], "x", ClimbingType.Sport, null, null, null, null) };
+        var updateReq = new UpdateRouteRequest { RouteId = Guid.NewGuid(), Route = new RouteRequestData(Guid.NewGuid(), [], "x", ClimbingType.Sport, 0, null, null, null, null) };
         var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(updateReq);
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
