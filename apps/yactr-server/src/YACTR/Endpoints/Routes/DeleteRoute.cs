@@ -25,11 +25,11 @@ public class DeleteRoute : AuthenticatedEndpoint<DeleteRouteRequest, EmptyRespon
 
         if (route == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
         await RouteRepository.DeleteAsync(route, ct);
-        await SendNoContentAsync(ct);
+        await Send.NoContentAsync(ct);
     }
 }

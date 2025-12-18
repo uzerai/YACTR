@@ -41,7 +41,7 @@
 //         // Validate rating value (assuming 1-5 scale)
 //         if (req.Rating.Rating < 1 || req.Rating.Rating > 5)
 //         {
-//             await SendErrorsAsync(400, ct);
+//             await Send.ErrorsAsync(400, ct);
 //             return;
 //         }
 

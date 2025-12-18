@@ -25,11 +25,11 @@ public class DeleteSector : AuthenticatedEndpoint<DeleteSectorRequest, EmptyResp
 
         if (sector == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
         await SectorRepository.DeleteAsync(sector, ct);
-        await SendNoContentAsync(ct);
+        await Send.NoContentAsync(ct);
     }
 }

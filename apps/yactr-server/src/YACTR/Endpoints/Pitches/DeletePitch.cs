@@ -25,11 +25,11 @@ public class DeletePitch : AuthenticatedEndpoint<DeletePitchRequest, EmptyRespon
 
         if (pitch == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
         await PitchRepository.DeleteAsync(pitch, ct);
-        await SendNoContentAsync(ct);
+        await Send.NoContentAsync(ct);
     }
 }

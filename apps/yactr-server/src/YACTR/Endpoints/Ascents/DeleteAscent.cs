@@ -22,7 +22,7 @@ public class DeleteAscent : AuthenticatedEndpoint<DeleteAscentRequest, AscentRes
     {
         if (!Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId))
         {
-            await SendUnauthorizedAsync(ct);
+            await Send.UnauthorizedAsync(ct);
             return;
         }
 
@@ -32,19 +32,19 @@ public class DeleteAscent : AuthenticatedEndpoint<DeleteAscentRequest, AscentRes
 
         if (ascent == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
         // Ensure the user owns this ascent
         if (ascent.UserId != userId)
         {
-            await SendForbiddenAsync(ct);
+            await Send.ForbiddenAsync(ct);
             return;
         }
 
         await AscentRepository.DeleteAsync(ascent, ct);
-        await SendAsync(new AscentResponse(
+        await Send.OkAsync(new AscentResponse(
             Id: ascent.Id,
             UserId: ascent.UserId,
             Type: ascent.Type,

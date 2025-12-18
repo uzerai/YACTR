@@ -24,7 +24,7 @@ public class UpdatePitch : AuthenticatedEndpoint<UpdatePitchRequest, EmptyRespon
         var existingPitch = await PitchRepository.GetByIdAsync(req.PitchId, ct);
         if (existingPitch == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
@@ -35,6 +35,6 @@ public class UpdatePitch : AuthenticatedEndpoint<UpdatePitchRequest, EmptyRespon
 
         await PitchRepository.UpdateAsync(existingPitch, ct);
 
-        await SendNoContentAsync(ct);
+        await Send.NoContentAsync(ct);
     }
 }

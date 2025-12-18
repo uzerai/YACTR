@@ -21,6 +21,6 @@ public class CreateSector : AuthenticatedEndpoint<SectorRequestData, SectorRespo
         var sector = Map.ToEntity(req);
         var createdSector = await SectorRepository.CreateAsync(sector, ct);
 
-        await SendCreatedAtAsync<GetSectorById>(createdSector.Id, await Map.FromEntityAsync(createdSector, ct), cancellation: ct);
+        await Send.CreatedAtAsync<GetSectorById>(createdSector.Id, await Map.FromEntityAsync(createdSector, ct), cancellation: ct);
     }
 }

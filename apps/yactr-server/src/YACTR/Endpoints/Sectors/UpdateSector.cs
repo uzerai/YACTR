@@ -31,7 +31,7 @@ public class UpdateSector : AuthenticatedEndpoint<UpdateSectorRequest, EmptyResp
         var existingSector = await SectorRepository.GetByIdAsync(req.SectorId, ct);
         if (existingSector == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
@@ -39,6 +39,6 @@ public class UpdateSector : AuthenticatedEndpoint<UpdateSectorRequest, EmptyResp
 
         await SectorRepository.UpdateAsync(existingSector, ct);
 
-        await SendNoContentAsync(ct);
+        await Send.NoContentAsync(ct);
     }
 }

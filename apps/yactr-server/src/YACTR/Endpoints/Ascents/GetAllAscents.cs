@@ -30,6 +30,6 @@ public class GetAllAscents : Endpoint<EmptyRequest, List<AscentResponse>>
             Route: a.Route
         )).OrderByDescending(a => a.CompletedAt).ToList();
 
-        await SendAsync(ascentResponses, cancellation: ct);
+        await Send.OkAsync(ascentResponses, cancellation: ct);
     }
 }

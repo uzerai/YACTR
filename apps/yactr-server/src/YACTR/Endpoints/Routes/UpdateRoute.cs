@@ -30,7 +30,7 @@ public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyRespon
         var existingRoute = await RouteRepository.GetByIdAsync(req.RouteId, ct);
         if (existingRoute == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
@@ -38,6 +38,6 @@ public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyRespon
 
         await RouteRepository.UpdateAsync(existingRoute, ct);
 
-        await SendNoContentAsync(ct);
+        await Send.NoContentAsync(ct);
     }
 }

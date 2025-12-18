@@ -41,12 +41,12 @@ public class CreateOrganizationTeamUser : Endpoint<CreateOrganizationTeamUserReq
         if (await _organizationTeamRepository.GetByIdAsync(req.TeamId, ct) is null)
         {
             AddError(r => r.TeamId, "Team does not exist");
-            await SendErrorsAsync((int)HttpStatusCode.FailedDependency, ct);
+            await Send.ErrorsAsync((int)HttpStatusCode.FailedDependency, ct);
             return;
         }
 
         var createdTeamUser = await _organizationTeamUserRepository.CreateAsync(organizationTeamUser, ct);
 
-        await SendAsync(createdTeamUser, cancellation: ct);
+        await Send.OkAsync(createdTeamUser, cancellation: ct);
     }
 }

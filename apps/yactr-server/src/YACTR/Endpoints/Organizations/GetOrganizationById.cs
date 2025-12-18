@@ -28,10 +28,10 @@ public class GetOrganizationById : Endpoint<GetOrganizationByIdRequest, Organiza
 
         if (organization is not null)
         {
-            await SendAsync(organization, cancellation: ct);
+            await Send.OkAsync(organization, cancellation: ct);
             return;
         }
 
-        await SendNotFoundAsync();
+        await Send.NotFoundAsync();
     }
 }

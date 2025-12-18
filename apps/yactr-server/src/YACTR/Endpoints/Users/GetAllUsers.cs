@@ -24,6 +24,6 @@ public class GetAllUsers : Endpoint<EmptyRequest, IEnumerable<User>>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        await SendOkAsync((await _userRepository.GetAllAsync(ct))!, ct);
+        await Send.OkAsync((await _userRepository.GetAllAsync(ct))!, ct);
     }
 }

@@ -33,7 +33,7 @@ public class CreateOrganization : Endpoint<CreateOrganizationRequestData, Organi
     {
         if (!Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId))
         {
-            await SendUnauthorizedAsync(ct);
+            await Send.UnauthorizedAsync(ct);
             return;
         }
 
@@ -54,6 +54,6 @@ public class CreateOrganization : Endpoint<CreateOrganizationRequestData, Organi
 
         await _organizationUserRepository.CreateAsync(organizationUser, ct);
 
-        await SendCreatedAtAsync<GetOrganizationById>(createdOrganization.Id, createdOrganization, cancellation: ct);
+        await Send.CreatedAtAsync<GetOrganizationById>(createdOrganization.Id, createdOrganization, cancellation: ct);
     }
 }

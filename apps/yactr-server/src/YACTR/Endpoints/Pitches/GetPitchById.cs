@@ -22,10 +22,10 @@ public class GetPitchById : Endpoint<GetPitchByIdRequest, Pitch>
 
         if (pitch == null)
         {
-            await SendNotFoundAsync(ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
-        await SendAsync(pitch, cancellation: ct);
+        await Send.OkAsync(pitch, cancellation: ct);
     }
 }

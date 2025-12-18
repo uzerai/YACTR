@@ -18,6 +18,6 @@ public class GetAllPitches : Endpoint<EmptyRequest, List<Pitch>>
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
         var pitches = await PitchRepository.GetAllAsync(ct);
-        await SendAsync([.. pitches], cancellation: ct);
+        await Send.OkAsync([.. pitches], cancellation: ct);
     }
 }

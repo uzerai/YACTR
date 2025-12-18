@@ -28,15 +28,15 @@ public class DeleteImage : AuthenticatedEndpoint<ImageDeleteRequest, ImageRespon
         try
         {
             var image = await ImageStorageService.RemoveImageAsync(req.ImageId, ct);
-            await SendOkAsync(await Map.FromEntityAsync(image, ct), cancellation: ct);
+            await Send.OkAsync(await Map.FromEntityAsync(image, ct), cancellation: ct);
         }
         catch (ObjectNotFoundException)
         {
-            await SendErrorsAsync(404, ct);
+            await Send.ErrorsAsync(404, ct);
         }
         catch
         {
-            await SendErrorsAsync(500, ct);
+            await Send.ErrorsAsync(500, ct);
         }
     }
 }

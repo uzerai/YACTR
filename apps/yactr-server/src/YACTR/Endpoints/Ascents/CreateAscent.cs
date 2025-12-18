@@ -40,7 +40,7 @@ public class CreateAscent : AuthenticatedEndpoint<CreateAscentRequest, AscentRes
             .Include(a => a.Route)
             .FirstAsync(a => a.Id == createdAscent.Id, ct);
 
-        await SendCreatedAtAsync<GetAscentById>(ascentWithRoute.Id, new AscentResponse(
+        await Send.CreatedAtAsync<GetAscentById>(ascentWithRoute.Id, new AscentResponse(
             Id: ascentWithRoute.Id,
             UserId: ascentWithRoute.UserId,
             Type: ascentWithRoute.Type,

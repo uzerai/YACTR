@@ -48,6 +48,6 @@ public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, RouteResponse
             })));
         }
 
-        await SendCreatedAtAsync<GetRouteById>(createdRoute.Id, await Map.FromEntityAsync(createdRoute, ct), cancellation: ct);
+        await Send.CreatedAtAsync<GetRouteById>(createdRoute.Id, await Map.FromEntityAsync(createdRoute, ct), cancellation: ct);
     }
 }

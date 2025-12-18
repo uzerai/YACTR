@@ -20,6 +20,6 @@ public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, A
     {
         var createdArea = await AreaRepository.CreateAsync(Map.ToEntity(req), ct);
 
-        await SendCreatedAtAsync<GetAreaById>(createdArea.Id, Map.FromEntity(createdArea), FastEndpoints.Http.GET, cancellation: ct);
+        await Send.CreatedAtAsync<GetAreaById>(createdArea.Id, Map.FromEntity(createdArea), FastEndpoints.Http.GET, cancellation: ct);
     }
 }

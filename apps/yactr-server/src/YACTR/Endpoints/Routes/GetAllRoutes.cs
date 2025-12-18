@@ -18,6 +18,6 @@ public class GetAllRoutes : Endpoint<EmptyRequest, IEnumerable<RouteResponse>, R
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
         var routes = await RouteRepository.GetAllAvailableAsync(ct);
-        await SendAsync(await Task.WhenAll(routes.Select(async e => await Map.FromEntityAsync(e, ct))), cancellation: ct);
+        await Send.OkAsync(await Task.WhenAll(routes.Select(async e => await Map.FromEntityAsync(e, ct))), cancellation: ct);
     }
 }
