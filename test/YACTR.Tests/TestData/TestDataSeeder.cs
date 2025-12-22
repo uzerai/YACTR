@@ -76,7 +76,6 @@ public class TestDataSeeder
         return user;
     }
 
-
     public async Task<(Area area, Sector sector, ICollection<Route> routes)> SeedAreaWithSectorAndRouteAsync()
     {
         User user = await CreateUserAsync();
