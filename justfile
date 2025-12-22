@@ -27,7 +27,7 @@ run-migrations environment='development':
 
 [doc('Creates a migration in the project')]
 add-migration migration_name:
-    dotnet ef migrations add {{migration_name}} --project src/YACTR
+    dotnet ef migrations add {{migration_name}} --project src/YACTR -o Data/Migrations
 
 [doc('Rolls back the database to a given migration')]
 db-rollback migration_name:
