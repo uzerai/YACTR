@@ -23,7 +23,7 @@ public class RootEndpointsIntegrationTests(IntegrationTestClassFixture fixture) 
     public async Task Index_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Act
-        var response = await fixture.AnonymousClient.GetAsync("/", TestContext.Current.CancellationToken);
+        var response = await fixture.CreateClient().GetAsync("/", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);

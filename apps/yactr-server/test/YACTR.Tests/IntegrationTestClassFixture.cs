@@ -21,7 +21,6 @@ namespace YACTR.Tests;
 public class IntegrationTestClassFixture : AppFixture<Program>
 {
     public DatabaseContext DatabaseContext { get; private set; } = null!;
-    public HttpClient AnonymousClient { get; private set; } = null!;
     public TestDataSeeder TestDataSeeder { get; private set; } = null!;
 
     protected JsonSerializerOptions _jsonSerializerOptions = new()
@@ -36,7 +35,6 @@ public class IntegrationTestClassFixture : AppFixture<Program>
     /// <returns></returns>
     protected override async ValueTask SetupAsync()
     {
-        AnonymousClient = CreateClient();
         DatabaseContext = Services.GetRequiredService<DatabaseContext>();
         TestDataSeeder = new TestDataSeeder(DatabaseContext, Services);
 

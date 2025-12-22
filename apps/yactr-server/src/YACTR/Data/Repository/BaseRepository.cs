@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using YACTR.Data;
 using YACTR.Data.Repository.Interface;
 
 namespace YACTR.Data.Repository;

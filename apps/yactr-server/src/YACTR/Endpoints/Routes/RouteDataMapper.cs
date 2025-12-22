@@ -111,7 +111,8 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
         e.Description = r.Description;
         e.Grade = r.Grade;
         // If all types of pitches are the same, set to the type of the route, otherwise, set to ClimbingType.Mixed
-        e.Type = r.Pitches.Select(x => x.Type).Aggregate(r.Type, (total, next) => total == next ? total : ClimbingType.Mixed);
+        e.Type = r.Pitches.Select(x => x.Type)
+            .Aggregate(r.Type, (total, next) => total == next ? total : ClimbingType.Mixed);
 
         e.BolterName = r.BolterName ?? e.BolterName;
         e.FirstAscentClimberName = r.FirstAscentClimberName ?? e.FirstAscentClimberName;
@@ -126,7 +127,6 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
         e.SectorTopoLinePoints = r.SectorTopoLinePoints?.ToList() ?? e.SectorTopoLinePoints;
         e.SectorTopoImageOverlaySvgId = r.SectorTopoImageOverlaySvgId;
 
-        // TODO: Fix synchronization of pitches -- not working atm.
         if (e.Pitches.Count > 0)
         {
             e.Pitches = r.Pitches.Select(p =>

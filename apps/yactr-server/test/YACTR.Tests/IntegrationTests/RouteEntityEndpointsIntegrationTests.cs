@@ -159,6 +159,149 @@ public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task Update_WithExistingPitches_UpdatesPitches()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+
+        var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var created = routes.First();
+
+        // First, create a route with pitches
+        var createRouteReq = new RouteRequestData(
+            SectorId: sector.Id,
+            Type: ClimbingType.Sport,
+            Pitches: [
+                new RoutePitchRequestData(
+                    Id: null,
+                    Name: "Original Pitch",
+                    Type: ClimbingType.Sport,
+                    Description: "Original description",
+                    Grade: 500,
+                    GearCount: 1,
+                    Height: 10,
+                    PitchOrder: 1
+                )
+            ],
+            Name: "Route With Pitches",
+            Description: "A route with pitches"
+        );
+
+        var (createResponse, routeWithPitches) = await client.POSTAsync<CreateRoute, RouteRequestData, RouteResponse>(createRouteReq);
+        createResponse.IsSuccessStatusCode.ShouldBeTrue();
+
+        // Now update with existing pitch IDs (this tests the branch where p.Id != null)
+        var updateRouteReq = new RouteRequestData(
+            SectorId: sector.Id,
+            Type: ClimbingType.Sport,
+            Pitches: [
+                new RoutePitchRequestData(
+                    Id: routeWithPitches.Pitches?.First().Id,
+                    Name: "Updated Pitch",
+                    Type: ClimbingType.Sport,
+                    Description: "Updated description",
+                    Grade: 600,
+                    GearCount: 2,
+                    Height: 15,
+                    PitchOrder: 1
+                )
+            ],
+            Name: "Updated Route With Pitches",
+            Description: "Updated route description"
+        );
+
+        var updateReq = new UpdateRouteRequest { RouteId = routeWithPitches.Id, Route = updateRouteReq };
+        var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(updateReq);
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Verify the update
+        var getReq = new GetRouteByIdRequest(routeWithPitches.Id);
+        var (getResponse, updatedRoute) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(getReq);
+        getResponse.IsSuccessStatusCode.ShouldBeTrue();
+        updatedRoute.Name.ShouldBe("Updated Route With Pitches");
+        updatedRoute.Pitches.ShouldNotBeNull();
+        updatedRoute.Pitches.Count().ShouldBe(1);
+        updatedRoute.Pitches.First().Name.ShouldBe("Updated Pitch");
+    }
+
+    [Fact]
+    public async Task Update_WithNoExistingPitches_CreatesNewPitch()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+
+        var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var created = routes.First(); // This route has no pitches initially
+
+        // Update route without pitches (tests the branch where e.Pitches.Count == 0)
+        var updateRouteReq = new RouteRequestData(
+            SectorId: sector.Id,
+            Type: ClimbingType.Sport,
+            Pitches: [],
+            Name: "Updated Route Without Pitches",
+            Description: "Updated description",
+            Grade: 500
+        );
+
+        var updateReq = new UpdateRouteRequest { RouteId = created.Id, Route = updateRouteReq };
+        var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(updateReq);
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Verify the update - should create a default pitch when pitches list is empty
+        var getReq = new GetRouteByIdRequest(created.Id);
+        var (getResponse, updatedRoute) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(getReq);
+        getResponse.IsSuccessStatusCode.ShouldBeTrue();
+        updatedRoute.Name.ShouldBe("Updated Route Without Pitches");
+    }
+
+    [Fact]
+    public async Task Update_WithMixedPitchTypes_SetsRouteTypeToMixed()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+
+        var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var created = routes.First();
+
+        // Update route with pitches of different types (tests the branch where types don't match)
+        var updateRouteReq = new RouteRequestData(
+            SectorId: sector.Id,
+            Type: ClimbingType.Sport,
+            Pitches: [
+                new RoutePitchRequestData(
+                    Id: null,
+                    Name: "Sport Pitch",
+                    Type: ClimbingType.Sport,
+                    Description: "Sport pitch",
+                    Grade: 500,
+                    Height: 10,
+                    GearCount: 1,
+                    PitchOrder: 1
+                ),
+                new RoutePitchRequestData(
+                    Id: null,
+                    Name: "Trad Pitch",
+                    Type: ClimbingType.Traditional,
+                    Description: "Trad pitch",
+                    Grade: 500,
+                    Height: 10,
+                    GearCount: 1,
+                    PitchOrder: 2
+                )
+            ],
+            Name: "Mixed Route",
+            Description: "A route with mixed pitch types"
+        );
+
+        var updateReq = new UpdateRouteRequest { RouteId = created.Id, Route = updateRouteReq };
+        var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(updateReq);
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Verify the route type is set to Mixed
+        var getReq = new GetRouteByIdRequest(created.Id);
+        var (getResponse, updatedRoute) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(getReq);
+        getResponse.IsSuccessStatusCode.ShouldBeTrue();
+        updatedRoute.Type.ShouldBe(ClimbingType.Mixed);
+    }
 }
 
 

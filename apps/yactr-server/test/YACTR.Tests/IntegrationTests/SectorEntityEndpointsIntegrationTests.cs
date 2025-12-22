@@ -172,4 +172,112 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
+
+    [Fact]
+    public async Task CreateSector_WithSectorImages_CreatesSectorWithImages()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+
+        // Arrange - Create images first
+        var image1 = await fixture.TestDataSeeder.CreateImageAsync();
+        var image2 = await fixture.TestDataSeeder.CreateImageAsync();
+
+        var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var createRequest = new SectorRequestData(
+            "Test Sector With Images",
+            fixture.TestDataSeeder.NewPolygon(),
+            fixture.TestDataSeeder.NewPoint(),
+            area.Id,
+            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataSeeder.NewLineString(),
+            new[] { 
+                new SectorImageRequestData(image1.Id, 1),
+                new SectorImageRequestData(image2.Id, 2)
+            },
+            image1.Id // Primary image
+        );
+
+        // Act
+        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, SectorResponse>(createRequest);
+
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.SectorImages.ShouldNotBeNull();
+        result.SectorImages.Count().ShouldBe(2);
+        result.PrimarySectorImageId.ShouldBe(image1.Id);
+    }
+
+    [Fact]
+    public async Task CreateSector_WithSectorImagesButNoPrimary_UsesFirstImageAsPrimary()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+
+        // Arrange - Create images first
+        var image1 = await fixture.TestDataSeeder.CreateImageAsync();
+        var image2 = await fixture.TestDataSeeder.CreateImageAsync();
+
+        var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var createRequest = new SectorRequestData(
+            "Test Sector With Images No Primary",
+            fixture.TestDataSeeder.NewPolygon(),
+            fixture.TestDataSeeder.NewPoint(),
+            area.Id,
+            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataSeeder.NewLineString(),
+            new[] { 
+                new SectorImageRequestData(image1.Id, 1),
+                new SectorImageRequestData(image2.Id, 2)
+            },
+            null // No primary image specified
+        );
+
+        // Act
+        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, SectorResponse>(createRequest);
+
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.PrimarySectorImageId.ShouldBe(image1.Id); // Should use first image as primary
+    }
+
+    [Fact]
+    public async Task GetSectorById_WithSectorImages_ReturnsSectorWithImageUrls()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+
+        // Arrange - Create a sector with images
+        var image1 = await fixture.TestDataSeeder.CreateImageAsync();
+        var image2 = await fixture.TestDataSeeder.CreateImageAsync();
+
+        var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var createRequest = new SectorRequestData(
+            "Test Sector With Images For Get",
+            fixture.TestDataSeeder.NewPolygon(),
+            fixture.TestDataSeeder.NewPoint(),
+            area.Id,
+            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataSeeder.NewLineString(),
+            new[] { 
+                new SectorImageRequestData(image1.Id, 1),
+                new SectorImageRequestData(image2.Id, 2)
+            },
+            image1.Id
+        );
+
+        var (createResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, SectorResponse>(createRequest);
+        createResponse.IsSuccessStatusCode.ShouldBeTrue();
+
+        // Act
+        var getRequest = new GetSectorByIdRequest(createdSector.Id);
+        var (response, result) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, SectorResponse>(getRequest);
+
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.SectorImages.ShouldNotBeNull();
+        result.SectorImages.Count().ShouldBe(2);
+        // Verify that image URLs are populated (coverage for the async mapping branch)
+        result.SectorImages.All(img => !string.IsNullOrEmpty(img.ImageUrl)).ShouldBeTrue();
+    }
 }

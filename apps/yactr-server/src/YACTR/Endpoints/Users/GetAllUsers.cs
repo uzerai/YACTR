@@ -6,24 +6,17 @@ using Permission = YACTR.Data.Model.Authorization.Permissions.Permission;
 
 namespace YACTR.Endpoints.Users;
 
-[AdminPermissionRequired(Permission.UsersRead)]
-public class GetAllUsers : Endpoint<EmptyRequest, IEnumerable<User>>
+public class GetAllUsers(IEntityRepository<User> userRepository) : AuthenticatedEndpoint<EmptyRequest, IEnumerable<User>>
 {
-    private readonly IEntityRepository<User> _userRepository;
-
-    public GetAllUsers(IEntityRepository<User> userRepository)
-    {
-        _userRepository = userRepository;
-    }
-
     public override void Configure()
     {
         Get("/");
         Group<UsersEndpointGroup>();
+        Options(b => b.WithMetadata(new AdminPermissionRequiredAttribute(Permission.UsersRead)));
     }
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        await Send.OkAsync((await _userRepository.GetAllAsync(ct))!, ct);
+        await Send.OkAsync(await userRepository.GetAllAsync(ct), ct);
     }
 }

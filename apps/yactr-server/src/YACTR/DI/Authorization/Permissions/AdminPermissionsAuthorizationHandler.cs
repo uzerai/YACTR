@@ -3,12 +3,13 @@ using YACTR.Data.Model.Authorization.Permissions;
 
 namespace YACTR.DI.Authorization.Permissions;
 
-public class AdminPermissionsAuthorizationHandler(ILogger<AdminPermissionsAuthorizationHandler> _logger) : AuthorizationHandler<AdminPermissionRequiredAttribute>
+public class AdminPermissionsAuthorizationHandler(ILogger<AdminPermissionsAuthorizationHandler> logger) : AuthorizationHandler<AdminPermissionRequiredAttribute>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AdminPermissionRequiredAttribute requirement)
     {
-        _logger.LogDebug("Handling admin permissions authorization for {Permission}", requirement.Permission);
-        _logger.LogDebug("User is {UserId}", context.User.Identity?.Name);
+        logger.LogDebug("Handling admin permissions authorization for {Permission}", requirement.Permission);
+        logger.LogDebug("User is {UserId}", context.User.Identity?.Name);
+        
         if (context.User.HasClaim(LocalClaimTypes.AdminPermission, requirement.Permission.ToString()))
         {
             context.Succeed(requirement);
