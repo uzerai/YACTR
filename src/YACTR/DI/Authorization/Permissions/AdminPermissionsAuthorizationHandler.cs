@@ -3,16 +3,8 @@ using YACTR.Data.Model.Authorization.Permissions;
 
 namespace YACTR.DI.Authorization.Permissions;
 
-public class AdminPermissionsAuthorizationHandler : AuthorizationHandler<AdminPermissionRequiredAttribute>
+public class AdminPermissionsAuthorizationHandler(ILogger<AdminPermissionsAuthorizationHandler> _logger) : AuthorizationHandler<AdminPermissionRequiredAttribute>
 {
-    private readonly ILogger<AdminPermissionsAuthorizationHandler> _logger;
-
-    public AdminPermissionsAuthorizationHandler(
-        ILogger<AdminPermissionsAuthorizationHandler> logger)
-    {
-        _logger = logger;
-    }
-
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AdminPermissionRequiredAttribute requirement)
     {
         _logger.LogDebug("Handling admin permissions authorization for {Permission}", requirement.Permission);
