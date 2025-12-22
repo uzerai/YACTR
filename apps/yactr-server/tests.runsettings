@@ -5,16 +5,16 @@
   It is also used to configure the data collectors for the test runner.
 -->
 <RunSettings>
-  <DataCollectionRunSettings>
-    <DataCollectors>
-      <DataCollector friendlyName="XPlat code coverage">
-        <Configuration>
-          <Format>cobertura,opencover</Format>
-          <Exclude>[*.Tests?]*</Exclude> <!-- [Assembly-Filter]Type-Filter -->
-          <ExcludeByFile>**/Migrations/*.cs,</ExcludeByFile> <!-- Globbing filter -->
-          <SkipAutoProps>true</SkipAutoProps>
-        </Configuration>
-      </DataCollector>
-    </DataCollectors>
-  </DataCollectionRunSettings>
+    <DataCollectionRunSettings>
+        <DataCollectors>
+            <DataCollector friendlyName="XPlat code coverage">
+                <Configuration>
+                    <Format>cobertura,opencover</Format>
+                    <Exclude>[*.Tests?]*</Exclude> <!-- [Assembly-Filter]Type-Filter -->
+                    <ExcludeByFile>**/Migrations/*.cs</ExcludeByFile> <!-- Globbing filter -->
+                    <SkipAutoProps>true</SkipAutoProps>
+                </Configuration>
+            </DataCollector>
+        </DataCollectors>
+    </DataCollectionRunSettings>
 </RunSettings>
