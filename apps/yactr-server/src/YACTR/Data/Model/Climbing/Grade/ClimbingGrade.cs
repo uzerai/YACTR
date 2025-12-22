@@ -104,7 +104,7 @@ public class ClimbingGrade
             > 490 => "11"
         };
     }
-    
+
     private static string FrenchGrade(int numericalGrade)
     {
         return numericalGrade switch
