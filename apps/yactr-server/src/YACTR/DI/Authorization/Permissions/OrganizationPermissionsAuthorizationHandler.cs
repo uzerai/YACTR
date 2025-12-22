@@ -3,39 +3,26 @@ using YACTR.Data.Model.Authorization.Permissions;
 
 namespace YACTR.DI.Authorization.Permissions;
 
-public class OrganizationPermissionsAuthorizationHandler : AuthorizationHandler<OrganizationPermissionRequiredAttribute>
+public class OrganizationPermissionsAuthorizationHandler(ILogger<OrganizationPermissionsAuthorizationHandler> logger) : AuthorizationHandler<OrganizationPermissionRequiredAttribute>
 {
-    private readonly ILogger<OrganizationPermissionsAuthorizationHandler> _logger;
-
-    public OrganizationPermissionsAuthorizationHandler(
-        ILogger<OrganizationPermissionsAuthorizationHandler> logger)
-    {
-        _logger = logger;
-    }
-
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, OrganizationPermissionRequiredAttribute requirement)
     {
-        _logger.LogDebug("Handling organization permissions authorization for {Permission}", requirement.Permission);
+        logger.LogDebug("Handling organization permissions authorization for {Permission}", requirement.Permission);
 
-        var httpContext = context.Resource as HttpContext;
-        if (httpContext == null)
+        if (context.Resource is not HttpContext httpContext)
         {
-            _logger.LogError("HttpContext is null; aborting authorization check.");
-            context.Fail();
-            return Task.CompletedTask;
+            // This is an implementation error, as this handler should not be used for non-HttpContext based resources.
+            throw new NotImplementedException("Context Resource is not HttpContext type.");
         }
 
-        string? organizationIdFromRoute = httpContext.GetRouteValue("OrganizationId")?.ToString();
-        if (organizationIdFromRoute == null)
-        {
-            _logger.LogError("OrganizationPermissionRequiredAttribute assigned on organization-less endpoint; aborting authorization check.");
-            context.Fail();
-            return Task.CompletedTask;
-        }
+        // This permission handler does not work without an OrganizationId route parameter present in the httpContext.
+        string? organizationIdFromRoute = httpContext.GetRouteValue("OrganizationId")?.ToString()
+            ?? throw new NotImplementedException("No OrganizationId route parameter found.");
 
         if (!Guid.TryParse(organizationIdFromRoute, out var organizationId))
         {
-            _logger.LogError("Organization ID from route is not a valid GUID; aborting authorization check.");
+            // This is a valid use-case to simply deny authorization for enumeration attacks without runtime exception.
+            logger.LogWarning("Organization ID from route is not a valid GUID; aborting authorization check.");
             context.Fail();
             return Task.CompletedTask;
         }
