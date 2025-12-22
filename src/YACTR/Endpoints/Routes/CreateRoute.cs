@@ -34,7 +34,8 @@ public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, RouteResponse
                 RouteId = createdRoute.Id,
                 SectorId = createdRoute.SectorId,
             });
-        } else
+        }
+        else
         {
             await Task.WhenAll(req.Pitches.Select(async pitchReq => await PitchRepository.CreateAsync(new Pitch()
             {

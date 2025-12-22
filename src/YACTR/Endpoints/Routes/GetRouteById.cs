@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using YACTR.Data.QueryExtensions;
@@ -8,10 +9,8 @@ namespace YACTR.Endpoints.Routes;
 
 public record GetRouteByIdRequest(Guid RouteId);
 
-public class GetRouteById : Endpoint<GetRouteByIdRequest, RouteResponse, RouteDataMapper>
+public class GetRouteById([Required] IEntityRepository<Route> routeRepository) : Endpoint<GetRouteByIdRequest, RouteResponse, RouteDataMapper>
 {
-    public required IEntityRepository<Route> RouteRepository { get; init; }
-
     public override void Configure()
     {
         Get("/{RouteId}");
@@ -20,7 +19,7 @@ public class GetRouteById : Endpoint<GetRouteByIdRequest, RouteResponse, RouteDa
 
     public override async Task HandleAsync(GetRouteByIdRequest req, CancellationToken ct)
     {
-        var route = await RouteRepository.BuildReadonlyQuery()
+        var route = await routeRepository.BuildReadonlyQuery()
             .Where(e => e.Id == req.RouteId)
             .WhereAvailable()
             .Include(e => e.Pitches.Where(x => x.DeletedAt == null))

@@ -8,10 +8,10 @@ namespace YACTR.Endpoints.Routes;
 
 public class UpdateRouteRequest
 {
-	public Guid RouteId { get; set; }
+    public Guid RouteId { get; set; }
 
-	[FromBody]
-	public required RouteRequestData Route { get; set; }
+    [FromBody]
+    public required RouteRequestData Route { get; set; }
 };
 
 public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyResponse, RouteDataMapper>

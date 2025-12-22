@@ -11,7 +11,7 @@ public record RoutePitchRequestData(
     string Name,
     ClimbingType Type,
     Guid? Id,
-    int? GearCount, 
+    int? GearCount,
     string? Description,
     int? Grade,
     int? Height,
@@ -77,7 +77,7 @@ public record RouteResponse(
 
 public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
 {
-	public override Route ToEntity(RouteRequestData r) => new Route()
+    public override Route ToEntity(RouteRequestData r) => new Route()
     {
         Name = r.Name,
         Type = r.Pitches.Select(x => x.Type).Aggregate(r.Type, (total, next) => total == next ? total : ClimbingType.Mixed),
@@ -105,25 +105,25 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
         SectorTopoLinePoints = r.SectorTopoLinePoints?.ToList()
     };
 
-	public override Route UpdateEntity(RouteRequestData r, Route e)
+    public override Route UpdateEntity(RouteRequestData r, Route e)
     {
-		e.Name = r.Name;
-		e.Description = r.Description;
+        e.Name = r.Name;
+        e.Description = r.Description;
         e.Grade = r.Grade;
         // If all types of pitches are the same, set to the type of the route, otherwise, set to ClimbingType.Mixed
-		e.Type = r.Pitches.Select(x => x.Type).Aggregate(r.Type, (total, next) => total == next ? total : ClimbingType.Mixed);
+        e.Type = r.Pitches.Select(x => x.Type).Aggregate(r.Type, (total, next) => total == next ? total : ClimbingType.Mixed);
 
-		e.BolterName = r.BolterName ?? e.BolterName;
-		e.FirstAscentClimberName = r.FirstAscentClimberName ?? e.FirstAscentClimberName;
-		e.FirstAscentDate = r.FirstAscentDate ?? e.FirstAscentDate;
+        e.BolterName = r.BolterName ?? e.BolterName;
+        e.FirstAscentClimberName = r.FirstAscentClimberName ?? e.FirstAscentClimberName;
+        e.FirstAscentDate = r.FirstAscentDate ?? e.FirstAscentDate;
 
-		e.TopoImageId = r.TopoImageId ?? e.TopoImageId;
-		e.TopoLinePoints = r.TopoLinePoints?.ToList() ?? e.TopoLinePoints;
-		e.TopoImageOverlaySvgId = r.TopoImageOverlayId ?? e.TopoImageOverlaySvgId;
+        e.TopoImageId = r.TopoImageId ?? e.TopoImageId;
+        e.TopoLinePoints = r.TopoLinePoints?.ToList() ?? e.TopoLinePoints;
+        e.TopoImageOverlaySvgId = r.TopoImageOverlayId ?? e.TopoImageOverlaySvgId;
 
         e.SectorId = r.SectorId;
         e.InSectorOrder = r.InSectorOrder;
-		e.SectorTopoLinePoints = r.SectorTopoLinePoints?.ToList() ?? e.SectorTopoLinePoints;
+        e.SectorTopoLinePoints = r.SectorTopoLinePoints?.ToList() ?? e.SectorTopoLinePoints;
         e.SectorTopoImageOverlaySvgId = r.SectorTopoImageOverlaySvgId;
 
         // TODO: Fix synchronization of pitches -- not working atm.
@@ -170,15 +170,15 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             ];
         }
 
-		return e;
-	}
+        return e;
+    }
 
-	public override async Task<RouteResponse> FromEntityAsync(Route e, CancellationToken ct = default)
-	{
-		using var mappingScope = CreateScope();
-		IImageStorageService service = mappingScope.Resolve<IImageStorageService>();
+    public override async Task<RouteResponse> FromEntityAsync(Route e, CancellationToken ct = default)
+    {
+        using var mappingScope = CreateScope();
+        IImageStorageService service = mappingScope.Resolve<IImageStorageService>();
 
-		return new(
+        return new(
             e.Id,
             e.Name,
             e.Description,
@@ -202,5 +202,5 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.TopoLinePoints?.ToArray(),
             e.SectorTopoLinePoints?.ToArray()
         );
-	}
+    }
 }
