@@ -154,7 +154,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
         };
 
         // Act
-        var (response, _) = await fixture.AnonymousClient.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
+        var (response, _) = await fixture.CreateClient().POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -222,7 +222,7 @@ public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fi
     public async Task DeleteImage_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Act
-        var (response, _) = await fixture.AnonymousClient.DELETEAsync<DeleteImage, ImageDeleteRequest, ImageResponse>(
+        var (response, _) = await fixture.CreateClient().DELETEAsync<DeleteImage, ImageDeleteRequest, ImageResponse>(
             new ImageDeleteRequest { ImageId = Guid.NewGuid() }, true);
 
         // Assert

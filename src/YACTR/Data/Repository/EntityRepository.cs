@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
 using YACTR.Data.Model;
-using YACTR.Data;
 using YACTR.Data.Repository.Interface;
 using YACTR.Data.QueryExtensions;
 

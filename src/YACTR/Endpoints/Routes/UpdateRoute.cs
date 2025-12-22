@@ -1,8 +1,12 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.Data.QueryExtensions;
 using YACTR.Data.Repository.Interface;
 using YACTR.DI.Authorization.Permissions;
+
 using Route = YACTR.Data.Model.Climbing.Route;
+using Void = FastEndpoints.Void;
 
 namespace YACTR.Endpoints.Routes;
 
@@ -25,19 +29,22 @@ public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyRespon
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.RoutesWrite)));
     }
 
-    public override async Task HandleAsync(UpdateRouteRequest req, CancellationToken ct)
+    public override async Task<Void> HandleAsync(UpdateRouteRequest req, CancellationToken ct)
     {
-        var existingRoute = await RouteRepository.GetByIdAsync(req.RouteId, ct);
+        var existingRoute = await RouteRepository.BuildTrackedQuery()
+            .Where(e => e.Id == req.RouteId)
+            .WhereAvailable()
+            .Include(e => e.Pitches)
+            .FirstOrDefaultAsync(ct);
+
         if (existingRoute == null)
         {
-            await Send.NotFoundAsync(ct);
-            return;
+            return await Send.NotFoundAsync(ct);
         }
 
-        Map.UpdateEntity(req.Route, existingRoute);
+        var updatedRoute = Map.UpdateEntity(req.Route, existingRoute);
+        await RouteRepository.UpdateAsync(updatedRoute, ct);
 
-        await RouteRepository.UpdateAsync(existingRoute, ct);
-
-        await Send.NoContentAsync(ct);
+        return await Send.NoContentAsync(ct);
     }
 }

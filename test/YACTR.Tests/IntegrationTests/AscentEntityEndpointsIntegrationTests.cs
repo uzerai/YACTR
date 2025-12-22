@@ -31,7 +31,7 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     [Fact]
     public async Task GetAllAscents_ReturnsSuccessStatusCode()
     {
-        using var client = fixture.AnonymousClient;
+        using var client = fixture.CreateClient();
 
         // Act
         var (response, result) = await client.GETAsync<GetAllAscents, EmptyRequest, List<AscentResponse>>(new());
@@ -296,7 +296,35 @@ public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         );
 
         // Act
-        var (response, _) = await fixture.AnonymousClient.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        var (response, _) = await fixture.CreateClient().POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task DeleteAscent_WithoutAuthentication_ReturnsUnauthorized()
+    {
+        // This test covers the branch where the user is not authenticated
+        // Arrange - Create an ascent with a valid user first
+        using var validClient = fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
+        var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var route = routes.First();
+        var completedAt = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(1));
+
+        var createRequest = new CreateAscentRequest(
+            RouteId: route.Id,
+            Type: AscentType.Tick,
+            CompletedAt: completedAt
+        );
+
+        var (createResponse, createdAscent) = await validClient.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        createResponse.IsSuccessStatusCode.ShouldBeTrue();
+
+        // Act - Try to delete without authentication (this tests the missing branch where ClaimValue returns null)
+        var deleteRequest = new DeleteAscentRequest(createdAscent.Id);
+        var (response, _) = await fixture.CreateClient().DELETEAsync<DeleteAscent, DeleteAscentRequest, AscentResponse>(deleteRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

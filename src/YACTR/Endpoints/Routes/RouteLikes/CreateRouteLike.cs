@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using YACTR.Data.Model.Climbing.Rating;
-using YACTR.Data.QueryExtensions;
 using YACTR.Data.Repository.Interface;
 using Route = YACTR.Data.Model.Climbing.Route;
 

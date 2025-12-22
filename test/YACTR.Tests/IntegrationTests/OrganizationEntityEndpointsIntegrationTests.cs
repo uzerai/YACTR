@@ -32,7 +32,7 @@ public class OrganizationEntityEndpointsIntegrationTests(IntegrationTestClassFix
     public async Task GetAll_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Act
-        var (response, _) = await fixture.AnonymousClient.GETAsync<GetAllOrganizations, EmptyRequest, List<Organization>>(new());
+        var (response, _) = await fixture.CreateClient().GETAsync<GetAllOrganizations, EmptyRequest, List<Organization>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -75,7 +75,7 @@ public class OrganizationEntityEndpointsIntegrationTests(IntegrationTestClassFix
         var createRequest = new CreateOrganizationRequestData("Test Org");
 
         // Act
-        var (response, _) = await fixture.AnonymousClient.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createRequest);
+        var (response, _) = await fixture.CreateClient().POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -122,7 +122,7 @@ public class OrganizationEntityEndpointsIntegrationTests(IntegrationTestClassFix
         var invalidId = Guid.NewGuid();
 
         // Act
-        var (response, _) = await fixture.AnonymousClient.GETAsync<GetOrganizationById, GetOrganizationByIdRequest, Organization>(new GetOrganizationByIdRequest(invalidId));
+        var (response, _) = await fixture.CreateClient().GETAsync<GetOrganizationById, GetOrganizationByIdRequest, Organization>(new GetOrganizationByIdRequest(invalidId));
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
