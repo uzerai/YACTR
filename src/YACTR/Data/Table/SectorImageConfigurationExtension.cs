@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using YACTR.Data.Model;
 
+namespace YACTR.Data.ConfigurationExtension;
+
 public static class SectorImageConfigurationExtension
 {
     public static ModelBuilder ConfigureSectorImageModel(this ModelBuilder modelBuilder)

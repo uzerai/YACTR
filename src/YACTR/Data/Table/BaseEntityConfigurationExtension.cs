@@ -10,6 +10,16 @@ public static class BaseEntityConfigurationExtension
         modelBuilder.Entity<BaseEntity>()
           .UseTpcMappingStrategy();
 
+        modelBuilder.Entity<BaseEntity>()
+            .HasIndex(e => e.CreatedAt)
+            .HasMethod("brin")
+            .IsDescending();
+
+        modelBuilder.Entity<BaseEntity>()
+            .HasIndex(e => e.UpdatedAt)
+            .HasMethod("brin")
+            .IsDescending();
+
         return modelBuilder;
     }
 }

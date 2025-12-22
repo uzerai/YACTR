@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace YACTR.Data.ConfigurationExtension;
 
-public static class BaseAscentConfigurationExtension
+public static class AscentConfigurationExtension
 {
     public static ModelBuilder ConfigureAscentModel(this ModelBuilder modelBuilder)
     {
