@@ -14,12 +14,24 @@ dev:
     attach -t yactr-dev
 
 [doc('Starts test-profile docker compose for debug with default settings')]
-test:
+test-env:
   tmux \
     new-session -d -s yactr-test "trap 'docker compose --profile test down' EXIT; docker compose --profile test up" \; \
     set-option -t yactr-test -g mouse on \; \
     set-option -t yactr-test destroy-unattached on \; \
     attach -t yactr-test
+
+[doc('Run the test-profile docker compose and run a test suite with coverage report generation enabled')]
+coverage:
+  rm -rf ./test/YACTR.Tests/TestResults && \
+  docker compose --profile test up -d && \
+  dotnet test YACTR.sln --settings ./tests.runsettings --verbosity minimal --collect:"XPlat Code Coverage" && \
+  docker compose --profile test down && \
+  reportgenerator \
+    -reports:"test/YACTR.Tests/TestResults/**/coverage.cobertura.xml" \
+    -targetdir:"coverage-report" \
+    -reporttypes:Html && \
+  open coverage-report/index.html
 
 [doc('Runs migrations against the dev-profile docker-compose')]
 run-migrations environment='development':

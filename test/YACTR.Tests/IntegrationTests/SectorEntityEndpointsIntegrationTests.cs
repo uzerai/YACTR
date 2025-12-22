@@ -24,6 +24,32 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
     }
 
     [Fact]
+    public async Task CreateSector_ReturnsSuccessStatusCode()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+
+        // Arrange
+        var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var createRequest = new SectorRequestData(
+            "Test Sector",
+            fixture.TestDataSeeder.NewPolygon(),
+            fixture.TestDataSeeder.NewPoint(),
+            area.Id,
+            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataSeeder.NewLineString(),
+            null,
+            null
+        );
+
+        // Act
+        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, SectorResponse>(createRequest);
+
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+    }
+
+    [Fact]
     public async Task GetById_WithValidId_ReturnsSector()
     {
         using var client = fixture.CreateAuthenticatedClient();
