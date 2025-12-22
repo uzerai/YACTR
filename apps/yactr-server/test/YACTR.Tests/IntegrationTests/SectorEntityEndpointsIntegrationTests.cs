@@ -91,7 +91,6 @@ public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture f
         using var client = fixture.CreateAuthenticatedClient();
         var invalidId = Guid.NewGuid();
 
-
         // Act
         var updateRequest = new UpdateSectorRequest()
         {

@@ -25,10 +25,10 @@ public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSch
     public const string TokenSplitChars = "::";
     public static readonly User DEFAULT_TEST_USER = new()
     {
-      Auth0UserId = $"test0|{Guid.Empty}",
-      Email = "test@test.dev",
-      Username = "test_user",
-      PlatformPermissions = Enum.GetValues<Permission>()
+        Auth0UserId = $"test0|{Guid.Empty}",
+        Email = "test@test.dev",
+        Username = "test_user",
+        PlatformPermissions = Enum.GetValues<Permission>()
     };
 
     /// <summary>
