@@ -4,6 +4,17 @@
                                  |    |     | |_____     |    |    \_
 ```
 <p align="center"><strong>Y</strong>et <strong>A</strong>nother <strong>C</strong>limbing <strong>TR</strong>acker</p>
+<div align="center">
+
+![.NET 10.0](https://img.shields.io/badge/Version-%2010.0-informational?style=flat&logo=dotnet)
+&nbsp;
+![Built With Docker](https://img.shields.io/badge/Built_With-Docker-informational?style=flat&logo=docker)
+&nbsp;
+[![Test Coverage](https://github.com/uzerai/YACTR/actions/workflows/test-coverage.yaml/badge.svg?branch=main)](https://github.com/uzerai/YACTR/actions/workflows/test-coverage.yaml)
+&nbsp;
+[![Image Build](https://github.com/uzerai/YACTR/actions/workflows/build-image.yaml/badge.svg?branch=main)](https://github.com/uzerai/YACTR/actions/workflows/build-image.yaml)
+
+</div>
 
 <p align="center">
   <a href="#why">Objective</a> •
