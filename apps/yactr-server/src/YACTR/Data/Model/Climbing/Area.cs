@@ -12,7 +12,6 @@ namespace YACTR.Data.Model.Climbing;
 /// 
 /// Most commonly represents a geographical area within which one or more climbing sectors are located.
 /// </summary>
-[Table("areas")]
 public class Area : BaseEntity
 {
     public required string Name { get; set; }
