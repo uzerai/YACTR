@@ -1,7 +1,7 @@
 using Shouldly;
 using YACTR.Data.Model.Climbing.Grade;
 
-namespace YACTR.Tests.UnitTests.GradeConverter;
+namespace YACTR.Tests.UnitTests.Grade.Converter;
 
 public abstract class GradeConverterTests<T> where T : Data.Model.Climbing.Grade.GradeConverter, new()
 {
