@@ -8,6 +8,9 @@ public static class AreaConfigurationExtension
     public static ModelBuilder ConfigureAreaModel(this ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Area>()
+            .ToTable("areas");
+
+        modelBuilder.Entity<Area>()
             .HasOne(e => e.MaintainerOrganization)
             .WithMany()
             .HasForeignKey(e => e.MaintainerOrganizationId);
