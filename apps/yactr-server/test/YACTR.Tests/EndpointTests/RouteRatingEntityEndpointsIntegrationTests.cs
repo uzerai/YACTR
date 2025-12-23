@@ -3,7 +3,7 @@ using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Endpoints.Routes.RouteRatings;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class RouteRatingEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>

@@ -3,7 +3,7 @@ using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Endpoints.Routes.RouteLikes;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class RouteLikeEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>

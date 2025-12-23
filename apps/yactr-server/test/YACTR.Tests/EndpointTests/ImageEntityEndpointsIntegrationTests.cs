@@ -8,7 +8,7 @@ using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Endpoints.Images;
 using YACTR.Tests.TestData;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class ImageEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
