@@ -6,7 +6,7 @@ using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints.Areas;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class AreaEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>

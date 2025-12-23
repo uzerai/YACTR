@@ -6,7 +6,7 @@ using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints.Routes;
 using YACTR.Tests.TestData;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class RouteEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>

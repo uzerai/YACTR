@@ -8,7 +8,7 @@
 // using YACTR.Endpoints.Organizations;
 // using YACTR.Endpoints.Organizations.Teams;
 
-// namespace YACTR.Tests.Endpoints;
+// namespace YACTR.Tests.EndpointTests;
 
 // [Collection("IntegrationTests")]
 // public class OrganizationTeamEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>

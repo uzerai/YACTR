@@ -8,7 +8,7 @@ using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Endpoints.Ascents;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class AscentEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>

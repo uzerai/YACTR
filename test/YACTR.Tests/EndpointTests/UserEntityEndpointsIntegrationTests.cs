@@ -6,7 +6,7 @@ using YACTR.Data.Model.Authentication;
 using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Endpoints.Users;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class UserEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>

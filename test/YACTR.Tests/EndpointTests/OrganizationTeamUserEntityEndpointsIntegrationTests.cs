@@ -9,7 +9,7 @@ using YACTR.Data.Model.Authentication;
 using YACTR.Endpoints.Organizations;
 using YACTR.Endpoints.Organizations.Teams;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class OrganizationTeamUserEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>

@@ -5,7 +5,7 @@ using Shouldly;
 using YACTR.Data.Model.Climbing;
 using YACTR.Endpoints.Sectors;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class SectorEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>

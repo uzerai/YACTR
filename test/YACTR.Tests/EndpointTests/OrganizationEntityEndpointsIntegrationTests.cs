@@ -5,7 +5,7 @@ using Shouldly;
 using YACTR.Data.Model.Organizations;
 using YACTR.Endpoints.Organizations;
 
-namespace YACTR.Tests.Endpoints;
+namespace YACTR.Tests.EndpointTests;
 
 [Collection("IntegrationTests")]
 public class OrganizationEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
