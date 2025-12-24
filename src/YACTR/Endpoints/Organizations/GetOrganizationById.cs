@@ -6,16 +6,8 @@ namespace YACTR.Endpoints.Organizations;
 
 public record GetOrganizationByIdRequest(Guid OrganizationId);
 
-public class GetOrganizationById : Endpoint<GetOrganizationByIdRequest, Organization>
+public class GetOrganizationById(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<GetOrganizationByIdRequest, Organization>
 {
-
-    private readonly IEntityRepository<Organization> _organizationRepository;
-
-    public GetOrganizationById(IEntityRepository<Organization> organizationRepository)
-    {
-        _organizationRepository = organizationRepository;
-    }
-
     public override void Configure()
     {
         Get("/{OrganizationId}");
@@ -24,7 +16,7 @@ public class GetOrganizationById : Endpoint<GetOrganizationByIdRequest, Organiza
 
     public override async Task HandleAsync(GetOrganizationByIdRequest req, CancellationToken ct)
     {
-        var organization = await _organizationRepository.GetByIdAsync(req.OrganizationId);
+        var organization = await organizationRepository.GetByIdAsync(req.OrganizationId, ct);
 
         if (organization is not null)
         {
@@ -32,6 +24,6 @@ public class GetOrganizationById : Endpoint<GetOrganizationByIdRequest, Organiza
             return;
         }
 
-        await Send.NotFoundAsync();
+        await Send.NotFoundAsync(ct);
     }
 }

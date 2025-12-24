@@ -3,32 +3,27 @@ using FastEndpoints;
 using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Organizations;
 using YACTR.Data.Repository.Interface;
+using YACTR.DI.Authorization.Permissions;
+using Void = FastEndpoints.Void;
 
 namespace YACTR.Endpoints.Organizations;
 
 public record CreateOrganizationTeamUserRequest(Guid OrganizationId, Guid TeamId, Guid UserId, List<Permission> Permissions);
+public record CreateOrganizationTeamUserResponse(Guid OrganizationId, Guid TeamId, Guid UserId);
 
-public class CreateOrganizationTeamUser : Endpoint<CreateOrganizationTeamUserRequest, OrganizationTeamUser>
+public class CreateOrganizationTeamUser(
+    IRepository<OrganizationUser> _organizationUserRepository,
+    IRepository<OrganizationTeamUser> _organizationTeamUserRepository, 
+    IEntityRepository<OrganizationTeam> _organizationTeamRepository) : AuthenticatedEndpoint<CreateOrganizationTeamUserRequest, CreateOrganizationTeamUserResponse>
 {
-    private readonly IRepository<OrganizationTeamUser> _organizationTeamUserRepository;
-    private readonly IEntityRepository<OrganizationTeam> _organizationTeamRepository;
-
-    public CreateOrganizationTeamUser(
-        IRepository<OrganizationTeamUser> organizationTeamUserRepository,
-        IEntityRepository<OrganizationTeam> organizationTeamRepository)
-    {
-        _organizationTeamUserRepository = organizationTeamUserRepository;
-        _organizationTeamRepository = organizationTeamRepository;
-    }
-
     public override void Configure()
     {
         Post("/{TeamId}/users");
         Group<OrganizationTeamsEndpointGroup>();
-        // Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.TeamsWrite)));
+        Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.TeamsWrite)));
     }
 
-    public override async Task HandleAsync(CreateOrganizationTeamUserRequest req, CancellationToken ct)
+    public override async Task<Void> HandleAsync(CreateOrganizationTeamUserRequest req, CancellationToken ct)
     {
         var organizationTeamUser = new OrganizationTeamUser
         {
@@ -38,15 +33,20 @@ public class CreateOrganizationTeamUser : Endpoint<CreateOrganizationTeamUserReq
             Permissions = req.Permissions,
         };
 
-        if (await _organizationTeamRepository.GetByIdAsync(req.TeamId, ct) is null)
+        var organizationTeam = await _organizationTeamRepository.GetByIdAsync(req.TeamId, ct);
+        if (organizationTeam is null)
         {
             AddError(r => r.TeamId, "Team does not exist");
-            await Send.ErrorsAsync((int)HttpStatusCode.FailedDependency, ct);
-            return;
+            return await Send.ErrorsAsync((int)HttpStatusCode.FailedDependency, ct);
         }
+        var organizationUser = await _organizationUserRepository.CreateAsync(new()
+        {
+            OrganizationId = organizationTeam.OrganizationId,
+            UserId = req.UserId
+        }, ct);
 
         var createdTeamUser = await _organizationTeamUserRepository.CreateAsync(organizationTeamUser, ct);
 
-        await Send.OkAsync(createdTeamUser, cancellation: ct);
+        return await Send.OkAsync(new (organizationTeam.OrganizationId, organizationTeam.Id, createdTeamUser.UserId), cancellation: ct);
     }
 }

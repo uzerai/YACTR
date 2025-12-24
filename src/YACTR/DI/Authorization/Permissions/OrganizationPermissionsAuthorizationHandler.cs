@@ -27,8 +27,10 @@ public class OrganizationPermissionsAuthorizationHandler(ILogger<OrganizationPer
             return Task.CompletedTask;
         }
 
-        if (context.User.Identities.First(x => x.Name == organizationId.ToString())
-            .HasClaim(LocalClaimTypes.OrganizationPermission, requirement.Permission.ToString()))
+        var organizationIdentity = context.User.Identities.FirstOrDefault(x => x.Name == organizationId.ToString());
+        var hasOrganizationClaim = organizationIdentity?.HasClaim(LocalClaimTypes.OrganizationPermission, requirement.Permission.ToString()) ?? false;
+
+        if (hasOrganizationClaim)
         {
             context.Succeed(requirement);
             return Task.CompletedTask;
