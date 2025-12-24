@@ -1,137 +1,147 @@
-// using System.Net;
-// using FastEndpoints;
-// using FastEndpoints.Testing;
-// using Shouldly;
-// using YACTR.Data.Model.Authentication;
-// using YACTR.Data.Model.Authorization.Permissions;
-// using YACTR.Data.Model.Organizations;
-// using YACTR.Endpoints.Organizations;
-// using YACTR.Endpoints.Organizations.Teams;
+using System.Net;
+using FastEndpoints;
+using FastEndpoints.Testing;
+using Shouldly;
+using YACTR.Data.Model.Authentication;
+using YACTR.Data.Model.Authorization.Permissions;
+using YACTR.Data.Model.Organizations;
+using YACTR.Endpoints.Organizations;
+using YACTR.Endpoints.Organizations.Teams;
 
-// namespace YACTR.Tests.EndpointTests;
+namespace YACTR.Tests.EndpointTests;
 
-// [Collection("IntegrationTests")]
-// public class OrganizationTeamEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
-// {
+[Collection("IntegrationTests")]
+public class OrganizationTeamEntityEndpointsIntegrationTests(IntegrationTestClassFixture fixture) : TestBase<IntegrationTestClassFixture>
+{
+    public Organization _organization = null!;
+    public OrganizationUser _organizationUser = null!;
 
-//     public Organization organization = null!;
-//   public OrganizationUser organizationUser = null!;
+    public User AllPermissionsUser = new()
+    {
+        Username = "test_user_with_all_permissions",
+        Email = "test_user@test.dev",
+        Auth0UserId = $"test|{Guid.NewGuid()}",
+        PlatformPermissions = Enum.GetValues<Permission>()
+    };
 
-//     public User AllPermissionsUser = new()
-//   {
-//     Username = "test_user_with_all_permissions",
-//     Email = "test_user@test.dev",
-//     Auth0UserId = $"test|{Guid.NewGuid()}",
-//     PlatformPermissions = Enum.GetValues<Permission>()
-//   };
+    protected override async ValueTask SetupAsync()
+    {
+        await base.SetupAsync();
 
-//   protected override async ValueTask SetupAsync()
-//   {
-//     await base.SetupAsync();
+        User user = await fixture.GetEntityRepository<User>()
+            .CreateAsync(AllPermissionsUser, TestContext.Current.CancellationToken);
 
-//     User user = await fixture.GetEntityRepository<User>()
-//     .CreateAsync(AllPermissionsUser, TestContext.Current.CancellationToken);
-
-//     organization = await fixture.GetEntityRepository<Organization>()
-//       .CreateAsync(new()
-//       {
-//         Name = "Test Organization",
-//       });
-
-
-//     OrganizationUser orgUser = await fixture.GetRepository<OrganizationUser>()
-//       .CreateAsync(new()
-//       {
-//         UserId = user.Id,
-//         OrganizationId = organization.Id,
-//       });
-//   }
+        _organization = await fixture.GetEntityRepository<Organization>()
+            .CreateAsync(new()
+            {
+                Name = "Test Organization",
+            });
 
 
-//     [Fact]
-//     public async Task GetAll_WithValidOrganizationId_ReturnsSuccessStatusCode()
-//     {
-//         using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
+        // Organization user with all permissions possible.
+        _organizationUser = await fixture.GetRepository<OrganizationUser>()
+            .CreateAsync(new()
+            {
+                UserId = user.Id,
+                OrganizationId = _organization.Id,
+                Permissions = Enum.GetValues<Permission>()
+            });
+    }
 
-//         // Arrange - First create an organization
-//         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Teams");
-//         var (orgResponse, organization) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createOrgRequest);
-//         orgResponse.IsSuccessStatusCode.ShouldBeTrue();
 
-//         // Act
-//         var getRequest = new GetAllOrganizationTeamsRequest(organization.Id);
-//         var (response, result) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeam>>(getRequest);
+    [Fact]
+    public async Task GetAll_WithOrganization_ReturnsSuccessStatusCode()
+    {
+        using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
 
-//         // Assert
-//         response.IsSuccessStatusCode.ShouldBeTrue();
-//         result.ShouldNotBeNull();
-//     }
+        // Act
+        var getRequest = new GetAllOrganizationTeamsRequest(_organization.Id);
+        var (response, result) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeam>>(getRequest);
 
-//     /// <summary>
-//     /// In this case; a user cannot have permissions for an organization which does not exist;
-//     /// therefore, forbidden is returned instead of not found.
-//     /// 
-//     /// It's also in the interest of enumeration attacks in the quantum computing age :')
-//     /// </summary>
-//     /// <returns></returns>
-//     [Fact]
-//     public async Task GetAll_WithInvalidOrganizationId_ReturnsForbidden()
-//     {
-//         using var client = fixture.CreateAuthenticatedClient();
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+    }
 
-//         // Arrange
-//         var invalidOrgId = Guid.NewGuid();
+    /// <summary>
+    /// In this case; a user cannot have permissions for an organization which does not exist;
+    /// therefore, forbidden is returned instead of not found.
+    /// 
+    /// It's also in the interest of enumeration attacks in the quantum computing age :')
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task GetAll_WithInvalidOrganizationId_ReturnsForbidden()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
 
-//         // Act
-//         var getRequest = new GetAllOrganizationTeamsRequest(invalidOrgId);
-//         var (response, _) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeam>>(getRequest);
+        // Arrange
+        var invalidOrgId = Guid.NewGuid();
 
-//         // Assert
-//         response.IsSuccessStatusCode.ShouldBeFalse();
-//         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
-//     }
+        // Act
+        var getRequest = new GetAllOrganizationTeamsRequest(invalidOrgId);
+        var (response, _) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeam>>(getRequest);
 
-//     [Fact]
-//     public async Task Create_WithValidData_ReturnsCreatedTeam()
-//     {
-//         using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
 
-//         // Arrange - First create an organization
-//         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Team Creation");
-//         var (orgResponse, organization) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createOrgRequest);
-//         orgResponse.IsSuccessStatusCode.ShouldBeTrue();
+    [Fact]
+    public async Task Create_WithValidData_ReturnsCreatedTeam()
+    {
+        using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
 
-//         // Create team request
-//         var createRequest = new CreateOrganizationTeamRequest(organization.Id, "Test Team");
+        // Arrange - First create an organization
 
-//         // Act
-//         var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createRequest);
+        // Create team request
+        var createRequest = new CreateOrganizationTeamRequest(_organization.Id, "Test Team");
 
-//         // Assert
-//         response.IsSuccessStatusCode.ShouldBeTrue();
-//         result.ShouldNotBeNull();
-//         result.Name.ShouldBe("Test Team");
-//         result.OrganizationId.ShouldBe(organization.Id);
-//     }
+        // Act
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createRequest);
 
-//     [Fact]
-//     public async Task Create_WithEmptyTeamName_ReturnsOk()
-//     {
-//         using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.Name.ShouldBe("Test Team");
+        result.OrganizationId.ShouldBe(_organization.Id);
+    }
 
-//         // Arrange - First create an organization
-//         var createOrgRequest = new CreateOrganizationRequestData("Test Organization for Empty Team");
-//         var (orgResponse, organization) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createOrgRequest);
-//         orgResponse.IsSuccessStatusCode.ShouldBeTrue();
+    [Fact]
+    public async Task Create_WithNoPermissions_ReturnsCreatedTeam()
+    {
+        using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
 
-//         var createRequest = new CreateOrganizationTeamRequest(organization.Id, "");
+        // Arrange - Remove the organization user == no permissions
+        fixture.DatabaseContext.Remove(_organizationUser);
+        await fixture.DatabaseContext.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-//         // Act
-//         var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createRequest);
+        // Create team request
+        var createRequest = new CreateOrganizationTeamRequest(_organization.Id, "Test Team");
 
-//         // Assert
-//         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-//         result.ShouldNotBeNull();
-//         result.Name.ShouldBe("");
-//     }
-// }
+        // Act
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createRequest);
+
+        // Assert
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+
+    [Fact]
+    public async Task Create_WithEmptyTeamName_ReturnsOk()
+    {
+        using var client = fixture.CreateAuthenticatedClient(AllPermissionsUser);
+
+        // Arrange - First create an organization
+        var createRequest = new CreateOrganizationTeamRequest(_organization.Id, "");
+
+        // Act
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createRequest);
+
+        // Assert
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        result.ShouldNotBeNull();
+        result.Name.ShouldBe("");
+    }
+}

@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using FastEndpoints;
 using FastEndpoints.Security;
 using YACTR.Data.Model.Authorization.Permissions;
 using YACTR.Data.Model.Organizations;
@@ -10,7 +9,7 @@ namespace YACTR.Endpoints.Organizations;
 
 public record CreateOrganizationRequestData(string Name);
 
-public class CreateOrganization : Endpoint<CreateOrganizationRequestData, Organization>
+public class CreateOrganization : AuthenticatedEndpoint<CreateOrganizationRequestData, Organization>
 {
 
     private readonly IEntityRepository<Organization> _organizationRepository;
