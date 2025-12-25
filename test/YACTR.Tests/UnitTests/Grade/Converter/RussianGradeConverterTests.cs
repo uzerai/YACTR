@@ -22,9 +22,9 @@ public class RussianGradeConverterTests : GradeConverterTests<RussianGradeConver
     [InlineData(411, "7B")]
     public void GradeConverter_GetGradeString_ConvertsCorrectly(int numericalGrade, string gradeString)
     {
-        var outputGrade = sut.ConvertToGrade(numericalGrade);
+        var outputGrade = sut.Convert(numericalGrade);
 
-        outputGrade.StringGrade.ShouldBeEquivalentTo(gradeString);
+        outputGrade.GradeString.ShouldBeEquivalentTo(gradeString);
     }
 }
 
