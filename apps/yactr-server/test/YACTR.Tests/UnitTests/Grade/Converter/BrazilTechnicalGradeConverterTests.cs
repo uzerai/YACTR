@@ -38,9 +38,9 @@ public class BrazilTechnicalGradeConverterTests : GradeConverterTests<BrazilTech
     [InlineData(431, "XIIc")]
     public void GradeConverter_GetGradeString_ConvertsCorrectly(int numericalGrade, string gradeString)
     {
-        var outputGrade = sut.ConvertToGrade(numericalGrade);
+        var outputGrade = sut.Convert(numericalGrade);
 
-        outputGrade.StringGrade.ShouldBeEquivalentTo(gradeString);
+        outputGrade.GradeString.ShouldBeEquivalentTo(gradeString);
     }
 }
 

@@ -3,7 +3,7 @@ using YACTR.Data.Model.Climbing.Grade;
 
 namespace YACTR.Tests.UnitTests.Grade.Converter;
 
-public abstract class GradeConverterTests<T> where T : Data.Model.Climbing.Grade.GradeConverter, new()
+public abstract class GradeConverterTests<T> where T : GradeConverter, new()
 {
     public T sut = new();
 
@@ -15,8 +15,16 @@ public abstract class GradeConverterTests<T> where T : Data.Model.Climbing.Grade
     [InlineData(401, GradeBand.Elite)]
     public void GradeConverter_GetGradeBand_ConvertsCorrectly(int numericalGrade, GradeBand expectedBand)
     {
-        var outputGrade = sut.ConvertToGrade(numericalGrade);
+        var outputGrade = sut.Convert(numericalGrade);
 
         outputGrade.GradeBand.ShouldBe(expectedBand);
+    }
+
+    [Fact]
+    public void GradeConverter_ForGradeSystem_ReturnsCorrectGradeSystem()
+    {
+        object outputConverter = GradeConverter.ForGradeSystem(sut.GradeSystem);
+
+        outputConverter.ShouldBeOfType(sut.GetType());
     }
 }
