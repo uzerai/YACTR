@@ -77,7 +77,7 @@ public record RouteResponse(
 
 public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
 {
-    public override Route ToEntity(RouteRequestData r) => new Route()
+    public override Route ToEntity(RouteRequestData r) => new()
     {
         Name = r.Name,
         Type = r.Pitches.Select(x => x.Type).Aggregate(r.Type, (total, next) => total == next ? total : ClimbingType.Mixed),
@@ -129,7 +129,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
 
         if (e.Pitches.Count > 0)
         {
-            e.Pitches = r.Pitches.Select(p =>
+            e.Pitches = [.. r.Pitches.Select(p =>
             {
                 if (p.Id != null)
                 {
@@ -154,7 +154,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
                     SectorId = r.SectorId,
                     Description = p.Description
                 };
-            }).ToList();
+            })];
         }
         else
         {
@@ -186,7 +186,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.SectorId,
             e.InSectorOrder,
             e.Grade,
-            0,
+            e.Pitches.Sum(p => p.GearCount),
             e.FirstAscentDate,
             e.FirstAscentClimberName,
             e.BolterName,
