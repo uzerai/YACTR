@@ -1,6 +1,5 @@
 using System.Data;
 using System.Security.Claims;
-using FileSignatures.Formats;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -122,7 +121,7 @@ sealed partial class DatabaseUserPermissionClaimsTransformer(
                     new Claim(ClaimTypes.NameIdentifier, orgUser.OrganizationId.ToString()),
                     new Claim(ClaimTypes.Role, "User"),
                     .. orgUser.Permissions.Select(
-                        permission => new Claim(LocalClaimTypes.OrganizationPermission, permission.ToString()!)
+                        permission => new Claim(PermissionLevel.OrganizationPermission.ToString(), permission.ToString()!)
                     )], ClaimTypes.AuthenticationMethod, ClaimTypes.NameIdentifier, ClaimTypes.Role));
             }
 
@@ -145,10 +144,10 @@ sealed partial class DatabaseUserPermissionClaimsTransformer(
             new Claim(ClaimTypes.AuthenticationInstant, user.LastLogin.ToUnixTimeMilliseconds().ToString()),
             new Claim(ClaimTypes.Role, user.AdminPermissions.Count != 0 ? "Admin" : "User"),
             .. user.PlatformPermissions.Select(
-                permission => new Claim(LocalClaimTypes.PlatformPermission, permission.ToString())
+                permission => new Claim(PermissionLevel.PlatformPermission.ToString(), permission.ToString())
             ),
             .. user.AdminPermissions.Select(
-                permission => new Claim(LocalClaimTypes.AdminPermission, permission.ToString())
+                permission => new Claim(PermissionLevel.AdminPermission.ToString(), permission.ToString())
             )
         ]);
 
