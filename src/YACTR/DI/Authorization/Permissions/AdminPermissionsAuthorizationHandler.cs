@@ -10,7 +10,7 @@ public class AdminPermissionsAuthorizationHandler(ILogger<AdminPermissionsAuthor
         logger.LogDebug("Handling admin permissions authorization for {Permission}", requirement.Permission);
         logger.LogDebug("User is {UserId}", context.User.Identity?.Name);
         
-        if (context.User.HasClaim(LocalClaimTypes.AdminPermission, requirement.Permission.ToString()))
+        if (context.User.HasClaim(PermissionLevel.AdminPermission.ToString(), requirement.Permission.ToString()))
         {
             context.Succeed(requirement);
             return Task.CompletedTask;

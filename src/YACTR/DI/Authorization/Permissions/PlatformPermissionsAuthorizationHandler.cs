@@ -9,7 +9,7 @@ public class PlatformPermissionsAuthorizationHandler(ILogger<PlatformPermissions
     {
         logger.LogDebug("Handling platform permissions authorization for {Permission}", requirement.Permission);
         logger.LogDebug("User is {UserId}", context.User.Identity?.Name);
-        if (context.User.HasClaim(LocalClaimTypes.PlatformPermission, requirement.Permission.ToString()))
+        if (context.User.HasClaim(PermissionLevel.PlatformPermission.ToString(), requirement.Permission.ToString()))
         {
             context.Succeed(requirement);
             return Task.CompletedTask;

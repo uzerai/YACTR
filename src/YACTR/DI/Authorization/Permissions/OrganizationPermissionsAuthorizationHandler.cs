@@ -28,7 +28,7 @@ public class OrganizationPermissionsAuthorizationHandler(ILogger<OrganizationPer
         }
 
         var organizationIdentity = context.User.Identities.FirstOrDefault(x => x.Name == organizationId.ToString());
-        var hasOrganizationClaim = organizationIdentity?.HasClaim(LocalClaimTypes.OrganizationPermission, requirement.Permission.ToString()) ?? false;
+        var hasOrganizationClaim = organizationIdentity?.HasClaim(PermissionLevel.OrganizationPermission.ToString(), requirement.Permission.ToString()) ?? false;
 
         if (hasOrganizationClaim)
         {
