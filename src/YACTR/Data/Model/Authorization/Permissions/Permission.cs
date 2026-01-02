@@ -15,6 +15,13 @@ public static class DefaultUserPermissions
         Permission.SectorsRead,
         Permission.RoutesRead,
         Permission.PitchesRead,
+        Permission.ImagesRead,
+        Permission.AchievementAscentRead,
+        Permission.AchievementAscentWrite,
+        Permission.RouteLikeRead,
+        Permission.RouteLikeWrite,
+        Permission.RouteRatingRead,
+        Permission.RouteRatingWrite,
     ];
 
     public static readonly Permission[] OrganizationPermissions = [
@@ -64,5 +71,18 @@ public enum Permission
     [JsonStringEnumMemberName("images:read")]
     ImagesRead,
     [JsonStringEnumMemberName("images:write")]
-    ImagesWrite
+    ImagesWrite,
+    [JsonStringEnumMemberName("route-rating:read")]
+    RouteRatingRead,
+    [JsonStringEnumMemberName("route-rating:write")]
+    RouteRatingWrite,
+    [JsonStringEnumMemberName("route-like:read")]
+    RouteLikeRead,
+    [JsonStringEnumMemberName("route-like:write")]
+    RouteLikeWrite,
+    [JsonStringEnumMemberName("achievement-ascent:read")]
+    AchievementAscentRead,
+    [JsonStringEnumMemberName("achievement-ascent:write")]
+    AchievementAscentWrite,
+
 }
