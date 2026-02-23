@@ -20,12 +20,6 @@ public class DeleteAscent : AuthenticatedEndpoint<DeleteAscentRequest, AscentRes
 
     public override async Task HandleAsync(DeleteAscentRequest req, CancellationToken ct)
     {
-        if (!Guid.TryParse(HttpContext.User.ClaimValue(ClaimTypes.Sid), out Guid userId))
-        {
-            await Send.UnauthorizedAsync(ct);
-            return;
-        }
-
         var ascent = await AscentRepository.BuildTrackedQuery()
             .Include(a => a.Route)
             .FirstOrDefaultAsync(a => a.Id == req.AscentId, ct);
@@ -37,7 +31,7 @@ public class DeleteAscent : AuthenticatedEndpoint<DeleteAscentRequest, AscentRes
         }
 
         // Ensure the user owns this ascent
-        if (ascent.UserId != userId)
+        if (ascent.UserId != CurrentUserId)
         {
             await Send.ForbiddenAsync(ct);
             return;

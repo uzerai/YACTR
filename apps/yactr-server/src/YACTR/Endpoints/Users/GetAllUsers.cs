@@ -17,6 +17,8 @@ public class GetAllUsers(IEntityRepository<User> userRepository) : Authenticated
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        await Send.OkAsync(await userRepository.GetAllAsync(ct), ct);
+        var allUsers = await userRepository.GetAllAsync(ct);
+
+        await Send.OkAsync(allUsers, ct);
     }
 }

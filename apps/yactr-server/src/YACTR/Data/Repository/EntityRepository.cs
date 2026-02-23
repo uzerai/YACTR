@@ -34,7 +34,7 @@ public partial class EntityRepository<T> : BaseRepository<T>, IEntityRepository<
 
     public override async Task<bool> DeleteAsync(T entity, CancellationToken ct = default)
     {
-        var entityToDelete = await GetByIdTrackingAsync(entity.Id);
+        var entityToDelete = await GetByIdTrackingAsync(entity.Id, ct);
 
         if (entityToDelete == null)
         {
