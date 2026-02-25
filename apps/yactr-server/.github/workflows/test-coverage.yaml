@@ -39,7 +39,6 @@ jobs:
       uses: hoverkraft-tech/compose-action@v2.0.1
       with:
         compose-file: "./docker-compose.yaml"
-        # up-flags: "--build"
         compose-flags: "--profile test"
 
     - name: Restore Dependencies
@@ -49,12 +48,12 @@ jobs:
       run: dotnet build YACTR.sln --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test YACTR.sln --settings ./tests.runsettings --configuration Release --no-build --verbosity minimal --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: dotnet test YACTR.sln --settings ./tests.runsettings --configuration Release --no-build --verbosity minimal --collect:"XPlat Code Coverage"
 
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: coverage/**/coverage.cobertura.xml
+        filename: tests/**/TestResults/**/coverage.cobertura.xml
         badge: true
         fail_below_min: true
         format: markdown
