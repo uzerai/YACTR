@@ -23,12 +23,12 @@ test-env:
 
 [doc('Run the test-profile docker compose and run a test suite with coverage report generation enabled')]
 coverage:
-  rm -rf ./test/YACTR.Tests/TestResults && \
+  rm -rf ./tests/YACTR.Api.Tests/TestResults && \
   docker compose --profile test up -d && \
   dotnet test YACTR.sln --settings ./tests.runsettings --verbosity minimal --collect:"XPlat Code Coverage" && \
   docker compose --profile test down && \
   reportgenerator \
-    -reports:"test/YACTR.Tests/TestResults/**/coverage.cobertura.xml" \
+    -reports:"tests/**/TestResults/**/coverage.cobertura.xml" \
     -targetdir:"coverage-report" \
     -reporttypes:Html && \
   open coverage-report/index.html
@@ -39,7 +39,7 @@ run-migrations environment='development':
 
 [doc('Creates a migration in the project')]
 add-migration migration_name:
-    dotnet ef migrations add {{migration_name}} --project src/YACTR -o Data/Migrations
+    dotnet ef migrations add {{migration_name}} --project src/YACTR.Infrastructure --startup-project src/YACTR.Api -c DatabaseContext -o Database/Migrations
 
 [doc('Rolls back the database to a given migration')]
 db-rollback migration_name:

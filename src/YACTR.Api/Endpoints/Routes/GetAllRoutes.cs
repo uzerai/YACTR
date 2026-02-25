@@ -1,0 +1,23 @@
+using FastEndpoints;
+using YACTR.Infrastructure.Database.Repository.Interface;
+using Route = YACTR.Domain.Model.Climbing.Route;
+
+namespace YACTR.Api.Endpoints.Routes;
+
+public class GetAllRoutes : Endpoint<EmptyRequest, IEnumerable<RouteResponse>, RouteDataMapper>
+{
+    public required IEntityRepository<Route> RouteRepository { get; init; }
+
+    public override void Configure()
+    {
+        Get("/");
+        AllowAnonymous();
+        Group<RoutesEndpointGroup>();
+    }
+
+    public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
+    {
+        var routes = await RouteRepository.GetAllAvailableAsync(ct);
+        await Send.OkAsync(await Task.WhenAll(routes.Select(async e => await Map.FromEntityAsync(e, ct))), cancellation: ct);
+    }
+}
