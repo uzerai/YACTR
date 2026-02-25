@@ -44,7 +44,7 @@ public class FinnishGradeConverterTests : GradeConverterTests<FinnishGradeConver
     [InlineData(441, "12+")]
     public void GradeConverter_GetGradeString_ConvertsCorrectly(int numericalGrade, string gradeString)
     {
-        var outputGrade = sut.Convert(numericalGrade);
+        var outputGrade = Sut.Convert(numericalGrade);
 
         outputGrade.GradeString.ShouldBeEquivalentTo(gradeString);
     }

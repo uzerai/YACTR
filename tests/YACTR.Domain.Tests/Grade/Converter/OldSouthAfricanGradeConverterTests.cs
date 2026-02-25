@@ -38,7 +38,7 @@ public class OldSouthAfricanGradeConverterTests : GradeConverterTests<OldSouthAf
     [InlineData(379, "J3")]
     public void GradeConverter_GetGradeString_ConvertsCorrectly(int numericalGrade, string gradeString)
     {
-        var outputGrade = sut.Convert(numericalGrade);
+        var outputGrade = Sut.Convert(numericalGrade);
 
         outputGrade.GradeString.ShouldBeEquivalentTo(gradeString);
     }

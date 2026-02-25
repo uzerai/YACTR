@@ -61,7 +61,7 @@ public class FrenchGradeConverterTests : GradeConverterTests<FrenchGradeConverte
     [InlineData(444, "9c")]
     public void GradeConverter_GetGradeString_ConvertsCorrectly(int numericalGrade, string gradeString)
     {
-        var outputGrade = sut.Convert(numericalGrade);
+        var outputGrade = Sut.Convert(numericalGrade);
 
         outputGrade.GradeString.ShouldBeEquivalentTo(gradeString);
     }

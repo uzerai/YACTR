@@ -42,7 +42,7 @@ public class YDSGradeConverterTests : GradeConverterTests<YDSGradeConverter>
     [InlineData(444, "5.15d")]
     public void GradeConverter_GetGradeString_ConvertsCorrectly(int numericalGrade, string gradeString)
     {
-        var outputGrade = sut.Convert(numericalGrade);
+        var outputGrade = Sut.Convert(numericalGrade);
 
         outputGrade.GradeString.ShouldBeEquivalentTo(gradeString);
     }
