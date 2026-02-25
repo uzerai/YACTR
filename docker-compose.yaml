@@ -25,12 +25,7 @@ services:
       - database-data:/var/lib/postgresql/data
       - ./container/local-db/init-scripts/01-init-extensions.sql:/docker-entrypoint-initdb.d/01-init-extensions.sql
     # Add build context to install extensions
-    image: registry.botten.me/yactr-database:main
-    # Uncomment this to build image locally; and comment out the 'image' line above.
-    # build:
-    #   context: .
-    #   dockerfile: container/local-db/Dockerfile
-    #   target: runner
+    image: postgres:18.2-alpine
     profiles:
       - test
       - development
