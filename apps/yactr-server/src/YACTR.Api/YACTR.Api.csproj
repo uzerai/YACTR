@@ -4,8 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ProjectName>YACTR.API</ProjectName>
-    <RootNamespace>YACTR</RootNamespace>
+    <ProjectName>YACTR.Api</ProjectName>
+    <RootNamespace>YACTR.Api</RootNamespace>
   </PropertyGroup>
   
   <ItemGroup>
@@ -20,3 +20,4 @@
   </ItemGroup>
 
 </Project>
+

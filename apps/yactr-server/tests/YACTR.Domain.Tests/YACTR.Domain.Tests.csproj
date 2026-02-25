@@ -6,9 +6,13 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <RootNamespace>YACTR</RootNamespace>
+    <RootNamespace>YACTR.Domain.Tests</RootNamespace>
     <AssemblyName>YACTR.Domain.Tests</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\YACTR.Domain\YACTR.Domain.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector">
@@ -16,7 +20,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit.v3.mtp-v1" />
     <PackageReference Include="xunit.v3"/>
     <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
@@ -28,9 +31,4 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\YACTR.Domain\YACTR.Domain.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ProjectName>YACTR.Infrastructure</ProjectName>
-    <RootNamespace>YACTR</RootNamespace>
+    <RootNamespace>YACTR.Infrastructure</RootNamespace>
   </PropertyGroup>
   
   <ItemGroup>
