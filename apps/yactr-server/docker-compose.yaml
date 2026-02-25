@@ -22,10 +22,10 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - database-data:/var/lib/postgresql/data
-      - ./container/local-db/init-scripts/01-init-extensions.sql:/docker-entrypoint-initdb.d/01-init-extensions.sql
+      - database-data:/var/lib/postgresql
     # Add build context to install extensions
-    image: postgres:18.2-alpine
+    image: postgis/postgis:18-3.6
+    platform: linux/amd64
     profiles:
       - test
       - development
