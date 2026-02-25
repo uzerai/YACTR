@@ -6,50 +6,42 @@
   <ItemGroup Label="Main dependencies">
     <PackageVersion Include="NetTopologySuite" Version="2.6.0" />
     <PackageVersion Include="NodaTime" Version="3.3.0" />
-    
     <!-- ASP.NET Core -->
     <PackageVersion Include="Bogus" Version="35.6.5" />
-    <PackageVersion Include="FastEndpoints" Version="7.1.1" />
-    <PackageVersion Include="FastEndpoints.Security" Version="7.1.1" />
-    <PackageVersion Include="FastEndpoints.Swagger" Version="7.1.1" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
-    <PackageVersion Include="NodaTime.Serialization.SystemTextJson" Version="1.3.0" />
+    <PackageVersion Include="FastEndpoints" Version="7.2.0" />
+    <PackageVersion Include="FastEndpoints.Security" Version="7.2.0" />
+    <PackageVersion Include="FastEndpoints.Swagger" Version="7.2.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
+    <PackageVersion Include="NodaTime.Serialization.SystemTextJson" Version="1.3.1" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" Version="10.0.0" />
-
     <!-- EF Core -->
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1" />
-    <PackageVersion Include="EFCore.NamingConventions" Version="10.0.0-rc.2" />
-
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3" />
+    <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
     <!-- EF Core Tools -->
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1"/>
-
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.3" />
     <!-- Auth -->
     <PackageVersion Include="Auth0.AspNetCore.Authentication" Version="1.6.0" />
-
     <!-- NetTopologySuite, for geolocation support in EF -->
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="10.0.0" />
     <PackageVersion Include="NetTopologySuite.IO.GeoJSON4STJ" Version="4.0.0" />
-
     <!-- Min io -->
     <!-- TODO: Need to replace this with garage -->
     <PackageVersion Include="Minio" Version="7.0.0" />
-
     <!-- FileSignatures, primarily for uploaded image signature detection -->
     <PackageVersion Include="FileSignatures" Version="6.1.1" />
   </ItemGroup>
-  
   <ItemGroup Label="Test dependencies">
-    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="coverlet.collector" Version="8.0.0" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageVersion Include="xunit.v3.mtp-v1" Version="3.2.0" />
-    <PackageVersion Include="xunit.v3" Version="3.2.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
-    <PackageVersion Include="FastEndpoints.Testing" Version="7.1.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageVersion Include="xunit.v3.mtp-v1" Version="3.2.2" />
+    <PackageVersion Include="xunit.v3" Version="3.2.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="FastEndpoints.Testing" Version="7.2.0" />
   </ItemGroup>
 </Project>
