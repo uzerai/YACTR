@@ -28,7 +28,7 @@ coverage:
   dotnet test YACTR.sln --settings ./tests.runsettings --verbosity minimal --collect:"XPlat Code Coverage" && \
   docker compose --profile test down && \
   reportgenerator \
-    -reports:"tests/YACTR.Api.Tests/TestResults/**/coverage.cobertura.xml" \
+    -reports:"tests/**/TestResults/**/coverage.cobertura.xml" \
     -targetdir:"coverage-report" \
     -reporttypes:Html && \
   open coverage-report/index.html
