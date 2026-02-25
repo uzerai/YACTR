@@ -22,15 +22,10 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - database-data:/var/lib/postgresql/data
-      - ./container/local-db/init-scripts/01-init-extensions.sql:/docker-entrypoint-initdb.d/01-init-extensions.sql
+      - database-data:/var/lib/postgresql
     # Add build context to install extensions
-    image: registry.botten.me/yactr-database:main
-    # Uncomment this to build image locally; and comment out the 'image' line above.
-    # build:
-    #   context: .
-    #   dockerfile: container/local-db/Dockerfile
-    #   target: runner
+    image: postgis/postgis:18-3.6
+    platform: linux/amd64
     profiles:
       - test
       - development
