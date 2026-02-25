@@ -44,7 +44,7 @@ public class PolishGradeConverterTests : GradeConverterTests<PolishGradeConverte
     [InlineData(441, "VI.9+")]
     public void GradeConverter_GetGradeString_ConvertsCorrectly(int numericalGrade, string gradeString)
     {
-        var outputGrade = sut.Convert(numericalGrade);
+        var outputGrade = Sut.Convert(numericalGrade);
 
         outputGrade.GradeString.ShouldBeEquivalentTo(gradeString);
     }

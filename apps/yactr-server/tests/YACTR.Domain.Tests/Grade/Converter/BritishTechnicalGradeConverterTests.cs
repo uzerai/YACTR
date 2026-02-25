@@ -29,7 +29,7 @@ public class BritishTechnicalGradeConverterTests : GradeConverterTests<BritishTe
     [InlineData(396, "7c")]
     public void GradeConverter_GetGradeString_ConvertsCorrectly(int numericalGrade, string gradeString)
     {
-        var outputGrade = sut.Convert(numericalGrade);
+        var outputGrade = Sut.Convert(numericalGrade);
 
         outputGrade.GradeString.ShouldBeEquivalentTo(gradeString);
     }

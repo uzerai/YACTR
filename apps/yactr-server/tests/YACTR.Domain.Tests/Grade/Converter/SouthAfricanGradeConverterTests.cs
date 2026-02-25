@@ -48,7 +48,7 @@ public class SouthAfricanGradeConverterTests : GradeConverterTests<SouthAfricanG
     [InlineData(430, "40")]
     public void GradeConverter_GetGradeString_ConvertsCorrectly(int numericalGrade, string gradeString)
     {
-        var outputGrade = sut.Convert(numericalGrade);
+        var outputGrade = Sut.Convert(numericalGrade);
 
         outputGrade.GradeString.ShouldBeEquivalentTo(gradeString);
     }
