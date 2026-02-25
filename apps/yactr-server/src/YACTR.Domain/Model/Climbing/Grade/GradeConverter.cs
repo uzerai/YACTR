@@ -10,7 +10,7 @@ public abstract class GradeConverter
 
     // These are currently hard-set independent of the GradeSystem used; 
     // and are effectively the common grade-buckets across all grade systems.
-    private readonly ImmutableList<(int rangeMin, int rangeMax, GradeBand band)> GradeBands =
+    private readonly ImmutableList<(int rangeMin, int rangeMax, GradeBand band)> _gradeBands =
     [
         (0, 100, GradeBand.Beginner),
         (101, 200, GradeBand.Intermediate),
@@ -54,7 +54,7 @@ public abstract class GradeConverter
     /// <returns>Grade object equivalent to gradeInt provided</returns>
     public Grade Convert(int gradeInt)
     {
-        return new()
+        return new Grade
         {
             GradeInt = gradeInt,
             GradeString = ToGradeString(gradeInt),
@@ -72,7 +72,7 @@ public abstract class GradeConverter
     public Grade Convert(string gradeString)
     {
         var gradeInt = ToGradeInt(gradeString);
-        return new()
+        return new Grade
         {
             GradeInt = gradeInt,
             GradeString = gradeString,
@@ -113,7 +113,7 @@ public abstract class GradeConverter
 
     private GradeBand ToGradeBand(int gradeInt)
     {
-        foreach (var (rangeMin, rangeMax, gradeBand) in GradeBands)
+        foreach (var (rangeMin, rangeMax, gradeBand) in _gradeBands)
         {
             if ((gradeInt - rangeMin) * (rangeMax - gradeInt)>= 0)
             {
