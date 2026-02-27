@@ -17,13 +17,11 @@ public class OrganizationTeamUser
     public virtual ICollection<Permission> Permissions { get; set; } = DefaultUserPermissions.TeamPermissions;
 
     [Required]
-    [ForeignKey("UserId")]
     public virtual User User { get; set; } = null!;
     [Required]
     [ForeignKey("OrganizationId")]
     public virtual Organization Organization { get; set; } = null!;
     [Required]
-    [ForeignKey("UserId OrganizationId")]
     public virtual OrganizationUser OrganizationUser { get; set; } = null!;
     [Required]
     [ForeignKey("OrganizationTeamId")]

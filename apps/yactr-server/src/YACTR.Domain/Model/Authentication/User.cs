@@ -8,8 +8,6 @@ using YACTR.Domain.Model.Organizations;
 
 namespace YACTR.Domain.Model.Authentication;
 
-// [Index(nameof(Auth0UserId), IsUnique = true)]
-// [Index(nameof(Email))]
 public class User : BaseEntity
 {
     [Required]
