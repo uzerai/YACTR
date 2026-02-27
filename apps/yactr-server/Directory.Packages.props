@@ -22,7 +22,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3" />
     <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1" />
     <!-- EF Core Tools -->
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1" />
     <!-- Auth -->
     <PackageVersion Include="Auth0.AspNetCore.Authentication" Version="1.6.0" />
     <!-- NetTopologySuite, for geolocation support in EF -->
