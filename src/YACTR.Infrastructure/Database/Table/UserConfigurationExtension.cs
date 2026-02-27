@@ -25,6 +25,12 @@ public static class UserConfigurationExtension
             .HasMany(e => e.RouteLikes)
             .WithOne(e => e.User);
 
+        modelBuilder.Entity<User>()
+            .HasIndex(e => e.Email);
+        
+        modelBuilder.Entity<User>()
+            .HasIndex(e => e.Auth0UserId);
+
         return modelBuilder;
     }
 }
