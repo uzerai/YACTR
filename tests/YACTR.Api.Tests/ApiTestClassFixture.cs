@@ -22,12 +22,6 @@ public class ApiTestClassFixture : AppFixture<Program>
     public DatabaseContext DatabaseContext { get; private set; } = null!;
     public TestDataSeeder TestDataSeeder { get; private set; } = null!;
 
-    protected JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        Converters = { new GeoJsonConverterFactory() }
-    };
-
     /// <summary>
     /// Ensures that the database is created before the test suite is run.
     /// </summary>
