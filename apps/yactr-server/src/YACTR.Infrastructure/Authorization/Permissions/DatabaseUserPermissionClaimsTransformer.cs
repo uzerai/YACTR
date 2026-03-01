@@ -11,6 +11,10 @@ using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Infrastructure.Authorization.Permissions;
 
+/// TODO: This should really be moved to be done in a separate auth service, which will authorize the user,
+/// populate the jwt, then forward it to the API (which can then just use the claims on the jwt instead of retrieving from database).
+/// That's going to be a future problem though, and for now this will work just fine.
+
 /// <summary>
 /// The UserPermissionsHydrator is what instantiates the custom claims for the local database
 /// into the user identity of the ASP.NET authorization flow.

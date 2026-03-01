@@ -22,7 +22,7 @@ namespace YACTR.Api.Tests;
 public class TestAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public const string AuthenticationScheme = "TestScheme";
-    public const string TokenSplitChars = "::";
+    private const string TokenSplitChars = "::";
     public static readonly User DEFAULT_TEST_USER = new()
     {
         Auth0UserId = $"test0|{Guid.Empty}",

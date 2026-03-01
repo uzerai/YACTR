@@ -26,7 +26,7 @@ test-env:
 [group('test')]
 [doc('Run the test-profile docker compose and run a test suite with coverage report generation enabled')]
 coverage:
-  rm -rf ./tests/YACTR.Api.Tests/TestResults
+  rm -rf tests/YACTR.Api.Tests/TestResults tests/YACTR.Domain.Tests/TestResults tests/YACTR.Infrastructure.Tests/TestResults
   docker compose --profile test up -d
   -dotnet test YACTR.sln --settings ./tests.runsettings --verbosity minimal --collect:"XPlat Code Coverage"
   docker compose --profile test down
