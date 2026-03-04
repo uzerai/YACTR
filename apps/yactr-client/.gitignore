@@ -1,6 +1,6 @@
 node_modules
 .cursor
-lib/api/generated
+src/lib/api/generated
 
 # Output
 .output
