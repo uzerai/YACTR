@@ -84,5 +84,4 @@ public enum Permission
     AchievementAscentRead,
     [JsonStringEnumMemberName("achievement-ascent:write")]
     AchievementAscentWrite,
-
 }

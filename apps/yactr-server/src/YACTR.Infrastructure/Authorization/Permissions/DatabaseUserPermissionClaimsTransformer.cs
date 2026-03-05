@@ -39,7 +39,7 @@ namespace YACTR.Infrastructure.Authorization.Permissions;
 /// </list>
 /// 
 /// <br/>
-/// This permission claims transformer will append all levels of permissions to 3 types of identities;
+/// This permission claims transformer will append all levels of permissions to 2 types of identities;
 /// <list type="bullet">
 ///   <item>
 ///     <description>
@@ -126,7 +126,8 @@ public sealed class DatabaseUserPermissionClaimsTransformer(
                     new Claim(ClaimTypes.Role, "User"),
                     .. orgUser.Permissions.Select(
                         permission => new Claim(PermissionLevel.OrganizationPermission.ToString(), permission.ToString()!)
-                    )], ClaimTypes.AuthenticationMethod, ClaimTypes.NameIdentifier, ClaimTypes.Role));
+                    )
+                ], ClaimTypes.AuthenticationMethod, ClaimTypes.NameIdentifier, ClaimTypes.Role));
             }
 
             transformerCache.Set(TransformerCacheKey(nameIdentifier), principal, TimeSpan.FromMinutes(1));
