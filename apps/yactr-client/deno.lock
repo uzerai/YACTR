@@ -30,7 +30,7 @@
     "npm:prettier@^3.8.1": "3.8.1",
     "npm:svelte-check@^4.4.4": "4.4.4_svelte@5.53.7__acorn@8.16.0_typescript@5.9.3",
     "npm:svelte-konva@^1.0.1": "1.0.1_konva@10.2.0_svelte@5.53.7__acorn@8.16.0",
-    "npm:svelte-openlayers@^1.6.0": "1.6.0_svelte@5.53.7__acorn@8.16.0",
+    "npm:svelte-openlayers@^2.1.0": "2.1.0_svelte@5.53.7__acorn@8.16.0",
     "npm:svelte@^5.53.6": "5.53.7_acorn@8.16.0",
     "npm:tailwindcss@^4.2.1": "4.2.1",
     "npm:typescript-eslint@^8.56.1": "8.56.1_eslint@9.39.3_typescript@5.9.3_@typescript-eslint+parser@8.56.1__eslint@9.39.3__typescript@5.9.3",
@@ -2303,8 +2303,8 @@
         "svelte"
       ]
     },
-    "svelte-openlayers@1.6.0_svelte@5.53.7__acorn@8.16.0": {
-      "integrity": "sha512-0Oyc65/hB7bHSLQnXA4MJn4W/X+NdXVqVBkq4lsooQtcVD/j4NEIekP2eGG9SV4ihMnZsLDK3XuTdlTmOF27/w==",
+    "svelte-openlayers@2.1.0_svelte@5.53.7__acorn@8.16.0": {
+      "integrity": "sha512-dBAgzwoyBG8PxXMng9S3JAFUj/8QzQRlRwI2sIf7/ZPuRfet7WlneQoQxzAz5VOt9X0v8VVl4JEkAt/0Iv3K6A==",
       "dependencies": [
         "ol",
         "svelte"
@@ -2597,7 +2597,7 @@
         "npm:prettier@^3.8.1",
         "npm:svelte-check@^4.4.4",
         "npm:svelte-konva@^1.0.1",
-        "npm:svelte-openlayers@^1.6.0",
+        "npm:svelte-openlayers@^2.1.0",
         "npm:svelte@^5.53.6",
         "npm:tailwindcss@^4.2.1",
         "npm:typescript-eslint@^8.56.1",
