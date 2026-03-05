@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { authClient } from '$lib/auth-client';
 
   const handleSignIn = async () => {
     const redirect =
-      $page.url.searchParams.get('callbackUrl') ??
-      '/admin';
+      page.url.searchParams.get('callbackUrl') ?? "/";
 
     await authClient.signIn.oauth2({
       providerId: 'auth0',

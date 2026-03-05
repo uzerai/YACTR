@@ -33,8 +33,8 @@
 			<button
 				class="rounded bg-white px-3 py-1 text-sm font-medium text-space-cadet hover:bg-gray-100"
 				onclick={async () => {
-					await authClient.signIn.social({
-						provider: 'auth0'
+					await authClient.signIn.oauth2({
+						providerId: 'auth0'
 					});
 				}}
 			>

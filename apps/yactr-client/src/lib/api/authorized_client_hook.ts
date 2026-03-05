@@ -5,11 +5,12 @@ import type { Handle } from "@sveltejs/kit";
 export const authorizedClientHook: Handle = async ({ event, resolve }) => {
   const session = await event.locals.auth();
 
-  console.debug("Setting @hey-api/client headers for authorization");
   if (session) {
+    console.debug("Setting @hey-api/client headers for authorization");
+
     client.setConfig({
       headers: {
-        Authorization: `Bearer ${session!.access_token}`
+        Authorization: `Bearer ${session.access_token}`
       }
     });
   }

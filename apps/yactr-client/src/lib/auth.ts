@@ -11,7 +11,7 @@ import {
   AUTH_AUTH0_SECRET,
   BETTER_AUTH_URL
 } from "$env/static/private";
-import { yactrEndpointsUsersGetCurrentUser } from "./api";
+import { yactrApiEndpointsUsersGetCurrentUser } from "./api";
 
 export interface AuthSession {
   access_token: string;
@@ -82,7 +82,7 @@ export const getAPIUserHook: Handle = async ({ event, resolve }) => {
     }
 
     if (!event.cookies.get("ajs_user")) {
-      const { data } = await yactrEndpointsUsersGetCurrentUser();
+      const { data } = await yactrApiEndpointsUsersGetCurrentUser();
 
       if (data) {
         event.cookies.set("ajs_user", JSON.stringify(data), {
