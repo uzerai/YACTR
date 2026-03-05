@@ -1,6 +1,6 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import { error, redirect, type Handle } from '@sveltejs/kit';
-import { getAPIUserHook, handle as handleAuth } from '$lib/auth';
+import { getAPIUserHook, handle as handleAuth } from './lib/auth';
 import { authorizedClientHook } from '$lib/api/authorized_client_hook';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 
@@ -20,7 +20,7 @@ const protectAdminRoutes: Handle = async ({ event, resolve }) => {
   const session = await event.locals.auth();
   const user = await event.locals.user();
 
-  if (!session) throw redirect(302, `/auth/signin?callbackUrl=${event.url.pathname}`);
+  if (!session) throw redirect(302, `/sign-in?callbackUrl=${event.url.pathname}`);
   if ((user?.admin_permissions?.length ?? 0) < 1) throw error(403, "You are not authorized to access this page");
 
   return resolve(event);
