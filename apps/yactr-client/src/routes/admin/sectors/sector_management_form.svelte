@@ -1,12 +1,12 @@
 <script lang="ts">
 	import MultiPolygonSelection from '$lib/components/GeolocationInput/MultiPolygonSelection.svelte';
 	import PointSelection from '$lib/components/GeolocationInput/PointSelection.svelte';
-	import type {
-		YactrEndpointsSectorsSectorRequestData,
-		YactrEndpointsAreasAreaResponse,
-		YactrEndpointsSectorsSectorImageResponseData,
-		YactrEndpointsSectorsGetSectorByIdData,
-		YactrEndpointsSectorsGetSectorByIdResponse
+import type {
+		YactrApiEndpointsSectorsSectorRequestData,
+		YactrApiEndpointsAreasAreaResponse,
+		YactrApiEndpointsSectorsSectorImageResponseData,
+		YactrApiEndpointsSectorsGetSectorByIdData,
+		YactrApiEndpointsSectorsGetSectorByIdResponse
 	} from '$lib/api';
 	import type { Coordinate } from 'ol/coordinate';
 	import {
@@ -27,11 +27,11 @@
 	let {
 		sector = $bindable(),
 		loadedImages: loaded_images = $bindable([]),
-		areas = [] as YactrEndpointsAreasAreaResponse[]
+		areas = [] as YactrApiEndpointsAreasAreaResponse[]
 	}: {
-		sector?: YactrEndpointsSectorsSectorRequestData;
-		loadedImages?: YactrEndpointsSectorsSectorImageResponseData[];
-		areas?: YactrEndpointsAreasAreaResponse[];
+		sector?: YactrApiEndpointsSectorsSectorRequestData;
+		loadedImages?: YactrApiEndpointsSectorsSectorImageResponseData[];
+		areas?: YactrApiEndpointsAreasAreaResponse[];
 	} = $props();
 
 	let area_id = $derived(sector?.area_id);
@@ -57,10 +57,10 @@
 			}))
 		);
 	let primary_image_preview: { alt: string; src: string } | undefined = $derived(
-		(sector as YactrEndpointsSectorsGetSectorByIdResponse)?.primary_sector_image_url
+		(sector as YactrApiEndpointsSectorsGetSectorByIdResponse)?.primary_sector_image_url
 			? {
 					alt: sector!.primary_sector_image_id!,
-					src: (sector as YactrEndpointsSectorsGetSectorByIdResponse).primary_sector_image_url!
+					src: (sector as YactrApiEndpointsSectorsGetSectorByIdResponse).primary_sector_image_url!
 				}
 			: undefined
 	);

@@ -1,4 +1,4 @@
-import { yactrEndpointsOrganizationsCreateOrganization } from "$lib/api";
+import { yactrApiEndpointsOrganizationsCreateOrganization } from "$lib/api";
 import { fail, redirect, type Actions } from "@sveltejs/kit";
 
 export const actions = {
@@ -8,7 +8,7 @@ export const actions = {
 
     if (!data.get("name")) throw fail(422, { name: "name" });
 
-    const { error } = await yactrEndpointsOrganizationsCreateOrganization({
+    const { error } = await yactrApiEndpointsOrganizationsCreateOrganization({
       headers: { Authorization: `Bearer ${session!.access_token}` },
       body: { name: data.get("name")!.toString() }
     });

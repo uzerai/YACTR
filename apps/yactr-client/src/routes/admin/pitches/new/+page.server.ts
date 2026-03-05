@@ -1,4 +1,4 @@
-import { yactrEndpointsPitchesCreatePitch, yactrEndpointsSectorsGetAllSectors } from "$lib/api";
+import { yactrApiEndpointsPitchesCreatePitch, yactrApiEndpointsSectorsGetAllSectors } from "$lib/api";
 import { fail, redirect, } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
@@ -6,7 +6,7 @@ import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async (event) => {
   const { session } = await event.parent();
-  const { data: sectors } = await yactrEndpointsSectorsGetAllSectors({
+  const { data: sectors } = await yactrApiEndpointsSectorsGetAllSectors({
     headers: { Authorization: `Bearer ${session!.access_token}` }
   });
   return { sectors };
@@ -21,7 +21,7 @@ export const actions = {
       throw fail(422, { sector_id: "sector_id" })
     }
 
-    const { error } = await yactrEndpointsPitchesCreatePitch({
+    const { error } = await yactrApiEndpointsPitchesCreatePitch({
       headers: { Authorization: `Bearer ${session!.access_token}` },
       body: {
         sector_id: data.get("sector_id")!.toString(),

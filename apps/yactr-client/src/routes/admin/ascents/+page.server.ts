@@ -1,11 +1,11 @@
-import { yactrEndpointsAscentsDeleteAscent, yactrEndpointsAscentsGetAllAscents } from "$lib/api";
+import { yactrApiEndpointsAscentsDeleteAscent, yactrApiEndpointsAscentsGetAllAscents } from "$lib/api";
 import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async (event) => {
   const { session } = await event.parent();
 
-  const { data: ascents } = await yactrEndpointsAscentsGetAllAscents({
+  const { data: ascents } = await yactrApiEndpointsAscentsGetAllAscents({
     headers: {
       Authorization: `Bearer ${session!.access_token}`
     }
@@ -23,7 +23,7 @@ export const actions = {
     const data = await request.formData();
     const ascent_id = data.get("ascent_id")!.toString();
 
-    const { error } = await yactrEndpointsAscentsDeleteAscent({
+    const { error } = await yactrApiEndpointsAscentsDeleteAscent({
       path: {
         ascent_id
       },

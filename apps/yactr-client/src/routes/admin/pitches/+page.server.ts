@@ -1,11 +1,11 @@
-import { yactrEndpointsPitchesDeletePitch, yactrEndpointsPitchesGetAllPitches } from "$lib/api";
+import { yactrApiEndpointsPitchesDeletePitch, yactrApiEndpointsPitchesGetAllPitches } from "$lib/api";
 import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async (event) => {
   const { session } = await event.parent();
 
-  const { data: pitches } = await yactrEndpointsPitchesGetAllPitches({
+  const { data: pitches } = await yactrApiEndpointsPitchesGetAllPitches({
     headers: {
       Authorization: `Bearer ${session!.access_token}`
     }
@@ -23,7 +23,7 @@ export const actions = {
     const data = await request.formData();
     const pitch_id = data.get("pitch_id")!.toString();
 
-    const { error } = await yactrEndpointsPitchesDeletePitch({
+    const { error } = await yactrApiEndpointsPitchesDeletePitch({
       path: {
         pitch_id
       },

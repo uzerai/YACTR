@@ -1,10 +1,10 @@
-import { yactrEndpointsOrganizationsGetAllOrganizations, yactrEndpointsOrganizationsTeamsCreateOrganizationTeam } from "$lib/api";
+import { yactrApiEndpointsOrganizationsGetAllOrganizations, yactrApiEndpointsOrganizationsTeamsCreateOrganizationTeam } from "$lib/api";
 import { fail, redirect } from "@sveltejs/kit";
 import { type Actions, type PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async (event) => {
   const { session } = await event.parent();
-  const { data: organizations } = await yactrEndpointsOrganizationsGetAllOrganizations({
+  const { data: organizations } = await yactrApiEndpointsOrganizationsGetAllOrganizations({
     headers: { Authorization: `Bearer ${session!.access_token}` }
   });
   return { organizations };
@@ -19,7 +19,7 @@ export const actions = {
       throw fail(422, { organization_id: "organization_id", name: "name" })
     }
 
-    const { error } = await yactrEndpointsOrganizationsTeamsCreateOrganizationTeam({
+    const { error } = await yactrApiEndpointsOrganizationsTeamsCreateOrganizationTeam({
       path: { organization_id: data.get("organization_id")!.toString() },
       headers: { Authorization: `Bearer ${session!.access_token}` },
       body: { name: data.get("name")!.toString() }

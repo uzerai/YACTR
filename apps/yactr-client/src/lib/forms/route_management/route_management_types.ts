@@ -1,11 +1,11 @@
-import type { YactrDataModelClimbingClimbingType } from "$lib/api";
+import type { YactrDomainModelClimbingClimbingType } from "$lib/api";
 
 // Strings _CAN_ be json serialized forms of more complex objects
 // TODO: Add type-hinting to json-serialized strings for automatic deserialization.
 export interface RouteManagementFormType {
   sector_id: string;
   name: string;
-  type: YactrDataModelClimbingClimbingType;
+  type: YactrDomainModelClimbingClimbingType;
   height?: number;
   description?: string;
   grade?: string;

@@ -1,9 +1,9 @@
-import { yactrEndpointsRoutesDeleteRoute, yactrEndpointsRoutesGetAllRoutes } from "$lib/api";
+import { yactrApiEndpointsRoutesDeleteRoute, yactrApiEndpointsRoutesGetAllRoutes } from "$lib/api";
 import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async () => {
-  const { data: routes } = await yactrEndpointsRoutesGetAllRoutes();
+  const { data: routes } = await yactrApiEndpointsRoutesGetAllRoutes();
 
   return {
     routes,
@@ -15,7 +15,7 @@ export const actions = {
     const data = await request.formData();
     const route_id = data.get("route_id")!.toString();
 
-    const { error, response } = await yactrEndpointsRoutesDeleteRoute({
+    const { error, response } = await yactrApiEndpointsRoutesDeleteRoute({
       path: {
         route_id
       },

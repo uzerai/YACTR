@@ -1,4 +1,4 @@
-import { yactrEndpointsAreasCreateArea } from "$lib/api";
+import { yactrApiEndpointsAreasCreateArea } from "$lib/api";
 import { fail, redirect, type Actions } from "@sveltejs/kit";
 import type { Coordinate } from "ol/coordinate.js";
 
@@ -22,7 +22,7 @@ export const actions = {
       }
     }
 
-    const { error, response } = await yactrEndpointsAreasCreateArea({
+    const { error, response  } = await yactrApiEndpointsAreasCreateArea({
       body: {
         name: data.get("name")!.toString(),
         description: data.get("description")!.toString(),

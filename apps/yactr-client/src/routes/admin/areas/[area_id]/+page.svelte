@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import AreaManagementForm from '../area_management_form.svelte';
-	import type { YactrEndpointsAreasAreaRequestData } from '$lib/api';
+	import type { YactrApiEndpointsAreasAreaRequestData } from '$lib/api';
 	import { Heading, Hr, Indicator, Tooltip } from 'flowbite-svelte';
 
 	let { data, params }: PageProps = $props();
@@ -9,7 +9,7 @@
 	let area = $derived({
 		...data.area,
 		id: params.area_id
-	}) as YactrEndpointsAreasAreaRequestData;
+	}) as YactrApiEndpointsAreasAreaRequestData;
 </script>
 
 <Heading tag="h1" class="flex items-center gap-2"

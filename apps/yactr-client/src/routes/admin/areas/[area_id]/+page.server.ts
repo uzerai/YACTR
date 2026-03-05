@@ -1,10 +1,10 @@
-import { yactrEndpointsAreasGetAreaById, yactrEndpointsAreasUpdateArea } from "$lib/api";
+import { yactrApiEndpointsAreasGetAreaById, yactrApiEndpointsAreasUpdateArea } from "$lib/api";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Coordinate } from "ol/coordinate";
 
 export const load: PageServerLoad = async ({ params }) => {
-  const { data: area } = await yactrEndpointsAreasGetAreaById({
+  const { data: area } = await yactrApiEndpointsAreasGetAreaById({
     path: {
       area_id: params.area_id
     }
@@ -28,7 +28,7 @@ export const actions = {
       }
     }
 
-    const { error } = await yactrEndpointsAreasUpdateArea({
+    const { error } = await yactrApiEndpointsAreasUpdateArea({
       path: {
         area_id: params.area_id!
       },

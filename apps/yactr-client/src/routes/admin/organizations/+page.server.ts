@@ -1,10 +1,10 @@
-import { yactrEndpointsOrganizationsGetAllOrganizations } from "$lib/api";
+import { yactrApiEndpointsOrganizationsGetAllOrganizations } from "$lib/api";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async (event) => {
   const { session } = await event.parent();
 
-  const { data: organizations } = await yactrEndpointsOrganizationsGetAllOrganizations({
+  const { data: organizations } = await yactrApiEndpointsOrganizationsGetAllOrganizations({
     headers: {
       Authorization: `Bearer ${session!.access_token}`
     }

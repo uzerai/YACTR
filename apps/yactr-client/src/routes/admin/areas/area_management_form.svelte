@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { YactrEndpointsAreasAreaRequestData } from '$lib/api';
+	import type { YactrApiEndpointsAreasAreaRequestData } from '$lib/api';
 	import { Input, Label, Button, Textarea, Tooltip, Heading, Hr } from 'flowbite-svelte';
 	import { InfoCircleOutline } from 'flowbite-svelte-icons';
 	import MultiPolygonSelection from '$lib/components/GeolocationInput/MultiPolygonSelection.svelte';
 	import PointSelection from '$lib/components/GeolocationInput/PointSelection.svelte';
 	import type { Coordinate } from 'ol/coordinate';
 
-	let { area = $bindable() }: { area?: YactrEndpointsAreasAreaRequestData } = $props();
+	let { area = $bindable() }: { area?: YactrApiEndpointsAreasAreaRequestData } = $props();
 
 	let boundary = $derived(area?.boundary?.coordinates as Coordinate[][][]);
 	let location = $derived(area?.location?.coordinates as Coordinate);

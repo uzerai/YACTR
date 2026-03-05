@@ -1,4 +1,4 @@
-import { yactrEndpointsAscentsCreateAscent, type YactrDataModelAchievementAscentType } from "$lib/api";
+import { yactrApiEndpointsAscentsCreateAscent, type YactrDomainModelAchievementAscentType } from "$lib/api";
 import { fail, redirect, type Actions } from "@sveltejs/kit";
 
 export const actions = {
@@ -11,13 +11,13 @@ export const actions = {
       throw fail(422, { route_id: "route_id" })
     }
 
-    const { error } = await yactrEndpointsAscentsCreateAscent({
+    const { error } = await yactrApiEndpointsAscentsCreateAscent({
       headers: {
         Authorization: `Bearer ${session!.access_token}`
       },
       body: {
         route_id: data.get("route_id")!.toString(),
-        type: Number(data.get("type")!.toString()) as YactrDataModelAchievementAscentType,
+        type: Number(data.get("type")!.toString()) as YactrDomainModelAchievementAscentType,
         completed_at: data.get("completed_at")!.toString() || undefined,
       }
     });

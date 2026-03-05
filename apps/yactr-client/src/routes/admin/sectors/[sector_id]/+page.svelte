@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
 	import SectorManagementForm from '../sector_management_form.svelte';
-	import type { YactrEndpointsSectorsSectorRequestData } from '$lib/api';
+	import type { YactrApiEndpointsSectorsSectorRequestData } from '$lib/api';
 	import { Heading, Hr, Indicator, Tooltip } from 'flowbite-svelte';
 
 	let { data, params }: PageProps = $props();

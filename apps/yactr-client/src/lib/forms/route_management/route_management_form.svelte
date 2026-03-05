@@ -1,10 +1,10 @@
 <script lang="ts">
 	import {
-		yactrEndpointsSectorsGetSectorById,
-		type YactrDataModelClimbingClimbingType,
-		type YactrEndpointsRoutesRouteResponse,
-		type YactrEndpointsSectorsSectorImageResponseData,
-		type YactrEndpointsSectorsSectorResponse
+		yactrApiEndpointsSectorsGetSectorById,
+		type YactrDomainModelClimbingClimbingType,
+		type YactrApiEndpointsRoutesRouteResponse,
+		type YactrApiEndpointsSectorsSectorImageResponseData,
+		type YactrApiEndpointsSectorsSectorResponse
 	} from '$lib/api';
 	import {
 		Button,
@@ -29,12 +29,12 @@
 		sectors = [],
 		access_token
 	}: {
-		route?: YactrEndpointsRoutesRouteResponse;
-		sectors: YactrEndpointsSectorsSectorResponse[];
+		route?: YactrApiEndpointsRoutesRouteResponse;
+		sectors: YactrApiEndpointsSectorsSectorResponse[];
 		access_token: string;
 	} = $props();
 
-	const climbing_types: YactrDataModelClimbingClimbingType[] = [
+	const climbing_types: YactrDomainModelClimbingClimbingType[] = [
 		'Sport',
 		'Traditional',
 		'Boulder',
@@ -42,15 +42,15 @@
 		'Aid'
 	];
 
-	let route = $state<YactrEndpointsRoutesRouteResponse>(routeProp ?? {});
-	let selected_sector = $state<YactrEndpointsSectorsSectorResponse>();
+	let route = $state<YactrApiEndpointsRoutesRouteResponse>(routeProp ?? {});
+	let selected_sector = $state<YactrApiEndpointsSectorsSectorResponse>();
 	let is_multipitch = $state((route.pitches?.length ?? 0) > 1);
 
 	let sector_images = $derived<
-		Array<YactrEndpointsSectorsSectorImageResponseData & Partial<{ isPrimary: boolean }>>
+		Array<YactrApiEndpointsSectorsSectorImageResponseData & Partial<{ isPrimary: boolean }>>
 	>(
 		selected_sector?.sector_images
-			?.map((image) => ({ ...image, isPrimary: false }))
+			?.map((image: YactrApiEndpointsSectorsSectorImageResponseData) => ({ ...image, isPrimary: false }))
 			?.concat({
 				image_id: selected_sector?.primary_sector_image_id!,
 				image_url: selected_sector?.primary_sector_image_url,
@@ -81,14 +81,15 @@
 
 	$effect(() => {
 		if (route.sector_id) {
-			yactrEndpointsSectorsGetSectorById({
+			yactrApiEndpointsSectorsGetSectorById({
 				path: {
 					sector_id: route.sector_id
 				},
 				headers: {
 					Authorization: `Bearer ${access_token}`
 				}
-			}).then(({ data, response }) => {
+			}).then((result: Awaited<ReturnType<typeof yactrApiEndpointsSectorsGetSectorById>>) => {
+				const { data, response } = result;
 				if (response.ok) {
 					selected_sector = data;
 				}

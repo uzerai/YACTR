@@ -1,15 +1,15 @@
-import { yactrEndpointsImagesUploadImage, yactrEndpointsRoutesGetRouteById, yactrEndpointsRoutesUpdateRoute, yactrEndpointsSectorsGetAllSectors, type YactrDataModelClimbingTopoTopoLinePoint } from "$lib/api";
+import { yactrApiEndpointsImagesUploadImage, yactrApiEndpointsRoutesGetRouteById, yactrApiEndpointsRoutesUpdateRoute, yactrApiEndpointsSectorsGetAllSectors, type YactrDomainModelClimbingTopoTopoLinePoint } from "$lib/api";
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params }) => {
-  const { data: route } = await yactrEndpointsRoutesGetRouteById({
+  const { data: route } = await yactrApiEndpointsRoutesGetRouteById({
     path: { route_id: params.route_id },
   });
 
   if (!route) return error(404, "Not found");
 
-  const { data: sectors } = await yactrEndpointsSectorsGetAllSectors();
+  const { data: sectors } = await yactrApiEndpointsSectorsGetAllSectors();
 
   console.dir(route, { depth: 4 });
 
@@ -33,7 +33,7 @@ export const actions = {
     let sector_topo_image_overlay_svg_id: string | undefined;
 
     if (route_image.size !== 0) {
-      const { data: route_image_data, response: route_image_upload_response } = await yactrEndpointsImagesUploadImage({
+      const { data: route_image_data, response: route_image_upload_response } = await yactrApiEndpointsImagesUploadImage({
         body: { image: route_image },
       });
       topo_image_id = route_image_data?.image_id;
@@ -41,7 +41,7 @@ export const actions = {
     }
 
     if (route_image_overlay.size !== 0) {
-      const { data: route_image_overlay_data, response: route_overlay_response } = await yactrEndpointsImagesUploadImage({
+      const { data: route_image_overlay_data, response: route_overlay_response } = await yactrApiEndpointsImagesUploadImage({
         body: { image: route_image_overlay },
       });
       topo_image_overlay_id = route_image_overlay_data?.image_id;
@@ -49,20 +49,20 @@ export const actions = {
     }
 
     if (sector_image_overlay.size !== 0) {
-      const { data: sector_image_overlay_data, response: sector_overlay_response } = await yactrEndpointsImagesUploadImage({
+      const { data: sector_image_overlay_data, response: sector_overlay_response } = await yactrApiEndpointsImagesUploadImage({
         body: { image: sector_image_overlay }
       });
       sector_topo_image_overlay_svg_id = sector_image_overlay_data?.image_id;
       console.dir({ sector_overlay_response });
     }
 
-    let topo_line_points: YactrDataModelClimbingTopoTopoLinePoint[] = [];
+    let topo_line_points: YactrDomainModelClimbingTopoTopoLinePoint[] = [];
     console.log("topo_line_points", data.get("topo_line_points")?.toString());
     if (data.get("topo_line_points")?.toString()) {
       topo_line_points = JSON.parse(data.get("topo_line_points")!.toString())
     }
 
-    let sector_topo_line_points: YactrDataModelClimbingTopoTopoLinePoint[] = [];
+    let sector_topo_line_points: YactrDomainModelClimbingTopoTopoLinePoint[] = [];
     if (data.get("sector_topo_line_points")?.toString()) {
       sector_topo_line_points = JSON.parse(data.get("sector_topo_line_points")!.toString());
     }
@@ -70,7 +70,7 @@ export const actions = {
     const body = {
       sector_id: data.get("sector_id")!.toString(),
       name: data.get("name")!.toString(),
-      grade: data.get("grade")?.toString(),
+      grade: data.get("grade") != null ? Number(data.get("grade")) : undefined,
       pitches: [],
       description: data.get("description")?.toString(),
       first_ascent_climber_name: data.get("first_ascent_climber_name")?.toString(),
@@ -85,7 +85,7 @@ export const actions = {
 
     console.dir(body, { depth: 4 });
 
-    const { error, response } = await yactrEndpointsRoutesUpdateRoute({
+    const { error, response } = await yactrApiEndpointsRoutesUpdateRoute({
       path: { route_id: params.route_id },
       body
     });

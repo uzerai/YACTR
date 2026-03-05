@@ -1,9 +1,9 @@
-import { yactrEndpointsImagesUploadImage, yactrEndpointsRoutesCreateRoute, yactrEndpointsSectorsGetAllSectors } from "$lib/api";
+import { yactrApiEndpointsImagesUploadImage, yactrApiEndpointsRoutesCreateRoute, yactrApiEndpointsSectorsGetAllSectors } from "$lib/api";
 import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
 
 export const load: PageServerLoad = async () => {
-  const { data: sectors } = await yactrEndpointsSectorsGetAllSectors();
+  const { data: sectors } = await yactrApiEndpointsSectorsGetAllSectors();
 
   return { sectors };
 }
@@ -21,15 +21,15 @@ export const actions = {
     const route_image_overlay = formData.get("route_image_svg_overlay") as File;
     const sector_image_overlay = formData.get("sector_image_svg_overlay") as File;
 
-    const route_image_upload = yactrEndpointsImagesUploadImage({
+    const route_image_upload = yactrApiEndpointsImagesUploadImage({
       body: { image: route_image },
     });
 
-    const route_image_overlay_upload = yactrEndpointsImagesUploadImage({
+    const route_image_overlay_upload = yactrApiEndpointsImagesUploadImage({
       body: { image: route_image_overlay },
     });
 
-    const sector_image_overlay_upload = yactrEndpointsImagesUploadImage({
+    const sector_image_overlay_upload = yactrApiEndpointsImagesUploadImage({
       body: { image: sector_image_overlay }
     });
 
@@ -43,11 +43,11 @@ export const actions = {
     //   sector_overlay_response
     // }, { depth: 4 });
 
-    const { error, response } = await yactrEndpointsRoutesCreateRoute({
+    const { error, response } = await yactrApiEndpointsRoutesCreateRoute({
       body: {
         sector_id: formData.get("sector_id")!.toString(),
         name: formData.get("name")!.toString(),
-        grade: formData.get("grade")?.toString(),
+        grade: formData.get("grade") != null ? Number(formData.get("grade")) : undefined,
         pitches: [],
         description: formData.get("description")?.toString(),
         first_ascent_climber_name: formData.get("first_ascent_climber_name")?.toString(),
