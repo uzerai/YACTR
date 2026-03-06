@@ -13,7 +13,6 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:e2e": "playwright test",
 		"api:generate": "openapi-ts && sed -ie \"s/ | null;/;/g\" src/lib/api/generated/types.gen.ts"
 	},
@@ -44,7 +43,9 @@
 		"prettier-plugin-tailwindcss": "^0.7.2",
 		"svelte": "^5.53.7",
 		"svelte-check": "^4.4.4",
+		"sveltekit-superforms": "^2.30.0",
 		"tailwindcss": "^4.2.1",
+		"typebox": "^1.1.6",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.56.1",
 		"vite": "^7.3.1",

@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { Button } from 'flowbite-svelte';
+	import VectorSource from 'ol/source/Vector';
 	import type { Coordinate } from 'ol/coordinate';
-	import type { Feature as OlFeature } from 'ol';
-	import { Map, Layer, Feature, Interaction } from 'svelte-openlayers';
-	import { createCircleStyle, createStyle, ReactiveCollection } from 'svelte-openlayers/utils';
+	import { LineString } from 'ol/geom';
+	import { Feature } from 'ol';
+	import { Interaction, Layer, View, Map } from 'svelte-openlayers';
+	import type { NetTopologySuiteGeometriesLineString } from '$lib/api';
 
 	let {
 		line = $bindable(),
@@ -11,33 +12,42 @@
 		zoom = $bindable(12),
 		disabled = false
 	}: {
-		line: Coordinate[];
+		line?: NetTopologySuiteGeometriesLineString;
 		mapCenter?: Coordinate;
 		zoom?: number;
 		disabled?: boolean;
 	} = $props();
 
-	let drawingMode = $state(false);
-	let selectedFeatures: ReactiveCollection<OlFeature> = $state(null);
+	let vectorSource = $state(new VectorSource());
 
-	const pointStyle = createCircleStyle({
-		radius: 10,
-		fill: '#4338ca', // Uses --ol-color-primary
-		stroke: '#ffffff',
-		strokeWidth: 2
-	});
+	if (line && line.coordinates) {
+		vectorSource.addFeatures(
+			line.coordinates.map(coordinate => new Feature({
+				geometry: new LineString([coordinate])
+			}))
+		)
+	}
 
-	const lineStyle = createStyle({
-		stroke: {
-			color: '#4338ca',
-			width: 2
+	const onDrawEnd = ({ feature }: { feature: Feature<LineString> }) => {
+		vectorSource.clear();
+
+		if (feature.getGeometry() !== undefined) {
+			line = {
+				type: "LineString",
+				coordinates: [
+					...feature.getGeometry()!.getCoordinates() as Coordinate[]
+				]
+			}
 		}
-	});
+	};
+	
+	const onModifyEnd = () => {
+		if (vectorSource.getFeatures().length < 1) return;
 
-	const mapClick = ({ coordinate }: { coordinate: Coordinate }) => {
-		if (drawingMode) {
-			line = [...line, coordinate];
-		}
+		line = {
+				type: "LineString",
+				coordinates: (vectorSource.getFeatures().at(0)?.getGeometry() as LineString)?.getCoordinates() as Coordinate[] ?? []
+			}
 	};
 </script>
 
@@ -48,35 +58,17 @@
 		></div>
 	{:else}
 		<div class="absolute top-0 right-0 z-20 m-4 flex gap-1 text-xs">
-			{#if !drawingMode}
-				<Button color="green" onclick={() => (drawingMode = true)} disabled={line.length > 0}
-					>Add path</Button
-				>
-			{:else}
-				<Button color="blue" onclick={() => (drawingMode = false)}>Save</Button>
-			{/if}
-
-			<Button color="red" disabled={line.length < 1} onclick={() => (line = [])}>Delete</Button>
 		</div>
 	{/if}
-	<Map.Root onClick={mapClick}>
-		<Map.View bind:center bind:zoom />
-		<Layer.Tile source="osm" />
-		<Layer.Vector style={pointStyle}>
-			{#each line as coordinate}
-				<Feature.Point coordinates={coordinate} />
-			{/each}
-		</Layer.Vector>
-		<Layer.Vector style={lineStyle}>
-			{#if line.length > 0}
-				<Feature.LineString coordinates={line} properties={{ type: 'lineString' }} />
-			{/if}
-		</Layer.Vector>
+	
+	<View bind:center bind:zoom>
+		<Map class="h-full w-full">
+			<Layer.Tile source="osm" />
 
-		<Interaction.Select
-			filter={(feature: OlFeature) => feature.getProperties().type === 'lineString'}
-			bind:selectedFeatures
-			multi={false}
-		/>
-	</Map.Root>
+			<Layer.Vector bind:source={vectorSource}>
+				<Interaction.Draw minPoints={2} type="LineString" bind:source={vectorSource} onDrawEnd={onDrawEnd} />
+				<Interaction.Modify bind:source={vectorSource} onModifyEnd={onModifyEnd} />
+			</Layer.Vector>
+		</Map>
+	</View>
 </div>

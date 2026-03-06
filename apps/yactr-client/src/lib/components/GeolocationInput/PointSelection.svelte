@@ -1,23 +1,31 @@
 <script lang="ts">
+	import type { YactrApiEndpointsAreasAreaRequestData } from '$lib/api';
 	import { P } from 'flowbite-svelte';
+	import type { Feature } from 'ol';
 	import type { Coordinate } from 'ol/coordinate';
-	import { Map, Layer, Feature } from 'svelte-openlayers';
-	import { createCircleStyle } from 'svelte-openlayers/utils';
+	import type { Point, PointFeature } from 'ol/renderer/webgl/PointsLayer';
+	import VectorSource from 'ol/source/Vector';
+	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 
 	let {
 		location = $bindable(),
 		mapCenter: center = $bindable([-74.006, 40.7128]),
 		disabled = false
-	}: { location?: Coordinate; mapCenter?: Coordinate; disabled?: boolean } = $props();
+	}: { location?: YactrApiEndpointsAreasAreaRequestData['location']; mapCenter?: Coordinate; disabled?: boolean } = $props();
 
 	let zoom = $state(12);
+	let vectorSource = $state(new VectorSource());
 
-	const pointStyle = createCircleStyle({
-		radius: 10,
-		fill: '#4338ca', // Uses --ol-color-primary
-		stroke: '#ffffff',
-		strokeWidth: 2
-	});
+	const onDrawEnd = ({ feature }: { feature: Feature<Point> }) => {
+		vectorSource.clear();
+
+		if (feature.getGeometry() !== undefined) {
+			location = {
+				type: "Point",
+				coordinates: (feature.getGeometry()?.getCoordinates() ?? []) as [number, number, number]
+			};
+		}
+	};
 </script>
 
 <div class="relative h-full w-full overflow-hidden rounded-lg border">
@@ -27,19 +35,19 @@
 		></div>
 	{/if}
 	<div class="absolute top-0 right-0 z-20 m-4 flex">
-		<P class="rounded-lg bg-gray-200 p-4">Click anywhere on the map to place the point.</P>
+		<P class="rounded-lg bg-gray-200/50 dark:bg-gray-700/50 p-2 text-sm">Click anywhere on the map to place the point.</P>
 	</div>
-	<Map.Root
-		onClick={({ coordinate }) => {
-			location = coordinate;
-		}}
-	>
-		<Map.View bind:center bind:zoom />
-		<Layer.Tile source="osm" />
-		<Layer.Vector style={pointStyle}>
-			{#if location}
-				<Feature.Point coordinates={location} />
-			{/if}
-		</Layer.Vector>
-	</Map.Root>
+
+
+	<View bind:center bind:zoom>
+		<Map class="h-full w-full">
+			<Layer.Tile source="osm" />
+
+			<Layer.Vector bind:source={vectorSource}>
+				<Interaction.Draw type="Point" bind:source={vectorSource}
+					maxPoints={1}
+					onDrawEnd={onDrawEnd} />
+			</Layer.Vector>
+		</Map>
+	</View>
 </div>

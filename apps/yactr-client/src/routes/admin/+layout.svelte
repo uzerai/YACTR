@@ -5,7 +5,10 @@
 		SidebarItem,
 		SidebarButton,
 		uiHelpers,
-		SidebarBrand
+		SidebarBrand,
+
+		DarkMode
+
 	} from 'flowbite-svelte';
 	import { page } from '$app/state';
 
@@ -41,9 +44,8 @@
 		backdrop={false}
 		isOpen={navOpen}
 		closeSidebar={closeNavigation}
-		params={{ x: -50, duration: 50 }}
-		class="z-50 ml-4 md:ml-0 md:h-dvh"
-		position="absolute"
+		class="z-50 ml-4 md:ml-0 md:min-h-full"
+		position="fixed"
 	>
 		<SidebarBrand {site} class="justify-center" classes={{ img: 'hidden' }} />
 		<SidebarGroup class="pb-6">
@@ -58,9 +60,13 @@
 			{#each organizationRoutes as route}
 				<SidebarItem href={`/admin/${route}`} label={route} class={navItemClass} />
 			{/each}
-		</SidebarGroup></Sidebar
-	>
-	<main class="h-dvh md:ml-64">
+		</SidebarGroup>
+		<SidebarGroup>
+			<DarkMode />
+		</SidebarGroup>
+	</Sidebar>
+
+	<main class="min-h-dvh md:ml-64 dark:bg-neutral-900">
 		<div class="relative p-4">
 			{@render children?.()}
 		</div>

@@ -2,8 +2,9 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-
 @plugin 'flowbite/plugin';
+
+@import 'svelte-openlayers/styles.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 

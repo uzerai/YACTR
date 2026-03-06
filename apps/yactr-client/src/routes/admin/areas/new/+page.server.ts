@@ -1,44 +1,39 @@
 import { yactrApiEndpointsAreasCreateArea } from "$lib/api";
+import { zYactrApiEndpointsAreasAreaRequestData } from "$lib/api/generated/zod.gen";
 import { fail, redirect, type Actions } from "@sveltejs/kit";
-import type { Coordinate } from "ol/coordinate.js";
+import { superValidate } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
+
+export const load = async () => {
+  const form = await superValidate(zod4(zYactrApiEndpointsAreasAreaRequestData));
+  return { form };
+};
 
 export const actions = {
   default: async ({ request }) => {
-    const data = await request.formData();
+    const form = await superValidate(request, zod4(zYactrApiEndpointsAreasAreaRequestData));
 
-    if (data.get("name") === "") {
-      return fail(422, { name: "name" })
-    }
-
-    if (data.get("description") === "") {
-      return fail(422, { description: "description" })
-    }
-
-    const boundary: Coordinate[][][] = JSON.parse(data.get("boundary")!.toString())
-
-    for (const multiPolygon of boundary) {
-      for (const polygon of multiPolygon) {
-        polygon.push(polygon.at(0)!)
-      }
+    if (!form.valid) {
+      return fail(422, { form });
     }
 
     const { error, response  } = await yactrApiEndpointsAreasCreateArea({
       body: {
-        name: data.get("name")!.toString(),
-        description: data.get("description")!.toString(),
+        name: form.data.name,
+        description: form.data.description ?? undefined,
         location: {
           type: "Point",
-          coordinates: JSON.parse(data.get("location")!.toString())
+          coordinates: form.data.location?.coordinates
         },
         boundary: {
           type: "MultiPolygon",
-          coordinates: boundary
+          coordinates: form.data.boundary?.coordinates
         }
       }
     });
 
     if (error || !response.ok) {
-      return fail(422, { error })
+      return fail(422, { form, error })
     }
 
     return redirect(303, '/admin/areas');

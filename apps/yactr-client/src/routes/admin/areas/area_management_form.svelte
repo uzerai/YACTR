@@ -1,22 +1,27 @@
 <script lang="ts">
-	import type { YactrApiEndpointsAreasAreaRequestData } from '$lib/api';
-	import { Input, Label, Button, Textarea, Tooltip, Heading, Hr } from 'flowbite-svelte';
+	import { Input, Label, Button, Textarea, Tooltip, Hr } from 'flowbite-svelte';
 	import { InfoCircleOutline } from 'flowbite-svelte-icons';
 	import MultiPolygonSelection from '$lib/components/GeolocationInput/MultiPolygonSelection.svelte';
 	import PointSelection from '$lib/components/GeolocationInput/PointSelection.svelte';
-	import type { Coordinate } from 'ol/coordinate';
+	import type { Infer } from 'zod';
+	import { superForm, type SuperValidated } from 'sveltekit-superforms';
+	import { zYactrApiEndpointsAreasAreaRequestData } from '$lib/api/generated/zod.gen';
+	import SuperDebug from 'sveltekit-superforms/SuperDebug.svelte';
+	let { data } : { data : SuperValidated<Infer<typeof zYactrApiEndpointsAreasAreaRequestData>> } = $props();
 
-	let { area = $bindable() }: { area?: YactrApiEndpointsAreasAreaRequestData } = $props();
+	const { form, errors, enhance } = superForm(data, {
+		dataType: 'json'
+	});
 
-	let boundary = $derived(area?.boundary?.coordinates as Coordinate[][][]);
-	let location = $derived(area?.location?.coordinates as Coordinate);
 </script>
 
-<form method="post">
+<SuperDebug bind:data={$form} />
+
+<form method="post" use:enhance>
 	<div class="grid gap-6">
 		<div class="flex w-1/2 flex-col gap-2">
 			<Label for="name">Name</Label>
-			<Input type="text" name="name" id="name" value={area?.name} required />
+			<Input type="text" name="name" id="name" bind:value={$form.name} required />
 		</div>
 		<div class="flex w-1/2 flex-col gap-2">
 			<Label for="description">Description</Label>
@@ -25,7 +30,7 @@
 				id="description"
 				class="w-full"
 				rows={4}
-				value={area?.description ?? undefined}
+				bind:value={$form.description as string | undefined} // Note to self; Textarea does _SUPPORT_ nullish values, just doesn't expose it as an accepted type
 			/>
 		</div>
 	</div>
@@ -39,9 +44,8 @@
 					>Position to be used (and searchable by) on world-map view.</Tooltip
 				></span
 			>
-			<Input type="hidden" name="location" id="location" value={JSON.stringify(location)} />
 			<div class="h-[50dvh]">
-				<PointSelection bind:location mapCenter={area?.location?.coordinates} />
+				<PointSelection bind:location={$form.location} mapCenter={$form.location?.coordinates} />
 			</div>
 		</div>
 		<div class="flex w-full flex-col gap-2 md:w-1/2">
@@ -51,9 +55,8 @@
 				<Tooltip class="max-w-80">General area outline; used to enforce borders of sectors</Tooltip
 				></span
 			>
-			<Input type="hidden" name="boundary" id="boundary" value={JSON.stringify(boundary)} />
 			<div class="h-[calc(50dvh)]">
-				<MultiPolygonSelection bind:boundary mapCenter={area?.location?.coordinates} />
+				<MultiPolygonSelection bind:boundary={$form.boundary} mapCenter={$form.location?.coordinates} />
 			</div>
 		</div>
 	</div>

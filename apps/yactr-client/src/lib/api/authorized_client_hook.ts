@@ -9,9 +9,7 @@ export const authorizedClientHook: Handle = async ({ event, resolve }) => {
     console.debug("Setting @hey-api/client headers for authorization");
 
     client.setConfig({
-      headers: {
-        Authorization: `Bearer ${session.access_token}`
-      }
+      auth: () => session.access_token
     });
   }
 
