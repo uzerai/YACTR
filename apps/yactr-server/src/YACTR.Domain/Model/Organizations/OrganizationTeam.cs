@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using YACTR.Domain.Model.Authentication;
 
 namespace YACTR.Domain.Model.Organizations;
@@ -9,7 +8,6 @@ public class OrganizationTeam : BaseEntity
     [Required]
     public required string Name { get; set; }
     [Required]
-    [ForeignKey("Organization")]
     public required Guid OrganizationId { get; set; }
 
     public virtual Organization Organization { get; set; } = null!;

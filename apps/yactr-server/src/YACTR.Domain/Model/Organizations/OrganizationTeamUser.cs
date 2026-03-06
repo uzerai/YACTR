@@ -19,11 +19,9 @@ public class OrganizationTeamUser
     [Required]
     public virtual User User { get; set; } = null!;
     [Required]
-    [ForeignKey("OrganizationId")]
     public virtual Organization Organization { get; set; } = null!;
     [Required]
     public virtual OrganizationUser OrganizationUser { get; set; } = null!;
     [Required]
-    [ForeignKey("OrganizationTeamId")]
     public virtual OrganizationTeam OrganizationTeam { get; set; } = null!;
 }

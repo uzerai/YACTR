@@ -10,6 +10,16 @@ public static class AscentConfigurationExtension
         modelBuilder.Entity<Ascent>()
             .ToTable("ascents");
 
+        modelBuilder.Entity<Ascent>()
+            .HasOne(e => e.User)
+            .WithMany()
+            .HasForeignKey(e => e.UserId);
+
+        modelBuilder.Entity<Ascent>()
+            .HasOne(e => e.Route)
+            .WithMany()
+            .HasForeignKey(e => e.RouteId);
+
         return modelBuilder;
     }
 }

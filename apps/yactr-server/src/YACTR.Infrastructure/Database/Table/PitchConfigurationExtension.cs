@@ -18,6 +18,11 @@ public static class PitchConfigurationExtension
             .HasForeignKey<Pitch>(e => e.RouteSvgOverlayId);
 
         modelBuilder.Entity<Pitch>()
+            .HasOne(e => e.Route)
+            .WithMany(e => e.Pitches)
+            .HasForeignKey(e => e.RouteId);
+
+        modelBuilder.Entity<Pitch>()
             .Property(e => e.Type)
             .HasColumnType("climbing_type");
 

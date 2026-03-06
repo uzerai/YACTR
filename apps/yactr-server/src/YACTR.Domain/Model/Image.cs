@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using YACTR.Domain.Model.Authentication;
 
@@ -10,6 +9,5 @@ public class Image : BaseEntity
     [JsonIgnore]
     public Guid? UploaderId { get; set; }
     [JsonIgnore]
-    [ForeignKey("UploaderId")]
     public virtual User? Uploader { get; set; }
 }
