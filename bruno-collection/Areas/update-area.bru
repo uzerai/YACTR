@@ -1,0 +1,15 @@
+meta {
+  name: update-area
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{API_BASE_URL}}/areas/{{area_id}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
