@@ -1,0 +1,16 @@
+meta {
+  name: get-area
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{API_BASE_URL}}/areas/{{area_id}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

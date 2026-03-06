@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "YACTR",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

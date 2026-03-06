@@ -1,0 +1,70 @@
+meta {
+  name: create-area
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{API_BASE_URL}}/areas
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "{{area_name}}",
+    "description": "{{area_description}}",
+    "location": {
+      "type": "Point",
+      "coordinates": {{area_point}}
+    },
+    "boundary": {
+      "type": "MultiPolygon",
+      "coordinates": {{area_boundary}}
+    }
+  }
+}
+
+vars:pre-request {
+  area_name: Test Area 1
+  area_description: Test Area 2
+  area_point: [ 59.304, 10.817, 16.16 ]
+  area_boundary: '''
+    [
+    [
+    			[
+    				[
+    					59.305385249,
+    					10.8193337917,
+    					31.83
+    				],
+    				[
+    					59.3052538088,
+    					10.8201169968,
+    					33.95
+    				],
+    				[
+    					59.3059219579,
+    					10.8214366436,
+    					38.71
+    				],
+    				[
+    					59.306261504,
+    					10.8209967613,
+    					43.21
+    				],
+    				[
+    					59.305385249,
+    					10.8193337917,
+    					31.83
+    				]
+    			]
+    		]
+    ]
+  '''
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
