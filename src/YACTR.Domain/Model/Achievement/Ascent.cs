@@ -16,6 +16,5 @@ public class Ascent : BaseEntity
     public virtual User User { get; set; } = null!;
 
     public required Guid RouteId { get; set; }
-    [ForeignKey("RouteId")]
     public virtual Route Route { get; set; } = null!;
 }

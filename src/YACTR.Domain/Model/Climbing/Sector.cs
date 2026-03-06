@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using NetTopologySuite.Geometries;
 
 namespace YACTR.Domain.Model.Climbing;
@@ -17,11 +16,9 @@ public class Sector : BaseEntity
     public LineString? ApproachPath { get; set; }
 
     public required Guid AreaId { get; set; }
-    [ForeignKey("AreaId")]
     public virtual Area Area { get; set; } = null!;
 
     public Guid? PrimarySectorImageId { get; set; }
-    [ForeignKey("SectorImageId")]
     public virtual Image? PrimarySectorImage { get; set; }
 
     public virtual ICollection<SectorImage> SectorImages { get; set; } = [];

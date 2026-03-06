@@ -9,10 +9,12 @@ public static class OrganizationUserConfigurationExtension
     {
         modelBuilder.Entity<OrganizationUser>()
             .HasKey(e => new { e.OrganizationId, e.UserId });
+
         modelBuilder.Entity<OrganizationUser>()
             .HasOne(e => e.Organization)
             .WithMany(e => e.OrganizationUsers)
             .HasForeignKey(e => e.OrganizationId);
+
         modelBuilder.Entity<OrganizationUser>()
             .HasOne(e => e.User)
             .WithMany(e => e.OrganizationUsers)
@@ -25,6 +27,11 @@ public static class OrganizationUserConfigurationExtension
         modelBuilder.Entity<OrganizationUser>()
             .HasIndex(e => e.Permissions)
             .HasMethod("gin");
+
+        modelBuilder.Entity<OrganizationUser>()
+            .HasMany(e => e.OrganizationTeamUsers)
+            .WithOne(e => e.OrganizationUser)
+            .HasForeignKey(e => new { e.OrganizationId, e.UserId });
 
         return modelBuilder;
     }

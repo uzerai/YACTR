@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using NodaTime;
 using YACTR.Domain.Model.Climbing.Rating;
 using YACTR.Domain.Model.Climbing.Topo;
@@ -22,24 +21,19 @@ public class Route : BaseEntity
     public required ClimbingType Type { get; set; }
 
     public required Guid SectorId { get; set; }
-    [ForeignKey("SectorId")]
     public virtual Sector Sector { get; set; } = null!;
     public Guid? SectorTopoImageId { get; set; }
-    [ForeignKey("SectorTopoImageId")]
     public virtual Image? SectorTopoImage { get; set; }
 
     public virtual List<TopoLinePoint>? SectorTopoLinePoints { get; set; }
     public Guid? SectorTopoImageOverlaySvgId { get; set; }
-    [ForeignKey("SectorTopoImageOverlaySvgId")]
     public virtual Image? SectorTopoImageOverlaySvg { get; set; }
 
     public Guid? TopoImageId { get; set; }
-    [ForeignKey("TopoImageId")]
     public virtual Image? TopoImage { get; set; }
 
     public virtual List<TopoLinePoint>? TopoLinePoints { get; set; }
     public Guid? TopoImageOverlaySvgId { get; set; }
-    [ForeignKey("TopoImageOverlaySvgId")]
     public Image? TopoImageOverlaySvg { get; set; }
 
     public virtual ICollection<Pitch> Pitches { get; set; } = [];

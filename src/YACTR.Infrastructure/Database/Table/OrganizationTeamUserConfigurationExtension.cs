@@ -8,6 +8,9 @@ public static class OrganizationTeamUserConfigurationExtension
     public static ModelBuilder ConfigureOrganizationTeamUserModel(this ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<OrganizationTeamUser>()
+            .HasKey(e => new { e.OrganizationId, e.OrganizationTeamId, e.UserId });
+
+        modelBuilder.Entity<OrganizationTeamUser>()
             .HasOne(e => e.OrganizationTeam)
             .WithMany(e => e.OrganizationTeamUsers)
             .HasForeignKey(e => e.OrganizationTeamId);
@@ -26,9 +29,6 @@ public static class OrganizationTeamUserConfigurationExtension
             .HasOne(e => e.Organization)
             .WithMany()
             .HasForeignKey(e => e.OrganizationId);
-
-        modelBuilder.Entity<OrganizationTeamUser>()
-            .HasKey(e => new { e.OrganizationId, e.OrganizationTeamId, e.UserId });
 
         return modelBuilder;
     }

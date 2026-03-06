@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using NetTopologySuite.Geometries;
 using YACTR.Domain.Model.Organizations;
 
@@ -19,7 +18,6 @@ public class Area : BaseEntity
     public required Point Location { get; set; }
     public required MultiPolygon Boundary { get; set; }
 
-    [ForeignKey("MaintainerOrganization")]
     public Guid? MaintainerOrganizationId { get; set; }
     public virtual Organization? MaintainerOrganization { get; set; }
     public virtual ICollection<Sector> Sectors { get; set; } = [];

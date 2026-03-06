@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using FileSignatures;
@@ -15,6 +16,7 @@ using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 using NSwag;
 using YACTR.Api.Swagger;
+using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Authorization.Permissions;
 using YACTR.Infrastructure.Database;
@@ -105,12 +107,12 @@ builder.Services.AddCors(options =>
 
 builder.Services
     .AddFastEndpoints()
-    // This configures the JSON serialization in the generated schema.
+    // This configures the JSON serialization in the generated swagger schema.
     .SwaggerDocument(swaggerSettings =>
     {
         swaggerSettings.SerializerSettings = serializerSettings =>
         {
-            serializerSettings.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            serializerSettings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             serializerSettings.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
             serializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
             serializerSettings.Converters.Add(new GeoJsonConverterFactory());
@@ -121,7 +123,7 @@ builder.Services
             docSettings.AddSecurity("JWTBearerAuth", new OpenApiSecurityScheme
             {
                 Type = OpenApiSecuritySchemeType.Http,
-                Scheme = "bearer",
+                Scheme = "Bearer",
                 BearerFormat = "JWT",
                 Description = "JWT Bearer auth using the Authorization header."
             });
@@ -132,7 +134,7 @@ builder.Services
     // This configures the serialization between Entity <-> JSON.
     .ConfigureHttpJsonOptions(options =>
     {
-        options.SerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+        options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
         options.SerializerOptions.Converters.Add(new GeoJsonConverterFactory());
         options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
@@ -159,6 +161,7 @@ builder.Services.AddMinio(configureClient => configureClient
 // This is specifically to pick up the YACTR.DI.FileFormatExtensions.SvgFileFormat detection and handling.
 var recognised = FileFormatLocator.GetFormats().OfType<Image>();
 recognised = recognised.Append(new Svg());
+
 var inspector = new FileFormatInspector(recognised);
 builder.Services.AddSingleton<IFileFormatInspector>(new FileFormatInspector(recognised));
 
