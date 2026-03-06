@@ -3,7 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import { authClient } from '$lib/auth-client';
 
-	let { children, data } = $props();
+	let { children } = $props();
 	const session = authClient.useSession();
 </script>
 

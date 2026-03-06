@@ -18,7 +18,7 @@ export interface AuthSession {
 }
 
 export const auth = betterAuth({
-  baseURL: new URL(BETTER_AUTH_URL).origin,
+  baseURL: BETTER_AUTH_URL,
   plugins: [
     genericOAuth({
       config: [
