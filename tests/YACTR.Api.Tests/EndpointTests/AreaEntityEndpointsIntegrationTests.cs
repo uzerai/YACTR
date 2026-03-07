@@ -54,6 +54,127 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         result.ShouldNotBeNull();
         result.Name.ShouldBe(createRequest.Name);
         result.Description.ShouldBe(createRequest.Description);
+        result.Location.ShouldBe(createRequest.Location);
+        result.Boundary.ShouldNotBeNull();
+        result.Boundary.IsEmpty.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task Create_WithEmptyName_ReturnsBadRequest()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var location = fixture.TestDataSeeder.NewPoint();
+        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+
+        var createRequest = new AreaRequestData(
+            "",
+            "A description",
+            location,
+            boundary
+        );
+
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Create_WithNameTooShort_ReturnsBadRequest()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var location = fixture.TestDataSeeder.NewPoint();
+        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+
+        var createRequest = new AreaRequestData(
+            "A",
+            "A description",
+            location,
+            boundary
+        );
+
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Create_WithNameTooLong_ReturnsBadRequest()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var location = fixture.TestDataSeeder.NewPoint();
+        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+
+        var createRequest = new AreaRequestData(
+            new string('x', 256),
+            "A description",
+            location,
+            boundary
+        );
+
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Create_WithDescriptionTooLong_ReturnsBadRequest()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var location = fixture.TestDataSeeder.NewPoint();
+        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+
+        var createRequest = new AreaRequestData(
+            "Valid Area Name",
+            new string('x', 1001),
+            location,
+            boundary
+        );
+
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Create_WithEmptyLocation_ReturnsBadRequest()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+
+        var createRequest = new AreaRequestData(
+            "Valid Area Name",
+            "A description",
+            fixture.TestDataSeeder.EmptyPoint(),
+            boundary
+        );
+
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Create_WithEmptyBoundary_ReturnsBadRequest()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var location = fixture.TestDataSeeder.NewPoint();
+
+        var createRequest = new AreaRequestData(
+            "Valid Area Name",
+            "A description",
+            location,
+            fixture.TestDataSeeder.EmptyMultiPolygon()
+        );
+
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -102,6 +223,9 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         result.ShouldNotBeNull();
         result.Id.ShouldBe(area.Id);
         result.Name.ShouldBe(area.Name);
+        result.Location.ShouldBe(area.Location);
+        result.Boundary.ShouldNotBeNull();
+        result.Boundary.IsEmpty.ShouldBeFalse();
     }
 
     [Fact]
@@ -170,6 +294,52 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task Update_WithEmptyName_ReturnsBadRequest()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+
+        var updateRequest = new UpdateAreaRequest
+        {
+            AreaId = area.Id,
+            Data = new AreaRequestData(
+                "",
+                "Updated description",
+                fixture.TestDataSeeder.NewPoint(),
+                fixture.TestDataSeeder.NewMultiPolygon()
+            )
+        };
+
+        var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);
+
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Update_WithEmptyBoundary_ReturnsBadRequest()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+
+        var updateRequest = new UpdateAreaRequest
+        {
+            AreaId = area.Id,
+            Data = new AreaRequestData(
+                "Valid Area Name",
+                "Updated description",
+                fixture.TestDataSeeder.NewPoint(),
+                fixture.TestDataSeeder.EmptyMultiPolygon()
+            )
+        };
+
+        var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);
+
+        response.IsSuccessStatusCode.ShouldBeFalse();
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
