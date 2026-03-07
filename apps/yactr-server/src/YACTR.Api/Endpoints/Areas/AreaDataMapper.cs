@@ -4,20 +4,6 @@ using YACTR.Domain.Model.Climbing;
 
 namespace YACTR.Api.Endpoints.Areas;
 
-/// <summary>
-/// Request data for creating and updating the <see cref="YACTR.Domain.Model.Climbing.Area"/> entity.
-/// </summary>
-/// <param name="Name">The name of the area.</param>
-/// <param name="Description">The description of the area.</param>
-/// <param name="Location">The location of the area.</param>
-/// <param name="Boundary">The boundary of the area.</param>
-public record AreaRequestData(
-    string Name,
-    string? Description,
-    Point Location,
-    MultiPolygon Boundary
-);
-
 public record AreaResponse(
     Guid Id,
     string Name,

@@ -1,4 +1,5 @@
 using FastEndpoints;
+using FluentValidation;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Authorization.Permissions;
@@ -12,6 +13,14 @@ public class UpdateAreaRequest
 
     [FromBody]
     public required AreaRequestData Data { get; set; }
+}
+
+public class UpdateAreaRequestValidator : Validator<UpdateAreaRequest>
+{
+    public UpdateAreaRequestValidator()
+    {
+        RuleFor(x => x.Data).SetValidator(new AreaRequestDataValidator());
+    }
 }
 
 public class UpdateArea : AuthenticatedEndpoint<UpdateAreaRequest, EmptyResponse, AreaDataMapper>
