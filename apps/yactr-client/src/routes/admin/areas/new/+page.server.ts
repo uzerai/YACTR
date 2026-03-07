@@ -1,10 +1,11 @@
 import { yactrApiEndpointsAreasCreateArea } from "$lib/api";
 import { zYactrApiEndpointsAreasAreaRequestData } from "$lib/api/generated/zod.gen";
-import { fail, redirect, type Actions } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
+import type { Actions, PageServerLoad } from "./$types";
 
-export const load = async () => {
+export const load: PageServerLoad = async () => {
   const form = await superValidate(zod4(zYactrApiEndpointsAreasAreaRequestData));
   return { form };
 };
@@ -14,6 +15,8 @@ export const actions = {
     const form = await superValidate(request, zod4(zYactrApiEndpointsAreasAreaRequestData));
 
     if (!form.valid) {
+      console.log("form not valid");
+      console.dir(form);
       return fail(422, { form });
     }
 
@@ -33,6 +36,8 @@ export const actions = {
     });
 
     if (error || !response.ok) {
+      console.log("request failed");
+      console.dir(response);
       return fail(422, { form, error })
     }
 

@@ -61,15 +61,21 @@
 	{/if}
 	<div class="absolute top-0 right-0 z-20 m-4 p-2 flex bg-gray-200/50 dark:bg-gray-700/50 rounded-lg">
 		<div class="flex flex-col gap-1">
-			<Button color="primary" onclick={() => isDrawing = true} disabled={isDrawing}>
-				Draw Polygon
-			</Button>
+			<div class="flex gap-2">
+				<Button color="primary" onclick={() => isDrawing = true} disabled={isDrawing}>
+					Draw Polygon
+				</Button>
+				<Button color="secondary" onclick={() => vectorSource.clear()} disabled={isDrawing}>
+					Clear
+				</Button>
+			</div>
 			<P size="sm">When drawing:</P>
 			<P size="sm">
 				<ul class="text-sm list-disc list-inside">
 					<li>Click to add points to the current polygon.</li>
 					<li>Double click last point to close the polygon</li>
 					<li>Polygon can be edited by clicking and dragging points/edges</li>
+					<li>Alt+click to remove a point when not drawing</li>
 				</ul>
 			</P>
 		</div>

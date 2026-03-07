@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { YactrApiEndpointsAreasAreaRequestData } from '$lib/api';
 	import { P } from 'flowbite-svelte';
-	import type { Feature } from 'ol';
+	import { Feature } from 'ol';
+	import { Point } from 'ol/geom';
 	import type { Coordinate } from 'ol/coordinate';
-	import type { Point, PointFeature } from 'ol/renderer/webgl/PointsLayer';
 	import VectorSource from 'ol/source/Vector';
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 
@@ -16,13 +16,22 @@
 	let zoom = $state(12);
 	let vectorSource = $state(new VectorSource());
 
+	if (location && location.coordinates) {
+		vectorSource.addFeature(new Feature({
+			geometry: new Point(location.coordinates)
+		}));
+	}
+
 	const onDrawEnd = ({ feature }: { feature: Feature<Point> }) => {
 		vectorSource.clear();
 
 		if (feature.getGeometry() !== undefined) {
 			location = {
 				type: "Point",
-				coordinates: (feature.getGeometry()?.getCoordinates() ?? []) as [number, number, number]
+				coordinates: [
+					...(feature.getGeometry()!.getCoordinates() as [number, number]),
+					0
+				]
 			};
 		}
 	};
