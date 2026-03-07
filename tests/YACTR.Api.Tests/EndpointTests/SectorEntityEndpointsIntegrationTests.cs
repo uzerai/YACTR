@@ -32,11 +32,11 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
         var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var createRequest = new SectorRequestData(
             "Test Sector",
-            fixture.TestDataSeeder.NewPolygon(),
-            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataFactory.NewPolygon(),
+            fixture.TestDataFactory.NewPoint(),
             area.Id,
-            fixture.TestDataSeeder.NewPoint(),
-            fixture.TestDataSeeder.NewLineString(),
+            fixture.TestDataFactory.NewPoint(),
+            fixture.TestDataFactory.NewLineString(),
             null,
             null
         );
@@ -97,11 +97,11 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
             SectorId = sector.Id,
             Data = new(
                 "Updated Sector",
-                fixture.TestDataSeeder.NewPolygon(),
-                fixture.TestDataSeeder.NewPoint(),
+                fixture.TestDataFactory.NewPolygon(),
+                fixture.TestDataFactory.NewPoint(),
                 area.Id,
-                fixture.TestDataSeeder.NewPoint(),
-                fixture.TestDataSeeder.NewLineString(),
+                fixture.TestDataFactory.NewPoint(),
+                fixture.TestDataFactory.NewLineString(),
                 null,
                 null)
         };
@@ -123,11 +123,11 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
             SectorId = invalidId,
             Data = new(
                 "",
-                fixture.TestDataSeeder.NewPolygon(),
-                fixture.TestDataSeeder.NewPoint(),
+                fixture.TestDataFactory.NewPolygon(),
+                fixture.TestDataFactory.NewPoint(),
                 Guid.NewGuid(),
-                fixture.TestDataSeeder.NewPoint(),
-                fixture.TestDataSeeder.NewLineString(),
+                fixture.TestDataFactory.NewPoint(),
+                fixture.TestDataFactory.NewLineString(),
                 null,
                 null)
         };
@@ -185,11 +185,11 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
         var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var createRequest = new SectorRequestData(
             "Test Sector With Images",
-            fixture.TestDataSeeder.NewPolygon(),
-            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataFactory.NewPolygon(),
+            fixture.TestDataFactory.NewPoint(),
             area.Id,
-            fixture.TestDataSeeder.NewPoint(),
-            fixture.TestDataSeeder.NewLineString(),
+            fixture.TestDataFactory.NewPoint(),
+            fixture.TestDataFactory.NewLineString(),
             new[] { 
                 new SectorImageRequestData(image1.Id, 1),
                 new SectorImageRequestData(image2.Id, 2)
@@ -220,11 +220,11 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
         var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var createRequest = new SectorRequestData(
             "Test Sector With Images No Primary",
-            fixture.TestDataSeeder.NewPolygon(),
-            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataFactory.NewPolygon(),
+            fixture.TestDataFactory.NewPoint(),
             area.Id,
-            fixture.TestDataSeeder.NewPoint(),
-            fixture.TestDataSeeder.NewLineString(),
+            fixture.TestDataFactory.NewPoint(),
+            fixture.TestDataFactory.NewLineString(),
             new[] { 
                 new SectorImageRequestData(image1.Id, 1),
                 new SectorImageRequestData(image2.Id, 2)
@@ -253,11 +253,11 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
         var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var createRequest = new SectorRequestData(
             "Test Sector With Images For Get",
-            fixture.TestDataSeeder.NewPolygon(),
-            fixture.TestDataSeeder.NewPoint(),
+            fixture.TestDataFactory.NewPolygon(),
+            fixture.TestDataFactory.NewPoint(),
             area.Id,
-            fixture.TestDataSeeder.NewPoint(),
-            fixture.TestDataSeeder.NewLineString(),
+            fixture.TestDataFactory.NewPoint(),
+            fixture.TestDataFactory.NewLineString(),
             new[] { 
                 new SectorImageRequestData(image1.Id, 1),
                 new SectorImageRequestData(image2.Id, 2)

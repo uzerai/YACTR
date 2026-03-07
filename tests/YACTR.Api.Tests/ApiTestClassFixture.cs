@@ -1,12 +1,12 @@
 using System.Net.Http.Headers;
-using System.Text.Json;
 using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using NetTopologySuite.IO.Converters;
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
 using NodaTime;
 using YACTR.Domain.Model;
 using YACTR.Domain.Model.Authentication;
@@ -14,13 +14,18 @@ using YACTR.Infrastructure.Database;
 using YACTR.Infrastructure.Database.QueryExtensions;
 using YACTR.Infrastructure.Database.Repository.ConfigurationExtension;
 using YACTR.Infrastructure.Database.Repository.Interface;
+using YACTR.Infrastructure.Service;
 
 namespace YACTR.Api.Tests;
 
 public class ApiTestClassFixture : AppFixture<Program>
 {
     public DatabaseContext DatabaseContext { get; private set; } = null!;
-    public TestDataSeeder TestDataSeeder { get; private set; } = null!;
+    // Note the distinction between TestDataSeeder and TestDataFactory.
+    // TestDataSeeder is used to seed the database with test data, while 
+    // TestDataFactory is used to create test data objects (without persisting them to the database)
+    public TestDataFactory TestDataFactory { get; private set; } = null!;
+    public IntegrationTestDataSeeder TestDataSeeder { get; private set; } = null!;
 
     /// <summary>
     /// Ensures that the database is created before the test suite is run.
@@ -29,7 +34,10 @@ public class ApiTestClassFixture : AppFixture<Program>
     protected override async ValueTask SetupAsync()
     {
         DatabaseContext = Services.GetRequiredService<DatabaseContext>();
-        TestDataSeeder = new TestDataSeeder(DatabaseContext, Services);
+        TestDataFactory = new TestDataFactory(NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326));
+        TestDataSeeder = new IntegrationTestDataSeeder(DatabaseContext, 
+            TestDataFactory,
+            Services.GetRequiredService<IImageStorageService>());
 
         await DatabaseContext.Database.EnsureCreatedAsync();
     }

@@ -35,8 +35,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         using var client = fixture.CreateAuthenticatedClient();
 
         // Arrange
-        var location = fixture.TestDataSeeder.NewPoint();
-        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+        var location = fixture.TestDataFactory.NewPoint();
+        var boundary = fixture.TestDataFactory.NewMultiPolygon();
 
         var createRequest = new AreaRequestData(
             "Test Climbing Area",
@@ -63,8 +63,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
     public async Task Create_WithEmptyName_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var location = fixture.TestDataSeeder.NewPoint();
-        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+        var location = fixture.TestDataFactory.NewPoint();
+        var boundary = fixture.TestDataFactory.NewMultiPolygon();
 
         var createRequest = new AreaRequestData(
             "",
@@ -83,8 +83,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
     public async Task Create_WithNameTooShort_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var location = fixture.TestDataSeeder.NewPoint();
-        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+        var location = fixture.TestDataFactory.NewPoint();
+        var boundary = fixture.TestDataFactory.NewMultiPolygon();
 
         var createRequest = new AreaRequestData(
             "A",
@@ -103,8 +103,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
     public async Task Create_WithNameTooLong_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var location = fixture.TestDataSeeder.NewPoint();
-        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+        var location = fixture.TestDataFactory.NewPoint();
+        var boundary = fixture.TestDataFactory.NewMultiPolygon();
 
         var createRequest = new AreaRequestData(
             new string('x', 256),
@@ -123,8 +123,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
     public async Task Create_WithDescriptionTooLong_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var location = fixture.TestDataSeeder.NewPoint();
-        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+        var location = fixture.TestDataFactory.NewPoint();
+        var boundary = fixture.TestDataFactory.NewMultiPolygon();
 
         var createRequest = new AreaRequestData(
             "Valid Area Name",
@@ -143,12 +143,12 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
     public async Task Create_WithEmptyLocation_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+        var boundary = fixture.TestDataFactory.NewMultiPolygon();
 
         var createRequest = new AreaRequestData(
             "Valid Area Name",
             "A description",
-            fixture.TestDataSeeder.EmptyPoint(),
+            fixture.TestDataFactory.EmptyPoint(),
             boundary
         );
 
@@ -162,13 +162,13 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
     public async Task Create_WithEmptyBoundary_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var location = fixture.TestDataSeeder.NewPoint();
+        var location = fixture.TestDataFactory.NewPoint();
 
         var createRequest = new AreaRequestData(
             "Valid Area Name",
             "A description",
             location,
-            fixture.TestDataSeeder.EmptyMultiPolygon()
+            fixture.TestDataFactory.EmptyMultiPolygon()
         );
 
         var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
@@ -190,8 +190,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         using var client = fixture.CreateAuthenticatedClient(user);
 
         // Arrange
-        var location = fixture.TestDataSeeder.NewPoint();
-        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+        var location = fixture.TestDataFactory.NewPoint();
+        var boundary = fixture.TestDataFactory.NewMultiPolygon();
 
         var createRequest = new AreaRequestData(
             "Test Climbing Area",
@@ -257,8 +257,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
             Data = new AreaRequestData(
                 "Test Area for Update",
                 "Updated description",
-                fixture.TestDataSeeder.NewPoint(),
-                fixture.TestDataSeeder.NewMultiPolygon()
+                fixture.TestDataFactory.NewPoint(),
+                fixture.TestDataFactory.NewMultiPolygon()
             )
         };
 
@@ -275,8 +275,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         var invalidId = Guid.NewGuid();
 
         // Act
-        var location = fixture.TestDataSeeder.NewPoint();
-        var boundary = fixture.TestDataSeeder.NewMultiPolygon();
+        var location = fixture.TestDataFactory.NewPoint();
+        var boundary = fixture.TestDataFactory.NewMultiPolygon();
 
         var updateRequest = new UpdateAreaRequest
         {
@@ -308,8 +308,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
             Data = new AreaRequestData(
                 "",
                 "Updated description",
-                fixture.TestDataSeeder.NewPoint(),
-                fixture.TestDataSeeder.NewMultiPolygon()
+                fixture.TestDataFactory.NewPoint(),
+                fixture.TestDataFactory.NewMultiPolygon()
             )
         };
 
@@ -331,8 +331,8 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
             Data = new AreaRequestData(
                 "Valid Area Name",
                 "Updated description",
-                fixture.TestDataSeeder.NewPoint(),
-                fixture.TestDataSeeder.EmptyMultiPolygon()
+                fixture.TestDataFactory.NewPoint(),
+                fixture.TestDataFactory.EmptyMultiPolygon()
             )
         };
 
