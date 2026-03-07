@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,6 +8,8 @@ public static class PermissionsAuthorizationHandlingConfigurationExtensions
 {
     public static IServiceCollection AddPermissionsAuthorizationHandling(this IServiceCollection services)
     {
+        services.AddTransient<IClaimsTransformation, DatabaseUserPermissionClaimsTransformer>();
+        
         services.AddTransient<IAuthorizationHandler, AdminPermissionsAuthorizationHandler>();
         services.AddTransient<IAuthorizationHandler, PlatformPermissionsAuthorizationHandler>();
         services.AddTransient<IAuthorizationHandler, OrganizationPermissionsAuthorizationHandler>();
