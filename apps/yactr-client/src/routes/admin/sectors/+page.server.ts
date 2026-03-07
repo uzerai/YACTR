@@ -1,9 +1,9 @@
 import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { yactrApiEndpointsSectorsDeleteSector, yactrApiEndpointsSectorsGetAllSectors } from "$lib/api";
+import { deleteSector, getAllSectors } from "$lib/api";
 
 export const load: PageServerLoad = async () => {
-  const { data: sectors } = await yactrApiEndpointsSectorsGetAllSectors();
+  const { data: sectors } = await getAllSectors();
 
   return {
     sectors
@@ -15,7 +15,7 @@ export const actions = {
     const data = await request.formData();
     const sector_id = data.get("sector_id")!.toString();
 
-    const { error, response } = await yactrApiEndpointsSectorsDeleteSector({
+    const { error, response } = await deleteSector({
       path: {
         sector_id
       }

@@ -2,18 +2,17 @@
 	import type { Coordinate } from 'ol/coordinate';
 	import { Map, Layer, View, Interaction, FeaturePolygon } from 'svelte-openlayers';
 	import VectorSource from 'ol/source/Vector';
-	import type { NetTopologySuiteGeometriesMultiPolygon, YactrApiEndpointsAreasAreaRequestData } from '$lib/api';
+	import type { MultiPolygon, AreaRequestData } from '$lib/api';
 	import { Button, P } from 'flowbite-svelte';
 	import { Polygon } from 'ol/geom';
 	import { Feature } from 'ol';
 
 	let {
 		boundary = $bindable(),
-		mapCenter: center = $bindable([-74.006, 40.7128]),
-		zoom = $bindable(12),
+		mapCenter = [-74.006, 40.7128],
 		disabled = false
 	}: {
-		boundary?: NetTopologySuiteGeometriesMultiPolygon;
+		boundary?: MultiPolygon;
 		mapCenter?: Coordinate;
 		zoom?: number;
 		disabled?: boolean;
@@ -80,7 +79,7 @@
 			</P>
 		</div>
 	</div>
-	<View bind:center bind:zoom>
+	<View center={mapCenter} zoom={12}>
 		<Map class="h-full w-full">
 			<Layer.Tile source="osm" />
 

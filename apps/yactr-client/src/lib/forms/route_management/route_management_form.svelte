@@ -1,10 +1,10 @@
 <script lang="ts">
 	import {
-		yactrApiEndpointsSectorsGetSectorById,
-		type YactrDomainModelClimbingClimbingType,
-		type YactrApiEndpointsRoutesRouteResponse,
-		type YactrApiEndpointsSectorsSectorImageResponseData,
-		type YactrApiEndpointsSectorsSectorResponse
+		getSectorById,
+		type ClimbingType,
+		type RouteResponse,
+		type SectorImageResponseData,
+		type SectorResponse
 	} from '$lib/api';
 	import {
 		Button,
@@ -29,12 +29,12 @@
 		sectors = [],
 		access_token
 	}: {
-		route?: YactrApiEndpointsRoutesRouteResponse;
-		sectors: YactrApiEndpointsSectorsSectorResponse[];
+		route?: RouteResponse;
+		sectors: SectorResponse[];
 		access_token: string;
 	} = $props();
 
-	const climbing_types: YactrDomainModelClimbingClimbingType[] = [
+	const climbing_types: ClimbingType[] = [
 		'Sport',
 		'Traditional',
 		'Boulder',
@@ -42,15 +42,15 @@
 		'Aid'
 	];
 
-	let route = $state<YactrApiEndpointsRoutesRouteResponse>(routeProp ?? {});
-	let selected_sector = $state<YactrApiEndpointsSectorsSectorResponse>();
+	let route = $state<RouteResponse>(routeProp ?? {});
+	let selected_sector = $state<SectorResponse>();
 	let is_multipitch = $state((route.pitches?.length ?? 0) > 1);
 
 	let sector_images = $derived<
-		Array<YactrApiEndpointsSectorsSectorImageResponseData & Partial<{ isPrimary: boolean }>>
+		Array<SectorImageResponseData & Partial<{ isPrimary: boolean }>>
 	>(
 		selected_sector?.sector_images
-			?.map((image: YactrApiEndpointsSectorsSectorImageResponseData) => ({ ...image, isPrimary: false }))
+			?.map((image: SectorImageResponseData) => ({ ...image, isPrimary: false }))
 			?.concat({
 				image_id: selected_sector?.primary_sector_image_id!,
 				image_url: selected_sector?.primary_sector_image_url,
@@ -81,14 +81,14 @@
 
 	$effect(() => {
 		if (route.sector_id) {
-			yactrApiEndpointsSectorsGetSectorById({
+			getSectorById({
 				path: {
 					sector_id: route.sector_id
 				},
 				headers: {
 					Authorization: `Bearer ${access_token}`
 				}
-			}).then((result: Awaited<ReturnType<typeof yactrApiEndpointsSectorsGetSectorById>>) => {
+			}).then((result: Awaited<ReturnType<typeof getSectorById>>) => {
 				const { data, response } = result;
 				if (response.ok) {
 					selected_sector = data;

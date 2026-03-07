@@ -1,11 +1,11 @@
-import { yactrApiEndpointsPitchesGetPitchById, yactrApiEndpointsPitchesUpdatePitch } from "$lib/api";
+import { getPitchById, updatePitch } from "$lib/api";
 import { fail, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 
 export const load: PageServerLoad = async ({ params, parent }) => {
   const { session } = await parent();
-  const { data: pitch } = await yactrApiEndpointsPitchesGetPitchById({
+  const { data: pitch } = await getPitchById({
     path: { pitch_id: params.pitch_id! },
     headers: { Authorization: `Bearer ${session!.access_token}` }
   });
@@ -17,7 +17,7 @@ export const actions = {
     const session = await locals.auth();
     const data = await request.formData();
 
-    const { error } = await yactrApiEndpointsPitchesUpdatePitch({
+    const { error } = await updatePitch({
       path: { pitch_id: params.pitch_id! },
       headers: { Authorization: `Bearer ${session!.access_token}` },
       body: {

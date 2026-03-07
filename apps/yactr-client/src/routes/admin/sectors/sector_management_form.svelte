@@ -2,11 +2,14 @@
 	import MultiPolygonSelection from '$lib/components/GeolocationInput/MultiPolygonSelection.svelte';
 	import PointSelection from '$lib/components/GeolocationInput/PointSelection.svelte';
 import type {
-		YactrApiEndpointsSectorsSectorRequestData,
-		YactrApiEndpointsAreasAreaResponse,
-		YactrApiEndpointsSectorsSectorImageResponseData,
-		YactrApiEndpointsSectorsGetSectorByIdData,
-		YactrApiEndpointsSectorsGetSectorByIdResponse
+		SectorRequestData,
+		AreaResponse,
+		SectorImageResponseData,
+		GetSectorByIdData,
+		GetSectorByIdResponse,
+		MultiPolygon,
+		Point,
+		LineString
 	} from '$lib/api';
 	import type { Coordinate } from 'ol/coordinate';
 	import {
@@ -27,11 +30,11 @@ import type {
 	let {
 		sector = $bindable(),
 		loadedImages: loaded_images = $bindable([]),
-		areas = [] as YactrApiEndpointsAreasAreaResponse[]
+		areas = [] as AreaResponse[]
 	}: {
-		sector?: YactrApiEndpointsSectorsSectorRequestData;
-		loadedImages?: YactrApiEndpointsSectorsSectorImageResponseData[];
-		areas?: YactrApiEndpointsAreasAreaResponse[];
+		sector?: SectorRequestData;
+		loadedImages?: SectorImageResponseData[];
+		areas?: AreaResponse[];
 	} = $props();
 
 	let area_id = $derived(sector?.area_id);
@@ -57,10 +60,10 @@ import type {
 			}))
 		);
 	let primary_image_preview: { alt: string; src: string } | undefined = $derived(
-		(sector as YactrApiEndpointsSectorsGetSectorByIdResponse)?.primary_sector_image_url
+		(sector as GetSectorByIdResponse)?.primary_sector_image_url
 			? {
 					alt: sector!.primary_sector_image_id!,
-					src: (sector as YactrApiEndpointsSectorsGetSectorByIdResponse).primary_sector_image_url!
+					src: (sector as GetSectorByIdResponse).primary_sector_image_url!
 				}
 			: undefined
 	);
@@ -169,7 +172,7 @@ import type {
 				<TabItem open title="Area" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
 						<MultiPolygonSelection
-							bind:boundary
+							bind:boundary={boundary as unknown as MultiPolygon}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
 						/>
@@ -178,7 +181,7 @@ import type {
 				<TabItem title="Entry point" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
 						<PointSelection
-							bind:location={entry_point}
+							bind:location={entry_point as unknown as Point}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
 						/>
@@ -187,7 +190,7 @@ import type {
 				<TabItem title="Parking" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
 						<PointSelection
-							bind:location={recommended_parking_location}
+							bind:location={recommended_parking_location as unknown as Point}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
 						/>
@@ -196,7 +199,7 @@ import type {
 				<TabItem title="Approach" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
 						<LineSelection
-							bind:line={approach_path}
+							bind:line={approach_path as unknown as LineString}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
 						/>

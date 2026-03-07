@@ -1,19 +1,19 @@
-import { yactrApiEndpointsAreasGetAreaById, yactrApiEndpointsAreasUpdateArea } from "$lib/api";
+import { getAreaById, updateArea } from "$lib/api";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Coordinate } from "ol/coordinate";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { zYactrApiEndpointsAreasAreaRequestData } from "$lib/api/generated/zod.gen";
+import { zAreaRequestData } from "$lib/api/generated/zod.gen";
 
 export const load: PageServerLoad = async ({ params }) => {
-  const { data: area } = await yactrApiEndpointsAreasGetAreaById({
+  const { data: area } = await getAreaById({
     path: {
       area_id: params.area_id
     }
   });
 
-  const form = await superValidate(area, zod4(zYactrApiEndpointsAreasAreaRequestData));
+  const form = await superValidate(area, zod4(zAreaRequestData));
 
   return {
     form
@@ -33,7 +33,7 @@ export const actions = {
       }
     }
 
-    const { error } = await yactrApiEndpointsAreasUpdateArea({
+    const { error } = await updateArea({
       path: {
         area_id: params.area_id!
       },

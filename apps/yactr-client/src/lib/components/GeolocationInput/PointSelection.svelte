@@ -1,19 +1,18 @@
 <script lang="ts">
-	import type { YactrApiEndpointsAreasAreaRequestData } from '$lib/api';
+	import type { AreaRequestData } from '$lib/api';
 	import { P } from 'flowbite-svelte';
 	import { Feature } from 'ol';
-	import { Point } from 'ol/geom';
 	import type { Coordinate } from 'ol/coordinate';
+	import { Point } from 'ol/geom';
 	import VectorSource from 'ol/source/Vector';
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 
 	let {
 		location = $bindable(),
-		mapCenter: center = $bindable([-74.006, 40.7128]),
+		mapCenter = [-74.006, 40.7128],
 		disabled = false
-	}: { location?: YactrApiEndpointsAreasAreaRequestData['location']; mapCenter?: Coordinate; disabled?: boolean } = $props();
+	}: { location?: AreaRequestData['location']; mapCenter?: Coordinate; disabled?: boolean } = $props();
 
-	let zoom = $state(12);
 	let vectorSource = $state(new VectorSource());
 
 	if (location && location.coordinates) {
@@ -48,7 +47,7 @@
 	</div>
 
 
-	<View bind:center bind:zoom>
+	<View center={mapCenter} zoom={12}>
 		<Map class="h-full w-full">
 			<Layer.Tile source="osm" />
 

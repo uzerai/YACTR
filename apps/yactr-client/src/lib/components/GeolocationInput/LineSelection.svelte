@@ -4,7 +4,7 @@
 	import { LineString } from 'ol/geom';
 	import { Feature } from 'ol';
 	import { Interaction, Layer, View, Map } from 'svelte-openlayers';
-	import type { NetTopologySuiteGeometriesLineString } from '$lib/api';
+	import type { LineString as LineStringGeoJSON } from '$lib/api';
 
 	let {
 		line = $bindable(),
@@ -12,7 +12,7 @@
 		zoom = $bindable(12),
 		disabled = false
 	}: {
-		line?: NetTopologySuiteGeometriesLineString;
+		line?: LineStringGeoJSON;
 		mapCenter?: Coordinate;
 		zoom?: number;
 		disabled?: boolean;

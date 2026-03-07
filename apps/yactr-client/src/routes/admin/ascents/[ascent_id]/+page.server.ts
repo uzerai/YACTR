@@ -1,11 +1,11 @@
-import { yactrApiEndpointsAscentsGetAscentById, yactrApiEndpointsAscentsUpdateAscent, type YactrDomainModelAchievementAscentType } from "$lib/api";
+import { getAscentById, updateAscent, type AscentType } from "$lib/api";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, parent }) => {
   const { session } = await parent();
 
-  const { data: ascent } = await yactrApiEndpointsAscentsGetAscentById({
+  const { data: ascent } = await getAscentById({
     path: {
       ascent_id: params.ascent_id!
     },
@@ -23,12 +23,12 @@ export const actions = {
     const data = await request.formData();
 
     const typeValue = data.get("type");
-    const body: { type?: YactrDomainModelAchievementAscentType; completed_at?: string } = {
-      type: typeValue !== null && typeValue !== "" ? (Number(typeValue.toString()) as YactrDomainModelAchievementAscentType) : undefined,
+    const body: { type?: AscentType; completed_at?: string } = {
+      type: typeValue !== null && typeValue !== "" ? (Number(typeValue.toString()) as AscentType) : undefined,
       completed_at: data.get("completed_at")?.toString()
     };
 
-    const { error } = await yactrApiEndpointsAscentsUpdateAscent({
+    const { error } = await updateAscent({
       path: {
         ascent_id: params.ascent_id!
       },

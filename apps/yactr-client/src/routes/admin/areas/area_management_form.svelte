@@ -3,19 +3,16 @@
 	import { InfoCircleOutline } from 'flowbite-svelte-icons';
 	import MultiPolygonSelection from '$lib/components/GeolocationInput/MultiPolygonSelection.svelte';
 	import PointSelection from '$lib/components/GeolocationInput/PointSelection.svelte';
-	import type { Infer } from 'zod';
+	import { z } from 'zod';
 	import { superForm, type SuperValidated } from 'sveltekit-superforms';
-	import { zYactrApiEndpointsAreasAreaRequestData } from '$lib/api/generated/zod.gen';
-	import SuperDebug from 'sveltekit-superforms/SuperDebug.svelte';
-	let { data } : { data : SuperValidated<Infer<typeof zYactrApiEndpointsAreasAreaRequestData>> } = $props();
+	import { zAreaRequestData } from '$lib/api/generated/zod.gen';
+	let { data }: { data: SuperValidated<z.infer<typeof zAreaRequestData>> } = $props();
 
-	const { form, errors, enhance } = superForm(data, {
+	const { form, enhance } = superForm(data, {
 		dataType: 'json'
 	});
 
 </script>
-
-<SuperDebug bind:data={$form} />
 
 <form method="post" use:enhance>
 	<div class="grid gap-6">

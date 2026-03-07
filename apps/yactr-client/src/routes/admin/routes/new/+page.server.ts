@@ -1,9 +1,9 @@
-import { yactrApiEndpointsImagesUploadImage, yactrApiEndpointsRoutesCreateRoute, yactrApiEndpointsSectorsGetAllSectors } from "$lib/api";
+import { uploadImage, createRoute, getAllSectors } from "$lib/api";
 import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
 
 export const load: PageServerLoad = async () => {
-  const { data: sectors } = await yactrApiEndpointsSectorsGetAllSectors();
+  const { data: sectors } = await getAllSectors();
 
   return { sectors };
 }
@@ -21,15 +21,15 @@ export const actions = {
     const route_image_overlay = formData.get("route_image_svg_overlay") as File;
     const sector_image_overlay = formData.get("sector_image_svg_overlay") as File;
 
-    const route_image_upload = yactrApiEndpointsImagesUploadImage({
+    const route_image_upload = uploadImage({
       body: { image: route_image },
     });
 
-    const route_image_overlay_upload = yactrApiEndpointsImagesUploadImage({
+    const route_image_overlay_upload = uploadImage({
       body: { image: route_image_overlay },
     });
 
-    const sector_image_overlay_upload = yactrApiEndpointsImagesUploadImage({
+    const sector_image_overlay_upload = uploadImage({
       body: { image: sector_image_overlay }
     });
 
@@ -43,7 +43,7 @@ export const actions = {
     //   sector_overlay_response
     // }, { depth: 4 });
 
-    const { error, response } = await yactrApiEndpointsRoutesCreateRoute({
+    const { error, response } = await createRoute({
       body: {
         sector_id: formData.get("sector_id")!.toString(),
         name: formData.get("name")!.toString(),

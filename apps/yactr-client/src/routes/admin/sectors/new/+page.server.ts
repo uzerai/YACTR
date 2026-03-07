@@ -1,10 +1,10 @@
-import { yactrApiEndpointsAreasGetAllAreas, yactrApiEndpointsImagesUploadImage, yactrApiEndpointsSectorsCreateSector } from "$lib/api";
+import { getAllAreas, uploadImage, createSector } from "$lib/api";
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import type { Coordinate } from "ol/coordinate";
 
 export const load: PageServerLoad = async () => {
-  const { data: areas } = await yactrApiEndpointsAreasGetAllAreas();
+  const { data: areas } = await getAllAreas();
 
   return { areas };
 }
@@ -15,12 +15,12 @@ export const actions = {
 
     // File handling first
     const primary_sector_image = data.get("primary_sector_image") as File | undefined;
-    const primary_sector_image_upload = primary_sector_image && yactrApiEndpointsImagesUploadImage({
+    const primary_sector_image_upload = primary_sector_image && uploadImage({
       body: { image: primary_sector_image }
     })
 
     const other_sector_images = data.getAll("sector_images");
-    const other_sector_images_uploads = other_sector_images.map(image => yactrApiEndpointsImagesUploadImage({
+    const other_sector_images_uploads = other_sector_images.map(image => uploadImage({
       body: { image: image as File }
     }));
 
@@ -37,7 +37,7 @@ export const actions = {
       polygonCoordinates.push(polygonCoordinates.at(0)!);
     }
 
-    const { response, error } = await yactrApiEndpointsSectorsCreateSector({
+    const { response, error } = await createSector({
       body: {
         name: data.get("name")!.toString(),
         area_id: data.get("area_id")!.toString(),

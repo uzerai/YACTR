@@ -1,4 +1,5 @@
-import type { YactrDataModelAuthenticationUser, client } from '$lib/api';
+import type { User } from '$lib/api';
+import { client } from '$lib/api/generated/client.gen';
 import type { AuthSession } from '$lib/auth';
 import { YACTR_BASE_API_URL } from '$env/static/private';
 
@@ -10,7 +11,7 @@ declare global {
     // interface Error {}
     interface Locals {
       auth: () => Promise<AuthSession | null>;
-      user(): Promise<YactrDataModelAuthenticationUser | undefined>;
+      user(): Promise<User | undefined>;
     }
     // interface PageData {}
     // interface PageState {}
