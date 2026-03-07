@@ -22,38 +22,29 @@ export const load: PageServerLoad = async ({ params }) => {
 
 export const actions = {
   default: async ({ request, params }) => {
-    const data = await request.formData();
+    const form = await superValidate(request, zod4(zAreaRequestData));
 
-    const boundary = JSON.parse(data.get("boundary")!.toString()) as Coordinate[][][];
-
-    // Complete the polygon
-    for (const multiPolygon of boundary) {
-      for (const polygon of multiPolygon) {
-        polygon.push(polygon.at(0)!)
-      }
+    if (!form.valid) {
+      return fail(422, { form });
     }
 
-    const { error } = await updateArea({
+    const { error, response } = await updateArea({
       path: {
         area_id: params.area_id!
       },
       body: {
-        name: data.get("name")!.toString(),
-        description: data.get("description")!.toString(),
-        location: {
-          type: "Point",
-          coordinates: JSON.parse(data.get("location")!.toString())
-        },
-        boundary: {
-          type: "MultiPolygon",
-          coordinates: boundary
-        }
+        name: form.data.name,
+        description: form.data.description ?? undefined,
+        location: form.data.location,
+        boundary: form.data.boundary
       }
     });
 
-    if (error) {
-      console.error(error);
-      return fail(422, { error });
+    if (!response.ok) {
+      console.dir({ response, error }, { depth: 4 });
+      return fail(422, { form, error });
     }
+
+    return { form };
   }
 } satisfies Actions;

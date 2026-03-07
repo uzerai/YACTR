@@ -15,8 +15,6 @@ export const actions = {
     const form = await superValidate(request, zod4(zAreaRequestData));
 
     if (!form.valid) {
-      console.log("form not valid");
-      console.dir(form);
       return fail(422, { form });
     }
 
@@ -35,9 +33,7 @@ export const actions = {
       }
     });
 
-    if (error || !response.ok) {
-      console.log("request failed");
-      console.dir(response);
+    if (!response.ok) {
       return fail(422, { form, error })
     }
 
