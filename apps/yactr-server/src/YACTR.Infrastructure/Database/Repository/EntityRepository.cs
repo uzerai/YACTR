@@ -54,6 +54,7 @@ public class EntityRepository<T> : BaseRepository<T>, IEntityRepository<T> where
     public virtual async Task<IEnumerable<T>> GetAllAvailableAsync(CancellationToken ct = default)
     {
         return await _context.Set<T>()
+            .AsNoTracking()
             .WhereAvailable()
             .ToListAsync(ct);
     }
