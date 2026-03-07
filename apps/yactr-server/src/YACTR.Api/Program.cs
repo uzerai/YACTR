@@ -116,6 +116,7 @@ builder.Services
     .SwaggerDocument(swaggerSettings =>
     {
         swaggerSettings.ShortSchemaNames = true;
+        swaggerSettings.RemoveEmptyRequestSchema = true;
         swaggerSettings.SerializerSettings = serializerSettings =>
         {
             serializerSettings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -126,6 +127,7 @@ builder.Services
 
         swaggerSettings.DocumentSettings = docSettings =>
         {
+            docSettings.MarkNonNullablePropsAsRequired();
             docSettings.AddSecurity("JWTBearerAuth", new OpenApiSecurityScheme
             {
                 Type = OpenApiSecuritySchemeType.Http,
