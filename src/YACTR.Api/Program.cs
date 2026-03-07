@@ -115,6 +115,7 @@ builder.Services
     })
     .SwaggerDocument(swaggerSettings =>
     {
+        swaggerSettings.ShortSchemaNames = true;
         swaggerSettings.SerializerSettings = serializerSettings =>
         {
             serializerSettings.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
@@ -202,11 +203,8 @@ app.UseCors("ConfiguredCors");
 
 app.UseAuthentication()
     .UseAuthorization()
-    .UseFastEndpoints(config => {
-        config.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        config.Serializer.Options.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-        config.Serializer.Options.Converters.Add(new GeoJsonConverterFactory());
-        config.Serializer.Options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    .UseFastEndpoints(fastEndpointsSettings => {
+        fastEndpointsSettings.Endpoints.ShortNames = true;
     })
     .UseSwaggerGen();
 
