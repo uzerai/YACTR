@@ -39,7 +39,8 @@ public class PitchEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) :
             "Test Pitch",
             ClimbingType.Sport,
             "A challenging sport pitch",
-            "5.10a"
+            "5.10a",
+            0
         );
 
         // Act
@@ -75,7 +76,8 @@ public class PitchEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) :
                 $"Test {pitchType} Pitch",
                 pitchType,
                 $"A {pitchType.ToString().ToLower()} pitch",
-                "5.8"
+                "5.8",
+                0
             );
 
             // Act
@@ -104,7 +106,8 @@ public class PitchEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) :
             "Test Pitch for GetById",
             ClimbingType.Sport,
             "Test description",
-            "5.9"
+            "5.9",
+            0
         );
 
         var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
@@ -151,7 +154,8 @@ public class PitchEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) :
             "Test Pitch for Update",
             ClimbingType.Sport,
             "Original description",
-            "5.8"
+            "5.8",
+            0
         );
 
         var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
@@ -163,7 +167,8 @@ public class PitchEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) :
             "Updated Pitch Name",
             ClimbingType.Sport,
             "Updated description",
-            "5.8"
+            "5.8",
+            0
         );
 
         // Act
@@ -186,7 +191,8 @@ public class PitchEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) :
             "Updated Pitch Name",
             ClimbingType.Sport,
             "Updated description",
-            "5.8"
+            "5.8",
+            0
         );
 
         // Act
@@ -213,7 +219,8 @@ public class PitchEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) :
             "Test Pitch for Delete",
             ClimbingType.Sport,
             "Test description",
-            "5.7"
+            "5.7",
+            0
         );
 
         var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);

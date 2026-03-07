@@ -31,7 +31,7 @@ public class UpdatePitch : AuthenticatedEndpoint<UpdatePitchRequest, EmptyRespon
         existingPitch.Name = req.Pitch.Name;
         existingPitch.Description = req.Pitch.Description;
         existingPitch.Type = req.Pitch.Type;
-        existingPitch.PitchOrder = req.Pitch.PitchOrder ?? existingPitch.PitchOrder;
+        existingPitch.PitchOrder = req.Pitch.PitchOrder;
 
         await PitchRepository.UpdateAsync(existingPitch, ct);
 

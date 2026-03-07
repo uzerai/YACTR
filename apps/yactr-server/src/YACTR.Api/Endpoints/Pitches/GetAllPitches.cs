@@ -4,7 +4,7 @@ using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Pitches;
 
-public class GetAllPitches : Endpoint<EmptyRequest, List<Pitch>>
+public class GetAllPitches : Endpoint<EmptyRequest, List<PitchResponse>, PitchDataMapper>
 {
     public required IEntityRepository<Pitch> PitchRepository { get; init; }
 
@@ -18,6 +18,6 @@ public class GetAllPitches : Endpoint<EmptyRequest, List<Pitch>>
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
         var pitches = await PitchRepository.GetAllAsync(ct);
-        await Send.OkAsync([.. pitches], cancellation: ct);
+        await Send.OkAsync([.. await Task.WhenAll(pitches.Select(async e => await Map.FromEntityAsync(e, ct)))], cancellation: ct);
     }
 }

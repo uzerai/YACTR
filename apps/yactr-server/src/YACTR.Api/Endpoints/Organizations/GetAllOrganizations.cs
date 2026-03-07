@@ -4,7 +4,7 @@ using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Organizations;
 
-public class GetAllOrganizations(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<EmptyRequest, List<Organization>>
+public class GetAllOrganizations(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<EmptyRequest, List<OrganizationResponse>>
 {
     public override void Configure()
     {
@@ -14,6 +14,7 @@ public class GetAllOrganizations(IEntityRepository<Organization> organizationRep
 
     public override async Task HandleAsync(EmptyRequest request, CancellationToken ct)
     {
-        await Send.OkAsync([.. await organizationRepository.GetAllAsync(ct)], ct);
+        var organizations = await organizationRepository.GetAllAsync(ct);
+        await Send.OkAsync(organizations.Select(e => new OrganizationResponse(e.Id, e.Name)).ToList(), ct);
     }
 }

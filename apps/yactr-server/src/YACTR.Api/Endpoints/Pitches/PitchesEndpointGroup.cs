@@ -14,11 +14,22 @@ namespace YACTR.Api.Endpoints.Pitches;
 public record PitchRequestData(
     Guid SectorId,
     Guid RouteId,
-    string Name,
+    string? Name,
     ClimbingType Type,
     string? Description,
     string? Grade,
-    ushort? PitchOrder = null);
+    int PitchOrder);
+
+public record PitchResponse(
+    Guid Id,
+    Guid RouteId,
+    Guid SectorId,
+    string? Name,
+    ClimbingType Type,
+    string? Description,
+    int? Grade,
+    int? PitchOrder = null
+);
 
 public class PitchesEndpointGroup : Group
 {

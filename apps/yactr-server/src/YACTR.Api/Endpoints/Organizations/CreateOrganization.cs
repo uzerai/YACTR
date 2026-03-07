@@ -12,7 +12,7 @@ public record CreateOrganizationRequestData(string Name);
 public class CreateOrganization(
     IEntityRepository<Organization> organizationRepository,
     IRepository<OrganizationUser> organizationUserRepository)
-    : AuthenticatedEndpoint<CreateOrganizationRequestData, Organization>
+    : AuthenticatedEndpoint<CreateOrganizationRequestData, OrganizationResponse>
 {
     public override void Configure()
     {
@@ -46,6 +46,6 @@ public class CreateOrganization(
 
         await organizationUserRepository.CreateAsync(organizationUser, ct);
 
-        await Send.CreatedAtAsync<GetOrganizationById>(createdOrganization.Id, createdOrganization, cancellation: ct);
+        await Send.CreatedAtAsync<GetOrganizationById>(createdOrganization.Id, new OrganizationResponse(createdOrganization.Id, createdOrganization.Name), cancellation: ct);
     }
 }

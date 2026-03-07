@@ -9,7 +9,7 @@ namespace YACTR.Api.Endpoints.Organizations.Teams;
 public record CreateOrganizationTeamRequest(Guid OrganizationId, string Name);
 
 public class CreateOrganizationTeam(IEntityRepository<OrganizationTeam> organizationTeamRepository)
-    : AuthenticatedEndpoint<CreateOrganizationTeamRequest, OrganizationTeam>
+    : AuthenticatedEndpoint<CreateOrganizationTeamRequest, OrganizationTeamResponse>
 {
     public override void Configure()
     {
@@ -28,6 +28,6 @@ public class CreateOrganizationTeam(IEntityRepository<OrganizationTeam> organiza
 
         var createdTeam = await organizationTeamRepository.CreateAsync(team, ct);
 
-        await Send.OkAsync(createdTeam, cancellation: ct);
+        await Send.OkAsync(new OrganizationTeamResponse(createdTeam.Id, createdTeam.Name), cancellation: ct);
     }
 }
