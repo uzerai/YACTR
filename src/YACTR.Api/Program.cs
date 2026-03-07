@@ -16,7 +16,6 @@ using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 using NSwag;
 using YACTR.Api.Swagger;
-using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Authorization.Permissions;
 using YACTR.Infrastructure.Database;
@@ -50,7 +49,6 @@ builder.Services.AddMemoryCache();
 // The claims transformation is what provides the user permissions to our custom local
 // authorization handling that checks the database user _post_ validating authentication with
 // our third party IDP.
-builder.Services.AddTransient<IClaimsTransformation, DatabaseUserPermissionClaimsTransformer>();
 builder.Services.AddPermissionsAuthorizationHandling();
 builder.Services.AddApplicationServices();
 
@@ -107,7 +105,14 @@ builder.Services.AddCors(options =>
 
 builder.Services
     .AddFastEndpoints()
-    // This configures the JSON serialization in the generated swagger schema.
+    // This configures the serialization between Entity <-> JSON.
+    .ConfigureHttpJsonOptions(options =>
+    {
+        options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+        options.SerializerOptions.Converters.Add(new GeoJsonConverterFactory());
+        options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    })
     .SwaggerDocument(swaggerSettings =>
     {
         swaggerSettings.SerializerSettings = serializerSettings =>
@@ -130,14 +135,6 @@ builder.Services
             // <see cref="NSwagNtsGeoJsonSchemaMappers"/>
             docSettings.SchemaSettings.AddNtsGeoJsonSchemas();
         };
-    })
-    // This configures the serialization between Entity <-> JSON.
-    .ConfigureHttpJsonOptions(options =>
-    {
-        options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-        options.SerializerOptions.Converters.Add(new GeoJsonConverterFactory());
-        options.SerializerOptions.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
     });
 
 // Add NodaTime clock service so we can use it in the database context for timestamping BaseEntity objects.
@@ -205,7 +202,12 @@ app.UseCors("ConfiguredCors");
 
 app.UseAuthentication()
     .UseAuthorization()
-    .UseFastEndpoints()
+    .UseFastEndpoints(config => {
+        config.Serializer.Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        config.Serializer.Options.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+        config.Serializer.Options.Converters.Add(new GeoJsonConverterFactory());
+        config.Serializer.Options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    })
     .UseSwaggerGen();
 
 app.Run();
