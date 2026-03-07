@@ -47,6 +47,16 @@ public class TestDataSeeder
         ]);
     }
 
+    /// <summary>
+    /// Returns an empty Point (IsEmpty == true). For use in validation tests.
+    /// </summary>
+    public Point EmptyPoint() => _geometryFactory.CreatePoint();
+
+    /// <summary>
+    /// Returns an empty MultiPolygon (IsEmpty == true). For use in validation tests.
+    /// </summary>
+    public MultiPolygon EmptyMultiPolygon() => _geometryFactory.CreateMultiPolygon();
+
     public LineString NewLineString()
     {
         return _geometryFactory.CreateLineString([

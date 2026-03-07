@@ -54,9 +54,6 @@ public class ApiTestClassFixture : AppFixture<Program>
     {
         base.ConfigureServices(services);
 
-        services.AddControllers();
-        services.AddRouting();
-
         services.Configure<DbContextOptionsBuilder>(options =>
         {
             options.UseNpgsql("Host=localhost;Database=yactr_test;Username=yactr;Password=yactr;Port=5432");
