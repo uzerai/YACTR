@@ -26,111 +26,118 @@ import type {
 	} from 'flowbite-svelte';
 	import LineSelection from '$lib/components/GeolocationInput/LineSelection.svelte';
 	import type { ChangeEventHandler } from 'svelte/elements';
+	import type { zSectorRequestData } from '$lib/api/generated/zod.gen';
+	import { z } from 'zod';
+	import type { SuperValidated } from 'sveltekit-superforms';
+	import SuperDebug, { superForm } from 'sveltekit-superforms';
+	import PolygonSelection from '$lib/components/GeolocationInput/PolygonSelection.svelte';
 
 	let {
-		sector = $bindable(),
-		loadedImages: loaded_images = $bindable([]),
+		data,
 		areas = [] as AreaResponse[]
 	}: {
-		sector?: SectorRequestData;
-		loadedImages?: SectorImageResponseData[];
+		data: SuperValidated<z.infer<typeof zSectorRequestData>>;
 		areas?: AreaResponse[];
 	} = $props();
 
-	let area_id = $derived(sector?.area_id);
+	const { form, enhance } = superForm(data, {
+		dataType: 'json'
+	});
 
-	let boundary = $derived(
-		(sector?.sector_area?.coordinates ? [sector.sector_area.coordinates!] : []) as Coordinate[][][]
-	);
-	let entry_point = $derived(sector?.entry_point?.coordinates as Coordinate);
-	let recommended_parking_location = $derived(
-		sector?.recommended_parking_location?.coordinates as Coordinate
-	);
-	let approach_path = $derived((sector?.approach_path?.coordinates ?? []) as Coordinate[]);
 	let derived_map_center = $derived(
-		areas.find((area) => area.id === area_id)?.location?.coordinates
+		areas.find((area) => area.id === $form.area_id)?.location?.coordinates
 	);
 
-	let loaded_image_previews: { alt: string; src: string; image_id: string }[] | undefined =
-		$derived(
-			loaded_images.map((image) => ({
-				alt: image.image_id!,
-				image_id: image.image_id!,
-				src: image.image_url!
-			}))
-		);
-	let primary_image_preview: { alt: string; src: string } | undefined = $derived(
-		(sector as GetSectorByIdResponse)?.primary_sector_image_url
-			? {
-					alt: sector!.primary_sector_image_id!,
-					src: (sector as GetSectorByIdResponse).primary_sector_image_url!
-				}
-			: undefined
-	);
-	let otherImagesPreviews: { alt: string; src: string }[] = $derived(loaded_image_previews);
+	// let boundary = $derived(
+	// 	(sector?.sector_area?.coordinates ? [sector.sector_area.coordinates!] : []) as Coordinate[][][]
+	// );
+	// let entry_point = $derived(sector?.entry_point?.coordinates as Coordinate);
+	// let recommended_parking_location = $derived(
+	// 	sector?.recommended_parking_location?.coordinates as Coordinate
+	// );
+	// let approach_path = $derived((sector?.approach_path?.coordinates ?? []) as Coordinate[]);
+	
 
-	const setPrimaryImagePreview: ChangeEventHandler<HTMLInputElement> = ({ currentTarget }) => {
-		if (currentTarget.files === null) return;
+	// let loaded_image_previews: { alt: string; src: string; image_id: string }[] | undefined =
+	// 	$derived(
+	// 		loaded_images.map((image) => ({
+	// 			alt: image.image_id!,
+	// 			image_id: image.image_id!,
+	// 			src: image.image_url!
+	// 		}))
+	// 	);
+	// let primary_image_preview: { alt: string; src: string } | undefined = $derived(
+	// 	(sector as GetSectorByIdResponse)?.primary_sector_image_url
+	// 		? {
+	// 				alt: sector!.primary_sector_image_id!,
+	// 				src: (sector as GetSectorByIdResponse).primary_sector_image_url!
+	// 			}
+	// 		: undefined
+	// );
+	// let otherImagesPreviews: { alt: string; src: string }[] = $derived(loaded_image_previews);
 
-		const file = currentTarget.files[0];
+	// const setPrimaryImagePreview: ChangeEventHandler<HTMLInputElement> = ({ currentTarget }) => {
+	// 	if (currentTarget.files === null) return;
 
-		if (file) {
-			const reader = new FileReader();
-			reader.addEventListener('load', function () {
-				primary_image_preview = {
-					alt: file.name,
-					src: reader.result as string
-				};
-			});
-			reader.readAsDataURL(file);
+	// 	const file = currentTarget.files[0];
 
-			return;
-		}
-	};
+	// 	if (file) {
+	// 		const reader = new FileReader();
+	// 		reader.addEventListener('load', function () {
+	// 			primary_image_preview = {
+	// 				alt: file.name,
+	// 				src: reader.result as string
+	// 			};
+	// 		});
+	// 		reader.readAsDataURL(file);
 
-	const setOtherImagesPreviews: ChangeEventHandler<HTMLInputElement> = ({ currentTarget }) => {
-		if (currentTarget.files === null) return;
-		if (otherImagesPreviews) otherImagesPreviews = [];
+	// 		return;
+	// 	}
+	// };
 
-		for (let fileIndex = 0; fileIndex < currentTarget.files.length; fileIndex++) {
-			const file = currentTarget.files[fileIndex];
+	// const setOtherImagesPreviews: ChangeEventHandler<HTMLInputElement> = ({ currentTarget }) => {
+	// 	if (currentTarget.files === null) return;
+	// 	if (otherImagesPreviews) otherImagesPreviews = [];
 
-			if (file) {
-				const reader = new FileReader();
-				reader.addEventListener('load', function () {
-					console.log('pushing image preview');
+	// 	for (let fileIndex = 0; fileIndex < currentTarget.files.length; fileIndex++) {
+	// 		const file = currentTarget.files[fileIndex];
 
-					const newImagePreviews = [
-						...otherImagesPreviews,
-						{
-							alt: file.name,
-							src: reader.result as string
-						}
-					];
+	// 		if (file) {
+	// 			const reader = new FileReader();
+	// 			reader.addEventListener('load', function () {
+	// 				console.log('pushing image preview');
 
-					otherImagesPreviews = newImagePreviews;
-				});
-				reader.readAsDataURL(file);
-			}
-		}
+	// 				const newImagePreviews = [
+	// 					...otherImagesPreviews,
+	// 					{
+	// 						alt: file.name,
+	// 						src: reader.result as string
+	// 					}
+	// 				];
 
-		return;
-	};
+	// 				otherImagesPreviews = newImagePreviews;
+	// 			});
+	// 			reader.readAsDataURL(file);
+	// 		}
+	// 	}
 
-	let formDisabled = $derived(!area_id);
+	// 	return;
+	// };
+
+	let formDisabled = $derived(!$form.area_id);
 </script>
 
-<form method="post" enctype="multipart/form-data">
+<SuperDebug data={form} />
+
+<form method="post" enctype="multipart/form-data" use:enhance>
 	<div class="grid gap-2">
 		<div class="flex flex-col gap-2">
 			<Label for="area_select">Area</Label>
-			<Input type="hidden" name="area_id" id="area_id" bind:value={area_id} />
 			<Select
-				bind:value={area_id}
+				bind:value={$form.area_id}
 				size="lg"
 				name="area_select"
 				id="area_select"
-				onchange={(e) => (area_id = (e.target as HTMLSelectElement).value)}
 				items={areas.map((area) => ({ value: area.id, name: `${area.name} (${area.id})` }))}
 				required
 			/>
@@ -142,37 +149,18 @@ import type {
 				type="text"
 				name="name"
 				id="name"
-				value={sector?.name}
+				bind:value={$form.name}
 				required
 				disabled={formDisabled}
 			/>
 		</div>
 		<Hr />
 		<div>
-			<Input type="hidden" name="sector_area" id="sector_area" value={JSON.stringify(boundary)} />
-			<Input
-				type="hidden"
-				name="entry_point"
-				id="entry_point"
-				value={JSON.stringify(entry_point)}
-			/>
-			<Input
-				type="hidden"
-				name="recommended_parking_location"
-				id="recommended_parking_location"
-				value={JSON.stringify(recommended_parking_location)}
-			/>
-			<Input
-				type="hidden"
-				name="approach_path"
-				id="approach_path"
-				value={JSON.stringify(approach_path)}
-			/>
 			<Tabs>
 				<TabItem open title="Area" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
-						<MultiPolygonSelection
-							bind:boundary={boundary as unknown as MultiPolygon}
+						<PolygonSelection
+							bind:boundary={$form.sector_area}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
 						/>
@@ -181,7 +169,7 @@ import type {
 				<TabItem title="Entry point" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
 						<PointSelection
-							bind:location={entry_point as unknown as Point}
+							bind:location={$form.entry_point}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
 						/>
@@ -190,7 +178,7 @@ import type {
 				<TabItem title="Parking" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
 						<PointSelection
-							bind:location={recommended_parking_location as unknown as Point}
+							bind:location={$form.recommended_parking_location}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
 						/>
@@ -199,7 +187,7 @@ import type {
 				<TabItem title="Approach" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
 						<LineSelection
-							bind:line={approach_path as unknown as LineString}
+							bind:line={$form.approach_path}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
 						/>
@@ -208,22 +196,20 @@ import type {
 			</Tabs>
 		</div>
 		<Hr />
-		<div class="flex gap-4">
+		<!-- <div class="flex gap-4">
 			<div class="flex w-1/2 flex-col gap-2">
 				<Label for="primary_sector_image">Primary sector image</Label>
 				<Fileupload
 					type="file"
-					id="primary_sector_image"
-					name="primary_sector_image"
 					onchange={setPrimaryImagePreview}
 					disabled={formDisabled}
 				/>
 
 				<Gallery class="w-full">
-					{#if primary_image_preview}
+					{#if $form.primary_sector_image_id}
 						<img
-							alt={primary_image_preview.alt}
-							src={primary_image_preview.src}
+							alt={$form.primary_sector_image_id}
+							src={$form.primary_sector_image_url}
 							class="rounded-xl"
 						/>
 					{/if}
@@ -241,7 +227,7 @@ import type {
 				/>
 				<Gallery items={otherImagesPreviews} class="grid-cols-3 gap-2" />
 			</div>
-		</div>
+		</div> -->
 
 		<div class="mt-4 flex justify-end">
 			<Button type="submit" color="primary" disabled={formDisabled}>Save</Button>

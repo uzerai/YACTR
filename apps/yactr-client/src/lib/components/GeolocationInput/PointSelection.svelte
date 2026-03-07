@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { AreaRequestData } from '$lib/api';
 	import { P } from 'flowbite-svelte';
 	import { Feature } from 'ol';
 	import type { Coordinate } from 'ol/coordinate';
 	import { Point } from 'ol/geom';
+	import type { Point as PointGeoJSON } from '$lib/api';
 	import VectorSource from 'ol/source/Vector';
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 
@@ -11,7 +11,7 @@
 		location = $bindable(),
 		mapCenter = [-74.006, 40.7128],
 		disabled = false
-	}: { location?: AreaRequestData['location']; mapCenter?: Coordinate; disabled?: boolean } = $props();
+	}: { location?: PointGeoJSON | null; mapCenter?: Coordinate; disabled?: boolean } = $props();
 
 	let vectorSource = $state(new VectorSource());
 

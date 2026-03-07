@@ -2,7 +2,7 @@
 	import type { Coordinate } from 'ol/coordinate';
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 	import VectorSource from 'ol/source/Vector';
-	import type { MultiPolygon } from '$lib/api';
+	import type { Polygon as PolygonGeoJson } from '$lib/api';
 	import { Button, P } from 'flowbite-svelte';
 	import { Polygon } from 'ol/geom';
 	import { Feature } from 'ol';
@@ -12,7 +12,7 @@
 		mapCenter = [-74.006, 40.7128],
 		disabled = false
 	}: {
-		boundary?: MultiPolygon | null;
+		boundary?: PolygonGeoJson | null;
 		mapCenter?: Coordinate;
 		zoom?: number;
 		disabled?: boolean;
@@ -21,36 +21,36 @@
 	let vectorSource = $state(new VectorSource());
 	
 	if (boundary && boundary.coordinates) {
-		vectorSource.addFeatures(
-			boundary.coordinates.map(polygon => new Feature({
-				geometry: new Polygon(polygon)
-			}))
+		vectorSource.addFeature(
+			new Feature({
+				geometry: new Polygon(boundary.coordinates)
+			})
 		)
 	}
 
 	let isDrawing = $state(false);
 
 	const onDrawEnd = ({ feature }: { feature: Feature<Polygon> }) => {
+    vectorSource.clear();
 		isDrawing = false;
 		
 		if (feature.getGeometry() !== undefined) {
 			boundary = {
-				type: "MultiPolygon",
-				coordinates: [
-					...vectorSource.getFeatures().map(feature => (feature.getGeometry() as Polygon).getCoordinates() as Coordinate[][]),
-					feature.getGeometry()!.getCoordinates() as Coordinate[][]
-				]
+				type: "Polygon",
+				coordinates: feature.getGeometry()!.getCoordinates()
 			}
 		}
 	};
 
 	const onModifyEnd = () => {
+    const singleFeature = vectorSource.getFeatures().at(0);
+
+    if (singleFeature === undefined) return;
+
 		boundary = {
-				type: "MultiPolygon",
-				coordinates: [
-					...vectorSource.getFeatures().map(feature => (feature.getGeometry() as Polygon).getCoordinates() as Coordinate[][])
-				]
-			}
+      type: "Polygon",
+      coordinates: (singleFeature.getGeometry() as Polygon)!.getCoordinates() as Coordinate[][]
+    }
 	};
 </script>
 

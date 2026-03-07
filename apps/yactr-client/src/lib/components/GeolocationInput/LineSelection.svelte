@@ -12,7 +12,7 @@
 		zoom = $bindable(12),
 		disabled = false
 	}: {
-		line?: LineStringGeoJSON;
+		line?: LineStringGeoJSON | null;
 		mapCenter?: Coordinate;
 		zoom?: number;
 		disabled?: boolean;

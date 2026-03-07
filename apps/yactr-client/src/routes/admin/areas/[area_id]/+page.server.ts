@@ -1,7 +1,6 @@
 import { getAreaById, updateArea } from "$lib/api";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
-import type { Coordinate } from "ol/coordinate";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { zAreaRequestData } from "$lib/api/generated/zod.gen";
