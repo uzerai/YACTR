@@ -5,7 +5,6 @@ using FastEndpoints;
 using FastEndpoints.Swagger;
 using FileSignatures;
 using FileSignatures.Formats;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -137,6 +136,10 @@ builder.Services
             });
             // <see cref="NSwagNtsGeoJsonSchemaMappers"/>
             docSettings.SchemaSettings.AddNtsGeoJsonSchemas();
+            // Only expose request/response models from YACTR.Api; exclude all other YACTR assembly types.
+            // docSettings.SchemaSettings.ApplyAssemblyExclusionFilter();
+            // Remove schema definitions for non-API types after generation (ExcludedTypeNames can be ignored when types are referenced).
+            // docSettings.AddAssemblyExclusionDocumentProcessor();
         };
     });
 

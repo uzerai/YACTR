@@ -4,7 +4,7 @@ using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Users;
 
-public class GetCurrentUser : AuthenticatedEndpoint<EmptyRequest, User>
+public class GetCurrentUser : AuthenticatedEndpoint<EmptyRequest, CurrentUserResponse>
 {
     public required IEntityRepository<User> UserRepository { get; init; }
 
@@ -16,6 +16,19 @@ public class GetCurrentUser : AuthenticatedEndpoint<EmptyRequest, User>
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        await Send.OkAsync((await UserRepository.GetByIdAsync(CurrentUserId, ct))!, ct);
+        var user = await UserRepository.GetByIdAsync(CurrentUserId, ct);
+
+        if (user == null)
+        {
+            await Send.NotFoundAsync(ct);
+            return;
+        }
+
+        await Send.OkAsync(new CurrentUserResponse(
+            Id: CurrentUserId,
+            Username: user.Username,
+            PlatformPermissions: user.PlatformPermissions,
+            AdminPermissions: user.AdminPermissions
+        ), ct);
     }
 }

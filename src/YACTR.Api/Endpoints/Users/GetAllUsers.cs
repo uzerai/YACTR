@@ -6,7 +6,7 @@ using Permission = YACTR.Domain.Model.Authorization.Permissions.Permission;
 
 namespace YACTR.Api.Endpoints.Users;
 
-public class GetAllUsers(IEntityRepository<User> userRepository) : AuthenticatedEndpoint<EmptyRequest, IEnumerable<User>>
+public class GetAllUsers(IEntityRepository<User> userRepository) : AuthenticatedEndpoint<EmptyRequest, IEnumerable<UserResponse>>
 {
     public override void Configure()
     {
@@ -19,6 +19,6 @@ public class GetAllUsers(IEntityRepository<User> userRepository) : Authenticated
     {
         var allUsers = await userRepository.GetAllAsync(ct);
 
-        await Send.OkAsync(allUsers, ct);
+        await Send.OkAsync(allUsers.Select(e => new UserResponse(e.Id, e.Username)), ct);
     }
 }

@@ -9,7 +9,7 @@ namespace YACTR.Api.Endpoints.Organizations;
 public record GetAllOrganizationTeamsRequest(Guid OrganizationId);
 
 public class GetAllOrganizationTeams(IEntityRepository<OrganizationTeam> organizationTeamRepository)
-    : AuthenticatedEndpoint<GetAllOrganizationTeamsRequest, List<OrganizationTeam>>
+    : AuthenticatedEndpoint<GetAllOrganizationTeamsRequest, List<OrganizationTeamResponse>>
 {
     private readonly IEntityRepository<OrganizationTeam> _organizationTeamRepository = organizationTeamRepository;
 
@@ -26,6 +26,6 @@ public class GetAllOrganizationTeams(IEntityRepository<OrganizationTeam> organiz
             .Where(e => e.OrganizationId == req.OrganizationId)
             .ToListAsync(ct);
 
-        await Send.OkAsync(teams, cancellation: ct);
+        await Send.OkAsync(teams.Select(e => new OrganizationTeamResponse(e.Id, e.Name)).ToList(), cancellation: ct);
     }
 }

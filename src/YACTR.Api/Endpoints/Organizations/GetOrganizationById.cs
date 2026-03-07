@@ -5,7 +5,7 @@ namespace YACTR.Api.Endpoints.Organizations;
 
 public record GetOrganizationByIdRequest(Guid OrganizationId);
 
-public class GetOrganizationById(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<GetOrganizationByIdRequest, Organization>
+public class GetOrganizationById(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<GetOrganizationByIdRequest, OrganizationResponse>
 {
     public override void Configure()
     {
@@ -17,12 +17,12 @@ public class GetOrganizationById(IEntityRepository<Organization> organizationRep
     {
         var organization = await organizationRepository.GetByIdAsync(req.OrganizationId, ct);
 
-        if (organization is not null)
+        if (organization is null)
         {
-            await Send.OkAsync(organization, cancellation: ct);
+            await Send.NotFoundAsync(ct);
             return;
         }
 
-        await Send.NotFoundAsync(ct);
+        await Send.OkAsync(new OrganizationResponse(organization.Id, organization.Name), cancellation: ct);
     }
 }

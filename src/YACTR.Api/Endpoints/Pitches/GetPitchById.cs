@@ -6,7 +6,7 @@ namespace YACTR.Api.Endpoints.Pitches;
 
 public record GetPitchByIdRequest(Guid PitchId);
 
-public class GetPitchById : Endpoint<GetPitchByIdRequest, Pitch>
+public class GetPitchById : Endpoint<GetPitchByIdRequest, PitchResponse, PitchDataMapper>
 {
     public required IEntityRepository<Pitch> PitchRepository { get; init; }
 
@@ -26,6 +26,6 @@ public class GetPitchById : Endpoint<GetPitchByIdRequest, Pitch>
             return;
         }
 
-        await Send.OkAsync(pitch, cancellation: ct);
+        await Send.OkAsync(await Map.FromEntityAsync(pitch, ct), cancellation: ct);
     }
 }

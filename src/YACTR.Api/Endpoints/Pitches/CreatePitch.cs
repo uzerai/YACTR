@@ -5,7 +5,7 @@ using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Pitches;
 
-public class CreatePitch : AuthenticatedEndpoint<PitchRequestData, Pitch>
+public class CreatePitch : AuthenticatedEndpoint<PitchRequestData, PitchResponse, PitchDataMapper>
 {
     public required IEntityRepository<Pitch> PitchRepository { get; init; }
 
@@ -18,15 +18,8 @@ public class CreatePitch : AuthenticatedEndpoint<PitchRequestData, Pitch>
 
     public override async Task HandleAsync(PitchRequestData req, CancellationToken ct)
     {
-        var createdPitch = await PitchRepository.CreateAsync(new()
-        {
-            Name = req.Name,
-            Description = req.Description,
-            Type = req.Type,
-            SectorId = req.SectorId,
-            RouteId = req.RouteId
-        }, ct);
+        var createdPitch = await PitchRepository.CreateAsync(Map.ToEntity(req), ct);
 
-        await Send.CreatedAtAsync<GetPitchById>(createdPitch.Id, createdPitch, cancellation: ct);
+        await Send.CreatedAtAsync<GetPitchById>(createdPitch.Id, await Map.FromEntityAsync(createdPitch, ct), cancellation: ct);
     }
 }
