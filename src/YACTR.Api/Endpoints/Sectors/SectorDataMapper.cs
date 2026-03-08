@@ -59,7 +59,7 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
         RecommendedParkingLocation = r.RecommendedParkingLocation,
         ApproachPath = r.ApproachPath,
         AreaId = r.AreaId,
-        PrimarySectorImageId = r.PrimarySectorImageId ?? r.SectorImages?.FirstOrDefault()?.ImageId ?? null,
+        PrimarySectorImageId = r.PrimarySectorImageId,
         SectorImages = r.SectorImages?.Select(s => new SectorImage()
         {
             ImageId = s.ImageId,
@@ -94,6 +94,12 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
         e.EntryPoint = r.EntryPoint;
         e.RecommendedParkingLocation = r.RecommendedParkingLocation;
         e.ApproachPath = r.ApproachPath;
+        e.PrimarySectorImageId = r.PrimarySectorImageId;
+        e.SectorImages = r.SectorImages?.Select(s => new SectorImage()
+        {
+            ImageId = s.ImageId,
+            Order = s.Order
+        }).ToList() ?? e.SectorImages;
 
         return e;
     }
