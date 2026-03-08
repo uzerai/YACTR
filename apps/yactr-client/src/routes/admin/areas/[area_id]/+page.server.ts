@@ -1,16 +1,20 @@
 import { getAreaById, updateArea } from "$lib/api";
-import { fail } from "@sveltejs/kit";
+import { error, fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { zAreaRequestData } from "$lib/api/generated/zod.gen";
 
 export const load: PageServerLoad = async ({ params }) => {
-  const { data: area } = await getAreaById({
+  const { data: area, response } = await getAreaById({
     path: {
       area_id: params.area_id
     }
   });
+
+  if (!response.ok) {
+    return error(404, { message: 'Not found' });
+  }
 
   const form = await superValidate(area, zod4(zAreaRequestData));
 
