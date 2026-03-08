@@ -17,53 +17,40 @@ export const actions = {
     const form = await superValidate(request, zod4(sectorRequestWithImages));
 
     if (!form.valid) {
-      console.log("form is not valid");
-      console.dir(form, { depth: 10 })
       return fail(422, withFiles({ form }));
     }
 
-    const { data: primary_sector_image_data, error: psi_error, response: psi_response } = await uploadImage({
-      body: { image: form.data.primary_sector_image }
-    });
-
-    if (!psi_response.ok || !primary_sector_image_data?.image_id) {
-      return fail(424, withFiles({ form, error: psi_error }));
+    if (form.data.sector_images.length === 0) {
+      return fail(422, withFiles({ form, error: { message: "At least one sector image is required" } }));
     }
-    
-    const other_sector_images: SectorImageRequestData[] = [];
 
-    for (const sector_image_with_order of form.data.sector_images ?? []) {
-      const { data: other_sector_image_data, error: osi_error, response: osi_response } = await uploadImage({
-        body: { image: sector_image_with_order.image }
+    for (const item of form.data.sector_images) {
+      if (item.image_id) continue;
+      if (!item.image) continue;
+
+      const { data: uploadData, error: uploadError, response: uploadResponse } = await uploadImage({
+        body: { image: item.image }
       });
-
-      if (!osi_response.ok) {
-        console.log("other sector image upload failed");
-        console.dir(osi_error);
-        return fail(424, withFiles({ form, error: { message: `Failed to upload sector image, order nr: ${sector_image_with_order.order}` } }))
-      }
       
-      if (other_sector_image_data?.image_id) {
-        other_sector_images.push({
-          image_id: other_sector_image_data.image_id,
-          order: sector_image_with_order.order
-        });
+      if (!uploadResponse.ok || !uploadData?.image_id) {
+        return fail(424, withFiles({ form, error: uploadError ?? { message: "Failed to upload sector image" } }));
       }
+
+      item.image_id = uploadData.image_id;
     }
 
-    if (other_sector_images.length !== (form.data.sector_images?.length ?? 0)) {
-      console.log("unexpected number of sector images uploaded");
-      console.dir(other_sector_images);
-      console.dir(form.data.sector_images);
-      return fail(424, withFiles({ form, error: { message: `Unexpected number of sector images uploaded` } }))
-    }
+    const primary_sector_image_id = form.data.sector_images.find(img => img.is_primary)?.image_id ?? form.data.sector_images[0]!.image_id;
+    const sector_images = form.data.sector_images.map(img => ({
+      image_id: img.image_id!,
+      order: img.order
+    }));
 
     const { error: create_sector_error, response: create_sector_response } = await createSector({
       body: {
         name: form.data.name,
         area_id: form.data.area_id,
-        primary_sector_image_id: primary_sector_image_data.image_id,
-        sector_images: other_sector_images,
+        primary_sector_image_id,
+        sector_images,
         entry_point: form.data.entry_point,
         recommended_parking_location: form.data.recommended_parking_location ?? undefined,
         approach_path: form.data.approach_path ?? undefined,
@@ -72,8 +59,6 @@ export const actions = {
     });
 
     if (!create_sector_response.ok) {
-      console.log("create sector failed");
-      console.dir(create_sector_error);
       return fail(422, withFiles({ form, error: create_sector_error }));
     }
 

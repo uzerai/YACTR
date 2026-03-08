@@ -1,11 +1,14 @@
 import {
   getAllAreas,
   getSectorById,
+  uploadImage,
+  updateSector,
+  type SectorImageRequestData
 } from "$lib/api";
-import { error } from "@sveltejs/kit";
+import { error, fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { superValidate } from "sveltekit-superforms";
+import { superValidate, withFiles } from "sveltekit-superforms";
 import { sectorRequestWithImages } from "$lib/server/sector_request_with_images";
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -24,6 +27,8 @@ export const load: PageServerLoad = async ({ params }) => {
 
   const form = await superValidate(sector, zod4(sectorRequestWithImages));
 
+  sector.sector_images.map(image => ({ ...image, is_primary: image.image_id === sector.primary_sector_image_id }));
+
   const { data: areas } = await getAllAreas();
 
   return {
@@ -35,63 +40,52 @@ export const load: PageServerLoad = async ({ params }) => {
 
 export const actions = {
   default: async ({ request, params }) => {
-    // const data = await request.formData();
+    const form = await superValidate(request, zod4(sectorRequestWithImages));
 
-    // const primary_sector_image = data.get("primary_sector_image") as File | undefined;
-    // const primary_sector_image_upload = primary_sector_image && uploadImage({
-    //   body: { image: primary_sector_image }
-    // })
+    if (!form.valid) {
+      return fail(422, withFiles({ form }));
+    }
 
-    // const other_sector_images = data.getAll("sector_images");
-    // const other_sector_images_uploads = other_sector_images.map(image => uploadImage({
-    //   body: { image: image as File }
-    // }));
+    for (const item of form.data.sector_images) {
+    if (item.image_id) continue;
+      if (!item.image) continue;
 
-    // const { data: primary_sector_image_data } = primary_sector_image_upload ? await primary_sector_image_upload : {}
-    // const other_images_data = await Promise.all(other_sector_images_uploads ?? []);
-    // const other_images_ids = other_images_data.map(({ data }, index) => ({
-    //   image_id: data?.image_id,
-    //   order: index
-    // }));
+      const { data: uploadData, error: uploadError, response: uploadResponse } = await uploadImage({
+        body: { image: item.image }
+      });
+      
+      if (!uploadResponse.ok || !uploadData?.image_id) {
+        return fail(424, withFiles({ form, error: uploadError ?? { message: "Failed to upload sector image" } }));
+      }
 
-    // const sectorAreaBoundary = JSON.parse(data.get("sector_area")!.toString()) as Coordinate[][][];
-    // const polygonCoordinates = sectorAreaBoundary?.[0]?.[0]?.map(coord => [...coord, 0.0]) ?? [];
-    // if (polygonCoordinates.length > 0) {
-    //   polygonCoordinates.push(polygonCoordinates.at(0)!);
-    // }
+      item.image_id = uploadData.image_id;
+    }
 
-    // const { response, error } = await updateSector({
-    //   path: {
-    //     sector_id: params.sector_id!
-    //   },
-    //   body: {
-    //     name: data.get("name")!.toString(),
-    //     area_id: data.get("area_id")!.toString(),
-    //     primary_sector_image_id: primary_sector_image_data?.image_id,
-    //     sector_images: other_images_ids,
-    //     entry_point: {
-    //       type: "Point",
-    //       coordinates: JSON.parse(data.get("entry_point")!.toString())
-    //     },
-    //     recommended_parking_location: {
-    //       type: "Point",
-    //       coordinates: JSON.parse(data.get("recommended_parking_location")!.toString())
-    //     },
-    //     sector_area: {
-    //       type: "Polygon",
-    //       coordinates: [polygonCoordinates]
-    //     },
-    //     approach_path: {
-    //       type: "LineString",
-    //       coordinates: JSON.parse(data.get("approach_path")!.toString())
-    //     }
-    //   }
-    // });
+    const primary_sector_image_id = form.data.sector_images.find(img => img.is_primary)?.image_id;
+    const sector_images = form.data.sector_images.map(img => ({
+      image_id: img.image_id!,
+      order: img.order
+    }));
 
+    const { error: updateError, response: updateResponse } = await updateSector({
+      path: { sector_id: params.sector_id! },
+      body: {
+        name: form.data.name,
+        area_id: form.data.area_id,
+        primary_sector_image_id,
+        sector_images,
+        entry_point: form.data.entry_point,
+        recommended_parking_location: form.data.recommended_parking_location ?? undefined,
+        approach_path: form.data.approach_path ?? undefined,
+        sector_area: form.data.sector_area
+      }
+    });
 
-    // if (!response.ok) {
-    //   return fail(422, { error });
-    // }
+    if (!updateResponse.ok) {
+      return fail(422, withFiles({ form, error: updateError }));
+    }
+
+    return { form };
   }
 } satisfies Actions;
 

@@ -13,17 +13,16 @@ export const sectorRequestWithImages = zSectorResponse.extend({
   name: z.string().min(1, { message: "Name is required" }),
   area_id: z.uuidv7().refine(id => id !== undefined, { message: "Area is required" }),
   primary_sector_image_id: z.string().optional(),
-  primary_sector_image: z.instanceof(File).optional()
-    .refine((file) => file?.size !== undefined && file?.size > 0, { message: "Primary sector image is required" }),
   primary_sector_image_url: z.string().optional(),
   sector_images: z.array(
     z.object({
       order: z.number().refine(order => order >= 0, { message: "Order must be greater than or equal to 0" }),
+      is_primary: z.boolean().optional(),
       image: z.instanceof(File).optional().refine((file) => file?.size !== undefined && file?.size > 0, { message: "Image is required" }),
       image_id: z.string().optional(),
       image_url: z.string().optional(),
-    })
-  ).optional(),
+    }).refine(img => img.image_id !== undefined || img.image !== undefined, { message: "Image or image_id is required" })
+  ),
   entry_point: zPoint.optional(),
   recommended_parking_location: zPoint.optional(),
   approach_path: zLineString.optional(),
