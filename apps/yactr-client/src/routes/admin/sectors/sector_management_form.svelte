@@ -1,17 +1,6 @@
 <script lang="ts">
-	import MultiPolygonSelection from '$lib/components/GeolocationInput/MultiPolygonSelection.svelte';
 	import PointSelection from '$lib/components/GeolocationInput/PointSelection.svelte';
-import type {
-		SectorRequestData,
-		AreaResponse,
-		SectorImageResponseData,
-		GetSectorByIdData,
-		GetSectorByIdResponse,
-		MultiPolygon,
-		Point,
-		LineString
-	} from '$lib/api';
-	import type { Coordinate } from 'ol/coordinate';
+	import type { AreaResponse } from '$lib/api';
 	import {
 		Button,
 		Fileupload,
@@ -25,18 +14,16 @@ import type {
 		Tabs
 	} from 'flowbite-svelte';
 	import LineSelection from '$lib/components/GeolocationInput/LineSelection.svelte';
-	import type { ChangeEventHandler } from 'svelte/elements';
-	import type { zSectorRequestData } from '$lib/api/generated/zod.gen';
 	import { z } from 'zod';
-	import type { SuperValidated } from 'sveltekit-superforms';
-	import SuperDebug, { superForm } from 'sveltekit-superforms';
+	import SuperDebug, { fileProxy, filesProxy, superForm, type SuperValidated } from 'sveltekit-superforms';
 	import PolygonSelection from '$lib/components/GeolocationInput/PolygonSelection.svelte';
+	import type { sectorRequestWithImages } from '$lib/server/sector_request_with_images';
 
 	let {
 		data,
 		areas = [] as AreaResponse[]
 	}: {
-		data: SuperValidated<z.infer<typeof zSectorRequestData>>;
+		data: SuperValidated<z.infer<typeof sectorRequestWithImages>>;
 		areas?: AreaResponse[];
 	} = $props();
 
@@ -48,15 +35,22 @@ import type {
 		areas.find((area) => area.id === $form.area_id)?.location?.coordinates
 	);
 
-	// let boundary = $derived(
-	// 	(sector?.sector_area?.coordinates ? [sector.sector_area.coordinates!] : []) as Coordinate[][][]
-	// );
-	// let entry_point = $derived(sector?.entry_point?.coordinates as Coordinate);
-	// let recommended_parking_location = $derived(
-	// 	sector?.recommended_parking_location?.coordinates as Coordinate
-	// );
-	// let approach_path = $derived((sector?.approach_path?.coordinates ?? []) as Coordinate[]);
-	
+	const primary_image_file_proxy = fileProxy(form, 'primary_sector_image');
+	const primary_image_preview = $derived.by(() => {
+		if (!$form.primary_sector_image_url && $primary_image_file_proxy.length === 0) return undefined;
+
+		if ($primary_image_file_proxy?.[0]?.name) {
+			return {
+				alt: $primary_image_file_proxy[0]!.name,
+				src: URL.createObjectURL($primary_image_file_proxy[0]!)
+			};
+		}
+
+		return {
+			alt: $form.primary_sector_image_id!,
+			src: $form.primary_sector_image_url
+		};
+	});
 
 	// let loaded_image_previews: { alt: string; src: string; image_id: string }[] | undefined =
 	// 	$derived(
@@ -196,26 +190,28 @@ import type {
 			</Tabs>
 		</div>
 		<Hr />
-		<!-- <div class="flex gap-4">
+		<div class="flex gap-4">
 			<div class="flex w-1/2 flex-col gap-2">
 				<Label for="primary_sector_image">Primary sector image</Label>
 				<Fileupload
 					type="file"
-					onchange={setPrimaryImagePreview}
+					accept="image/*"
+					name="primary_sector_image"
 					disabled={formDisabled}
+					bind:files={$primary_image_file_proxy}
 				/>
 
 				<Gallery class="w-full">
-					{#if $form.primary_sector_image_id}
+					{#if primary_image_preview}
 						<img
-							alt={$form.primary_sector_image_id}
-							src={$form.primary_sector_image_url}
+							alt={primary_image_preview?.alt}
+							src={primary_image_preview?.src}
 							class="rounded-xl"
 						/>
 					{/if}
 				</Gallery>
 			</div>
-			<div class="flex flex-1 flex-col gap-2">
+			<!-- <div class="flex flex-1 flex-col gap-2">
 				<Label for="sector_images">Other images</Label>
 				<Fileupload
 					type="file"
@@ -226,8 +222,8 @@ import type {
 					onchange={setOtherImagesPreviews}
 				/>
 				<Gallery items={otherImagesPreviews} class="grid-cols-3 gap-2" />
-			</div>
-		</div> -->
+			</div> -->
+		</div>
 
 		<div class="mt-4 flex justify-end">
 			<Button type="submit" color="primary" disabled={formDisabled}>Save</Button>

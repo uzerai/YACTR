@@ -47,7 +47,7 @@
 					<TableBodyCell>{'updatedat'}</TableBodyCell>
 					<TableBodyCell class="flex gap-1">
 						<Button href={`/admin/sectors/${sector.id}`} color="blue">Edit</Button>
-						<form method="post" action="?/delete">
+						<form method="post" action="/delete">
 							<Input type="hidden" name="sector_id" value={sector.id} />
 							<Button type="submit" color="red">Delete</Button>
 						</form>
