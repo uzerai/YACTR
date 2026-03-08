@@ -1,5 +1,6 @@
 using FastEndpoints;
 using NetTopologySuite.Geometries;
+using NodaTime;
 using YACTR.Domain.Model.Climbing;
 
 namespace YACTR.Api.Endpoints.Areas;
@@ -9,7 +10,9 @@ public record AreaResponse(
     string Name,
     string? Description,
     Point Location,
-    MultiPolygon Boundary
+    MultiPolygon Boundary,
+    Instant CreatedAt,
+    Instant UpdatedAt
 );
 
 public class AreaDataMapper : Mapper<AreaRequestData, AreaResponse, Area>
@@ -22,7 +25,7 @@ public class AreaDataMapper : Mapper<AreaRequestData, AreaResponse, Area>
         Boundary = r.Boundary,
     };
 
-    public override AreaResponse FromEntity(Area e) => new(e.Id, e.Name, e.Description, e.Location, e.Boundary);
+    public override AreaResponse FromEntity(Area e) => new(e.Id, e.Name, e.Description, e.Location, e.Boundary, e.CreatedAt, e.UpdatedAt);
 
     public override Area UpdateEntity(AreaRequestData r, Area e)
     {
