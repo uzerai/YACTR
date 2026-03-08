@@ -1,5 +1,6 @@
 using FastEndpoints;
 using NetTopologySuite.Geometries;
+using NodaTime;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Service;
 
@@ -46,7 +47,9 @@ public record SectorResponse(
     Guid AreaId,
     Guid? PrimarySectorImageId,
     string? PrimarySectorImageUrl,
-    IEnumerable<SectorImageResponseData> SectorImages
+    IEnumerable<SectorImageResponseData> SectorImages,
+    Instant CreatedAt,
+    Instant UpdatedAt
 );
 
 public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector>
@@ -83,7 +86,9 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
             e.AreaId,
             e.PrimarySectorImageId,
             e.PrimarySectorImageId.HasValue ? await service.GetImageUrlAsync(e.PrimarySectorImageId.Value, ct) : null,
-            await Task.WhenAll(e.SectorImages.Select(async sI => new SectorImageResponseData(sI.ImageId, sI.Order, await service.GetImageUrlAsync(sI.ImageId, ct))))
+            await Task.WhenAll(e.SectorImages.Select(async sI => new SectorImageResponseData(sI.ImageId, sI.Order, await service.GetImageUrlAsync(sI.ImageId, ct)))),
+            e.CreatedAt,
+            e.UpdatedAt
         );
     }
 
