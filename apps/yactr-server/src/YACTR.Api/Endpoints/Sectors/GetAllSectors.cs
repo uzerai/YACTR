@@ -12,6 +12,7 @@ public class GetAllSectors : Endpoint<EmptyRequest, List<SectorResponse>, Sector
     {
         Get("/");
         Group<SectorsEndpointGroup>();
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)

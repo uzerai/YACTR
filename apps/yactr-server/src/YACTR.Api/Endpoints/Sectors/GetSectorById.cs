@@ -16,6 +16,7 @@ public class GetSectorById : Endpoint<GetSectorByIdRequest, SectorResponse, Sect
     {
         Get("/{SectorId}");
         Group<SectorsEndpointGroup>();
+        AllowAnonymous();
     }
 
     public override async Task HandleAsync(GetSectorByIdRequest req, CancellationToken ct)
