@@ -3,18 +3,18 @@ import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { sectorRequestWithImages } from "$lib/server/sector_request_with_images";
+import { sectorManagementFormDto } from "$lib/shared/dto/sector_management_form_dto";
 
 export const load: PageServerLoad = async () => {
   const { data: areas } = await getAllAreas();
-  const form = await superValidate(zod4(sectorRequestWithImages));
+  const form = await superValidate(zod4(sectorManagementFormDto));
 
   return { areas, form };
 }
 
 export const actions = {
   default: async ({ request }) => {
-    const form = await superValidate(request, zod4(sectorRequestWithImages));
+    const form = await superValidate(request, zod4(sectorManagementFormDto));
 
     if (!form.valid) {
       return fail(422, withFiles({ form }));
@@ -51,7 +51,7 @@ export const actions = {
         area_id: form.data.area_id,
         primary_sector_image_id,
         sector_images,
-        entry_point: form.data.entry_point,
+        entry_point: form.data.entry_point ?? undefined,
         recommended_parking_location: form.data.recommended_parking_location ?? undefined,
         approach_path: form.data.approach_path ?? undefined,
         sector_area: form.data.sector_area,

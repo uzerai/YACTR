@@ -16,14 +16,14 @@
 	import { z } from 'zod';
 	import { fieldProxy, superForm, type SuperValidated } from 'sveltekit-superforms';
 	import PolygonSelection from '$lib/components/GeolocationInput/PolygonSelection.svelte';
-	import type { sectorRequestWithImages } from '$lib/server/sector_request_with_images';
+	import type { sectorManagementFormDto } from '$lib/shared/dto/sector_management_form_dto';
 	import SectorImagesManager from '$lib/components/ImagesUploading/SectorImagesManager.svelte';
 
 	let {
 		data,
 		areas = [] as AreaResponse[]
 	}: {
-		data: SuperValidated<z.infer<typeof sectorRequestWithImages>>;
+		data: SuperValidated<z.infer<typeof sectorManagementFormDto>>;
 		areas?: AreaResponse[];
 	} = $props();
 
