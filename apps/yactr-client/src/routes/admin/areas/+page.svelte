@@ -37,8 +37,8 @@
 					<TableBodyCell>{area.id}</TableBodyCell>
 					<TableBodyCell>{area.name}</TableBodyCell>
 					<TableBodyCell>{area.description}</TableBodyCell>
-					<TableBodyCell>{'created_at'}</TableBodyCell>
-					<TableBodyCell>{'updated_at'}</TableBodyCell>
+					<TableBodyCell>{area.created_at}</TableBodyCell>
+					<TableBodyCell>{area.updated_at}</TableBodyCell>
 					<TableBodyCell class="flex gap-1">
 						<Button href={`/admin/areas/${area.id}`} color="blue">Edit</Button>
 						<form method="post" action="?/delete">

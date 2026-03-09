@@ -6,8 +6,6 @@ export const authorizedClientHook: Handle = async ({ event, resolve }) => {
   const session = await event.locals.auth();
 
   if (session) {
-    console.debug("Setting @hey-api/client headers for authorization");
-
     client.setConfig({
       auth: () => session.access_token
     });

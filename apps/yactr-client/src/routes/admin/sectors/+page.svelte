@@ -43,8 +43,8 @@
 							>{sector.area_id}</a
 						></TableBodyCell
 					>
-					<TableBodyCell>{'createdat'}</TableBodyCell>
-					<TableBodyCell>{'updatedat'}</TableBodyCell>
+					<TableBodyCell>{sector.created_at}</TableBodyCell>
+					<TableBodyCell>{sector.updated_at}</TableBodyCell>
 					<TableBodyCell class="flex gap-1">
 						<Button href={`/admin/sectors/${sector.id}`} color="blue">Edit</Button>
 						<form method="post" action="/delete">

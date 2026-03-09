@@ -1,11 +1,11 @@
 <script lang="ts">
 	import {
 		getSectorById,
-		type ClimbingType,
 		type RouteResponse,
 		type SectorImageResponseData,
 		type SectorResponse
 	} from '$lib/api';
+	import { ClimbingType, ClimbingType as ClimbingTypeObj } from '$lib/api/generated/types.gen';
 	import {
 		Button,
 		Card,
@@ -24,69 +24,59 @@
 	} from 'flowbite-svelte';
 	import RouteEditor from '$lib/components/RouteTopoEditor/route_topo_editor.svelte';
 	import { InfoCircleOutline } from 'flowbite-svelte-icons';
+	import { z } from 'zod';
+	import SuperDebug, { superForm, type SuperValidated } from 'sveltekit-superforms';
+	import { zClimbingType, zRouteResponse, type zRouteRequestData } from '$lib/api/generated/zod.gen';
 	let {
-		route: routeProp,
-		sectors = [],
-		access_token
+		data,
+		sectors = []
 	}: {
-		route?: RouteResponse;
+		data: SuperValidated<z.infer<typeof zRouteResponse>>;
 		sectors: SectorResponse[];
-		access_token: string;
 	} = $props();
 
-	const climbing_types: ClimbingType[] = [
-		'Sport',
-		'Traditional',
-		'Boulder',
-		'Mixed',
-		'Aid'
-	];
+	const { form, enhance } = superForm(data, {
+		dataType: 'json'
+	})
 
-	let route = $state<RouteResponse>(routeProp ?? {});
+	const climbing_types = Object.values(ClimbingTypeObj);
+	let form_disabled = $derived(!$form.sector_id);
+	let is_multipitch = $derived(($form.pitches?.length ?? 0) > 1);
+
 	let selected_sector = $state<SectorResponse>();
-	let is_multipitch = $state((route.pitches?.length ?? 0) > 1);
 
 	let sector_images = $derived<
-		Array<SectorImageResponseData & Partial<{ isPrimary: boolean }>>
+		Array<SectorImageResponseData & Partial<{ is_primary: boolean }>>
 	>(
+		// Here we just splice the primary image indications from response.
 		selected_sector?.sector_images
-			?.map((image: SectorImageResponseData) => ({ ...image, isPrimary: false }))
-			?.concat({
-				image_id: selected_sector?.primary_sector_image_id!,
-				image_url: selected_sector?.primary_sector_image_url,
-				isPrimary: true
-			}) ?? []
+			?.map((image: SectorImageResponseData) => ({ ...image, is_primary: image.image_id === selected_sector?.primary_sector_image_id })) ?? []
 	);
+	
 	let selected_sector_topo_image = $derived<string | undefined>(
-		sector_images?.find((image) => image.image_id === route.sector_topo_image_id)?.image_url ??
-			route?.sector_topo_image_url
-	);
+		sector_images?.find((image) => image.image_id === $form.sector_topo_image_id)?.image_url);
 
-	let form_disabled = $derived(!route.sector_id);
 
-	let route_image_input_html = $state<HTMLInputElement>();
-	let route_image_uploader = $state<HTMLInputElement>();
-	let route_image_overlay_input_html = $state<HTMLInputElement>();
-	let sector_image_overlay_input_html = $state<HTMLInputElement>();
+	// let route_image_input_html = $state<HTMLInputElement>();
+	// let route_image_uploader = $state<HTMLInputElement>();
+	// let route_image_overlay_input_html = $state<HTMLInputElement>();
+	// let sector_image_overlay_input_html = $state<HTMLInputElement>();
 
-	const add_new_pitch = () => {
-		if (route.pitches) {
-			route.pitches.push({
-				pitch_order: route.pitches.length
-			});
-		} else {
-			route.pitches = [{}];
-		}
-	};
+	// const add_new_pitch = () => {
+	// 	if (route.pitches) {
+	// 		route.pitches.push({
+	// 			pitch_order: route.pitches.length
+	// 		});
+	// 	} else {
+	// 		route.pitches = [{}];
+	// 	}
+	// };
 
 	$effect(() => {
-		if (route.sector_id) {
+		if ($form.sector_id) {
 			getSectorById({
 				path: {
-					sector_id: route.sector_id
-				},
-				headers: {
-					Authorization: `Bearer ${access_token}`
+					sector_id: $form.sector_id
 				}
 			}).then((result: Awaited<ReturnType<typeof getSectorById>>) => {
 				const { data, response } = result;
@@ -98,13 +88,15 @@
 	});
 </script>
 
+<SuperDebug data={$form} />
+
 <form method="post" class="" enctype="multipart/form-data">
 	<div class="grid gap-6 md:grid-cols-2">
 		<div class="flex flex-col gap-4">
 			<div class="flex flex-col gap-2">
 				<Label for="sector_id">Sector</Label>
 				<Select
-					bind:value={route.sector_id}
+					bind:value={$form.sector_id}
 					size="lg"
 					name="sector_id"
 					id="sector_id"
@@ -121,7 +113,7 @@
 				<div class="flex w-1/2 flex-col gap-2">
 					<Label for="climbing_type">Climbing type</Label>
 					<Select
-						bind:value={route.type}
+						bind:value={$form.type}
 						name="climbing_type"
 						id="climbing_type"
 						disabled={form_disabled || is_multipitch}
@@ -142,13 +134,13 @@
 					<Toggle
 						name="is_multipitch"
 						bind:checked={is_multipitch}
-						disabled={route.type === 'Boulder'}
+						disabled={$form.type === ClimbingType.BOULDER}
 					/>
 				</div>
 			</div>
 			<div class="flex flex-col gap-2">
 				<Label for="name">Name</Label>
-				<Input name="name" bind:value={route.name} required disabled={form_disabled} />
+				<Input name="name" bind:value={$form.name} required disabled={form_disabled} />
 			</div>
 			<div class="flex flex-col gap-2">
 				<Label for="height">Height</Label>
@@ -159,14 +151,14 @@
 				<Textarea
 					name="description"
 					class="w-1/2"
-					bind:value={route.description}
+					bind:value={$form.description as string | undefined}
 					disabled={form_disabled}
 				/>
 			</div>
 			<div class="flex gap-2">
 				<div class="flex flex-col gap-2">
 					<Label for="grade">Grade</Label>
-					<Input name="grade" bind:value={route.grade} disabled={form_disabled} />
+					<Input name="grade" bind:value={$form.grade as number | undefined} disabled={form_disabled} />
 				</div>
 				<div class="flex flex-col gap-2">
 					<Label for="number_of_bolts">Number of bolts</Label>
@@ -175,20 +167,20 @@
 			</div>
 			<div class="flex flex-col gap-2">
 				<Label for="bolter_name">Bolted by</Label>
-				<Input name="bolter_name" bind:value={route.bolter_name} disabled={form_disabled} />
+				<Input name="bolter_name" bind:value={$form.bolter_name as string | undefined} disabled={form_disabled} />
 			</div>
 			<div class="flex flex-col gap-2">
 				<Label for="first_ascent_climber_name">First ascended by</Label>
 				<Input
 					name="first_ascent_climber_name"
-					bind:value={route.first_ascent_climber_name}
+					bind:value={$form.first_ascent_climber_name as string | undefined}
 					disabled={form_disabled}
 				/>
 			</div>
 
 			{#if is_multipitch}
 				<Hr>Pitches</Hr>
-				{#each route.pitches as pitch, index}
+				{#each $form.pitches as $pitch, index}
 					<Card class="p-2">
 						<div class="flex gap-2">
 							<Label for="pitch_order">Order</Label>
@@ -197,7 +189,7 @@
 						<div class="flex gap-2">
 							<Label for="pitch_type">Type</Label>
 							<Select
-								bind:value={pitch.type}
+								bind:value={$pitch.type}
 								name="pitch_type"
 								id="pitch_type"
 								required
@@ -209,11 +201,11 @@
 						</div>
 						<div class="flex flex-col gap-2">
 							<Label for="pitch_name">Name</Label>
-							<Input name="pitch_name" bind:value={pitch.name} required />
+							<Input name="pitch_name" bind:value={$pitch.name as string | undefined} required />
 						</div>
 						<div class="flex gap-2">
 							<Label for="pitch_height">Height</Label>
-							<Input type="number" name="pitch_height" bind:value={pitch.height} required />
+							<Input type="number" name="pitch_height" bind:value={$pitch.height as number | undefined} required />
 						</div>
 						<div class="flex gap-2">
 							<Label for="pitch_grade">Grade</Label>
@@ -221,51 +213,15 @@
 						</div>
 						<div class="flex flex-col gap-2">
 							<Label for="pitch_description">Description</Label>
-							<Input name="pitch_description" bind:value={pitch.description} />
+							<Input name="pitch_description" bind:value={$pitch.description as string | undefined} />
 						</div>
 					</Card>
 				{/each}
-				<Button type="button" color="secondary" onclick={add_new_pitch}>Add pitch</Button>
+				<!-- <Button type="button" color="secondary" onclick={add_new_pitch}>Add pitch</Button> -->
 			{/if}
 		</div>
 		<div class="flex flex-col gap-2">
-			<Input
-				type="file"
-				hidden
-				id="route_image"
-				name="route_image"
-				accept=".jpeg,.jpg,.png,.webp"
-				bind:elementRef={route_image_input_html}
-			/>
-			<Input
-				type="hidden"
-				id="sector_topo_image_id"
-				name="sector_topo_image_id"
-				bind:value={route.sector_topo_image_id}
-			/>
-			<Input
-				type="hidden"
-				id="topo_image_id"
-				name="topo_image_id"
-				bind:value={route.topo_image_id}
-			/>
-			<Input
-				hidden
-				id="route_image_svg_overlay"
-				type="file"
-				name="route_image_svg_overlay"
-				accept=".svg"
-				bind:elementRef={route_image_overlay_input_html}
-			/>
-			<Input
-				hidden
-				id="sector_image_svg_overlay"
-				type="file"
-				name="sector_image_svg_overlay"
-				accept=".svg"
-				bind:elementRef={sector_image_overlay_input_html}
-			/>
-			<Input
+			<!-- <Input
 				type="hidden"
 				id="topo_line_points"
 				name="topo_line_points"
@@ -276,28 +232,28 @@
 				id="sector_topo_line_points"
 				name="sector_topo_line_points"
 				value={JSON.stringify(route.sector_topo_line_points)}
-			/>
+			/> -->
 			<Tabs>
 				<TabItem open title="Sector topo" disabled={form_disabled}>
 					<div class="flex flex-col gap-2">
 						<Label for="sector_image_selector">Sector image selection</Label>
 						<Select
 							name="sector_image_selector"
-							items={sector_images?.map(({ image_id, image_url, isPrimary }) => ({
+							items={sector_images?.map(({ image_id, image_url, is_primary }) => ({
 								value: image_id,
-								name: `${isPrimary ? 'Primary image:' : 'Secondary image:'} ${image_id}`
+								name: `${is_primary ? 'Primary image:' : 'Secondary image:'} ${image_id}`
 							}))}
-							bind:value={route.sector_topo_image_id}
+							bind:value={$form.sector_topo_image_id}
 						/>
 						<RouteEditor
 							bind:image={selected_sector_topo_image}
-							bind:points={route.sector_topo_line_points}
-							bind:svg_file={route.sector_topo_image_overlay_url}
-							bind:svg_output_file_upload={sector_image_overlay_input_html}
+							bind:points={$form.sector_topo_line_points}
+							bind:svg_file={$form.sector_topo_image_overlay_url}
+							// bind:svg_output_file_upload={sector_image_overlay_input_html}
 						/>
 					</div>
 				</TabItem>
-				<TabItem title="Route unique topo" disabled={form_disabled}>
+				<!-- <TabItem title="Route unique topo" disabled={form_disabled}>
 					<div class="flex flex-col gap-2">
 						<Label for="route_image_uploader">Route unique topo image upload</Label>
 						<P size="xs">Intended for if the sector image doesn't depict the route in full</P>
@@ -337,7 +293,7 @@
 							bind:svg_output_file_upload={route_image_overlay_input_html}
 						/>
 					</div>
-				</TabItem>
+				</TabItem> -->
 			</Tabs>
 		</div>
 	</div>
