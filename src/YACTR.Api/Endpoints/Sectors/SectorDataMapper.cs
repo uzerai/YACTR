@@ -18,7 +18,7 @@ namespace YACTR.Api.Endpoints.Sectors;
 public record SectorRequestData(
     string Name,
     Polygon SectorArea,
-    Point EntryPoint,
+    Point? EntryPoint,
     Guid AreaId,
     Point? RecommendedParkingLocation,
     LineString? ApproachPath,
@@ -41,7 +41,7 @@ public record SectorResponse(
     Guid Id,
     string Name,
     Polygon SectorArea,
-    Point EntryPoint,
+    Point? EntryPoint,
     Point? RecommendedParkingLocation,
     LineString? ApproachPath,
     Guid AreaId,
