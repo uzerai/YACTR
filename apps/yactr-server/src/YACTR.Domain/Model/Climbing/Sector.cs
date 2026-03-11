@@ -11,7 +11,7 @@ public class Sector : BaseEntity
     public required string Name { get; set; }
 
     public required Polygon SectorArea { get; set; }
-    public required Point EntryPoint { get; set; }
+    public Point? EntryPoint { get; set; }
     public Point? RecommendedParkingLocation { get; set; }
     public LineString? ApproachPath { get; set; }
 
