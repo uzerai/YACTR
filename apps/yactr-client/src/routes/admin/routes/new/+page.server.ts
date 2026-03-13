@@ -1,25 +1,26 @@
 import { uploadImage, createRoute, getAllSectors } from "$lib/api";
 import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
-import { zRouteResponse } from "$lib/api/generated/zod.gen";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
+import { routeManagementFormDto } from "$lib/shared/dto/route_management_form_dto";
 
 export const load: PageServerLoad = async () => {
   const { data: sectors, response } = await getAllSectors();
+  const form = await superValidate(zod4(routeManagementFormDto));
+
 
   if (!response.ok || !sectors) {
-    return fail(500, { message: "Failed to fetch sectors" });
+    return fail(500, { message: "Failed to fetch sectors", form });
   }
 
-  const form = await superValidate(zod4(zRouteResponse));
 
   return { sectors, form };
 }
 
 export const actions = {
   default: async ({ request }) => {
-    const form = await superValidate(request, zod4(zRouteResponse));
+    const form = await superValidate(request, zod4(routeManagementFormDto));
 
     if (!form.valid) {
       return fail(422, { form });

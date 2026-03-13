@@ -26,12 +26,13 @@
 	import { InfoCircleOutline } from 'flowbite-svelte-icons';
 	import { z } from 'zod';
 	import SuperDebug, { superForm, type SuperValidated } from 'sveltekit-superforms';
-	import { zClimbingType, zRouteResponse, type zRouteRequestData } from '$lib/api/generated/zod.gen';
+	import type { routeManagementFormDto } from '$lib/shared/dto/route_management_form_dto';
+
 	let {
 		data,
 		sectors = []
 	}: {
-		data: SuperValidated<z.infer<typeof zRouteResponse>>;
+		data: SuperValidated<z.infer<typeof routeManagementFormDto>>;
 		sectors: SectorResponse[];
 	} = $props();
 
@@ -221,18 +222,6 @@
 			{/if}
 		</div>
 		<div class="flex flex-col gap-2">
-			<!-- <Input
-				type="hidden"
-				id="topo_line_points"
-				name="topo_line_points"
-				value={JSON.stringify(route.topo_line_points)}
-			/>
-			<Input
-				type="hidden"
-				id="sector_topo_line_points"
-				name="sector_topo_line_points"
-				value={JSON.stringify(route.sector_topo_line_points)}
-			/> -->
 			<Tabs>
 				<TabItem open title="Sector topo" disabled={form_disabled}>
 					<div class="flex flex-col gap-2">
@@ -283,13 +272,12 @@
 									}
 								}
 							}}
-							bind:elementRef={route_image_uploader}
 							disabled={form_disabled}
 						/>
 						<RouteEditor
-							bind:image={route.topo_image_url}
+							bind:image={$form.topo_image_url}
 							bind:points={route.topo_line_points}
-							bind:svg_file={route.topo_image_overlay_url}
+							bind:svg_file={$form.topo_image}
 							bind:svg_output_file_upload={route_image_overlay_input_html}
 						/>
 					</div>
