@@ -2,7 +2,7 @@
 	import { Input, Label, Button, Textarea, Tooltip, Hr } from 'flowbite-svelte';
 	import { InfoCircleOutline } from 'flowbite-svelte-icons';
 	import MultiPolygonSelection from '$lib/components/GeolocationInput/MultiPolygonSelection.svelte';
-	import PointSelection from '$lib/components/GeolocationInput/PointSelection.svelte';
+	import { Point as PointInput, MultiPolygon as MultiPolygonInput } from '$lib/components/geo-input';
 	import { z } from 'zod';
 	import { superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { zAreaRequestData } from '$lib/api/generated/zod.gen';
@@ -44,7 +44,7 @@
 				></span
 			>
 			<div class="h-[50dvh]">
-				<PointSelection bind:location={$form.location} mapCenter={$form.location?.coordinates} />
+				<PointInput bind:location={$form.location} mapCenter={$form.location?.coordinates} />
 			</div>
 		</div>
 		<div class="flex w-full flex-col gap-2 md:w-1/2">
@@ -55,7 +55,7 @@
 				></span
 			>
 			<div class="h-[calc(50dvh)]">
-				<MultiPolygonSelection bind:boundary={$form.boundary} mapCenter={$form.location?.coordinates} />
+				<MultiPolygonInput bind:boundary={$form.boundary} mapCenter={$form.location?.coordinates} />
 			</div>
 		</div>
 	</div>

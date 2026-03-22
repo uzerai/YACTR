@@ -1,30 +1,9 @@
 <script lang="ts">
-	import {
-		Sidebar,
-		SidebarGroup,
-		SidebarItem,
-		SidebarButton,
-		uiHelpers,
-		SidebarBrand,
-
-		DarkMode
-
-	} from 'flowbite-svelte';
-	import { page } from '$app/state';
-
+	import * as Sidebar from '$lib/components/ui/sidebar';
+	import { MapsEditingIcon, PinLocation02Icon, CurvyUpDownDirectionIcon, AutoConversationsIcon } from '@hugeicons/core-free-icons';
+	import { HugeiconsIcon as Icon } from '@hugeicons/svelte';
+	
 	let { children } = $props();
-
-	/// Navigation bar logic.
-	let activeUrl = $state(page.url.pathname);
-	const navItemClass = 'flex-1 ms-3 whitespace-nowrap capitalize';
-	const navSidebar = uiHelpers();
-	let navOpen = $state(false);
-	const closeNavigation = navSidebar.close;
-
-	$effect(() => {
-		navOpen = navSidebar.isOpen;
-		activeUrl = page.url.pathname;
-	});
 
 	const site = {
 		name: 'YACTR',
@@ -33,42 +12,70 @@
 
 	const locationRoutes = ['areas', 'sectors', 'routes', 'pitches', 'ascents'];
 	const organizationRoutes = ['organizations', 'teams', 'users'];
+
+	const climbingNavItems = [
+    {
+      title: "Areas",
+      url: "admin/areas",
+      icon: MapsEditingIcon,
+    },
+		{
+			title: "Sectors",
+			url: "admin/sectors",
+			icon: PinLocation02Icon,
+		},
+		{
+			title: "Routes",
+			url: "admin/routes",
+			icon: CurvyUpDownDirectionIcon,
+		},
+		{
+			title: "Pitches",
+			url: "admin/pitches",
+			icon: AutoConversationsIcon,
+		}
+  ];
 </script>
 
-<div class="border-b md:hidden">
-	<SidebarButton onclick={navSidebar.toggle} class="mb-2" />
-</div>
-<div class="relative">
-	<Sidebar
-		{activeUrl}
-		backdrop={false}
-		isOpen={navOpen}
-		closeSidebar={closeNavigation}
-		class="z-50 ml-4 md:ml-0 md:min-h-full"
-		position="fixed"
-	>
-		<SidebarBrand {site} class="justify-center" classes={{ img: 'hidden' }} />
-		<SidebarGroup class="pb-6">
-			<SidebarItem href={`/admin`} label="Dashboard" class={navItemClass} />
-		</SidebarGroup>
-		<SidebarGroup class="flex flex-col gap-1 pb-6">
-			{#each locationRoutes as route}
-				<SidebarItem href={`/admin/${route}`} label={route} class={navItemClass} />
-			{/each}
-		</SidebarGroup>
-		<SidebarGroup>
-			{#each organizationRoutes as route}
-				<SidebarItem href={`/admin/${route}`} label={route} class={navItemClass} />
-			{/each}
-		</SidebarGroup>
-		<SidebarGroup>
-			<DarkMode />
-		</SidebarGroup>
-	</Sidebar>
-
-	<main class="min-h-dvh md:ml-64 dark:bg-neutral-900">
-		<div class="relative p-4">
-			{@render children?.()}
-		</div>
-	</main>
-</div>
+<Sidebar.Provider>
+  <Sidebar.Root>
+    <Sidebar.Header>
+			<div class="flex items-center justify-center gap-2">
+				<span>Y A C T R</span><span>|</span><span class="text-xs text-gray-500">Admin</span>
+			</div>
+		</Sidebar.Header>
+		<Sidebar.Content>
+			<Sidebar.Group>
+				<Sidebar.GroupLabel>
+					Climbing
+				</Sidebar.GroupLabel>
+				<Sidebar.GroupContent>
+					<Sidebar.Menu>
+						{#each climbingNavItems as item (item.title)}
+							<Sidebar.MenuItem>
+								<Sidebar.MenuButton>
+									{#snippet child({ props })}
+										<a href={item.url} {...props}>
+											<Icon icon={item.icon} />
+											<span>{item.title}</span>
+										</a>
+									{/snippet}
+								</Sidebar.MenuButton>
+							</Sidebar.MenuItem>
+						{/each}
+					</Sidebar.Menu>
+				</Sidebar.GroupContent>
+			</Sidebar.Group>
+			<Sidebar.Separator />
+			<Sidebar.Group>
+				<Sidebar.GroupLabel>
+					Administration
+				</Sidebar.GroupLabel>
+			</Sidebar.Group>
+		</Sidebar.Content>
+  </Sidebar.Root>
+  <main>
+	<Sidebar.Trigger />
+    {@render children()}
+  </main>
+</Sidebar.Provider>

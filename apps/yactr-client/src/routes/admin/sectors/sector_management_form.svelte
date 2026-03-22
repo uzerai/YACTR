@@ -1,5 +1,4 @@
 <script lang="ts">
-	import PointSelection from '$lib/components/GeolocationInput/PointSelection.svelte';
 	import type { AreaResponse } from '$lib/api';
 	import {
 		Button,
@@ -12,12 +11,11 @@
 		TabItem,
 		Tabs
 	} from 'flowbite-svelte';
-	import LineSelection from '$lib/components/GeolocationInput/LineSelection.svelte';
 	import { z } from 'zod';
 	import { fieldProxy, superForm, type SuperValidated } from 'sveltekit-superforms';
-	import PolygonSelection from '$lib/components/GeolocationInput/PolygonSelection.svelte';
 	import type { sectorManagementFormDto } from '$lib/shared/dto/sector_management_form_dto';
 	import SectorImagesManager from '$lib/components/ImagesUploading/SectorImagesManager.svelte';
+	import { Point as PointInput, Polygon as PolygonInput, LineString as LineStringInput } from '$lib/components/geo-input';
 
 	let {
 		data,
@@ -68,7 +66,7 @@
 			<Tabs>
 				<TabItem open title="Area" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
-						<PolygonSelection
+						<PolygonInput
 							bind:boundary={$form.sector_area}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
@@ -77,7 +75,7 @@
 				</TabItem>
 				<TabItem title="Entry point" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
-						<PointSelection
+						<PointInput
 							bind:location={$form.entry_point}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
@@ -86,7 +84,7 @@
 				</TabItem>
 				<TabItem title="Parking" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
-						<PointSelection
+						<PointInput
 							bind:location={$form.recommended_parking_location}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
@@ -95,7 +93,7 @@
 				</TabItem>
 				<TabItem title="Approach" disabled={formDisabled}>
 					<div class="h-[50dvh] w-full">
-						<LineSelection
+						<LineStringInput
 							bind:line={$form.approach_path}
 							disabled={formDisabled}
 							mapCenter={derived_map_center}
