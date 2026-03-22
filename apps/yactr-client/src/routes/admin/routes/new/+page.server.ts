@@ -1,7 +1,7 @@
 import { uploadImage, createRoute, getAllSectors } from "$lib/api";
 import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
-import { superValidate } from "sveltekit-superforms";
+import { superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { routeManagementFormDto } from "$lib/shared/dto/route_management_form_dto";
 
@@ -9,7 +9,7 @@ export const load: PageServerLoad = async () => {
   const { data: sectors, response } = await getAllSectors();
   const form = await superValidate(zod4(routeManagementFormDto));
 
-
+ 
   if (!response.ok || !sectors) {
     return fail(500, { message: "Failed to fetch sectors", form });
   }
@@ -18,12 +18,13 @@ export const load: PageServerLoad = async () => {
   return { sectors, form };
 }
 
-export const actions = {
+export const actions: Actions = {
   default: async ({ request }) => {
     const form = await superValidate(request, zod4(routeManagementFormDto));
 
     if (!form.valid) {
-      return fail(422, { form });
+      console.warn("Route form validation failed", { errors: form.errors, data: form.data });
+      return fail(422, withFiles({ form }));
     }
 
     // const formData = await request.formData();

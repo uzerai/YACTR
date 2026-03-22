@@ -36,9 +36,9 @@
 		sectors: SectorResponse[];
 	} = $props();
 
-	const { form, enhance } = superForm(data, {
+	const { form, enhance, errors, allErrors, message } = superForm(data, {
 		dataType: 'json'
-	})
+	});
 
 	const climbing_types = Object.values(ClimbingTypeObj);
 	let form_disabled = $derived(!$form.sector_id);
@@ -89,9 +89,10 @@
 	});
 </script>
 
-<SuperDebug data={$form} />
+<SuperDebug data={{ form: $form, errors: $errors, allErrors: $allErrors, message: $message }} />
 
-<form method="post" class="" enctype="multipart/form-data">
+
+<form method="post" class="" enctype="multipart/form-data" use:enhance>
 	<div class="grid gap-6 md:grid-cols-2">
 		<div class="flex flex-col gap-4">
 			<div class="flex flex-col gap-2">
@@ -159,7 +160,7 @@
 			<div class="flex gap-2">
 				<div class="flex flex-col gap-2">
 					<Label for="grade">Grade</Label>
-					<Input name="grade" bind:value={$form.grade as number | undefined} disabled={form_disabled} />
+					<Input name="grade" bind:value={$form.grade as number | undefined} type="number" disabled={form_disabled} />
 				</div>
 				<div class="flex flex-col gap-2">
 					<Label for="number_of_bolts">Number of bolts</Label>
