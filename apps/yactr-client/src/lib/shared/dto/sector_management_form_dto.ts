@@ -10,7 +10,7 @@ import z from "zod";
  * files to the API before validation on the client-side server.
  */
 export const sectorManagementFormDto = zSectorResponse
-  .extend(zSectorRequestData)
+  .extend(zSectorRequestData.shape)
   .extend({
     sector_images: z.array(
       z.object({
