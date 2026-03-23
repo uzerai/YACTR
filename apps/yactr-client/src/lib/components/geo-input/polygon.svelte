@@ -6,6 +6,7 @@
 	import { Button, P } from 'flowbite-svelte';
 	import { Polygon } from 'ol/geom';
 	import { Feature } from 'ol';
+	import { untrack } from 'svelte';
 
 	let {
 		boundary = $bindable(),
@@ -20,13 +21,15 @@
 
 	let vectorSource = $state(new VectorSource());
 	
-	if (boundary && boundary.coordinates) {
-		vectorSource.addFeature(
-			new Feature({
-				geometry: new Polygon(boundary.coordinates)
-			})
-		)
-	}
+	untrack(() => {
+		if (boundary && boundary.coordinates) {
+			vectorSource.addFeature(
+				new Feature({
+					geometry: new Polygon(boundary.coordinates)
+				})
+			)
+		}
+	});
 
 	let isDrawing = $state(false);
 

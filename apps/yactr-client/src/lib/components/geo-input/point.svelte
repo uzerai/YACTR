@@ -1,25 +1,30 @@
 <script lang="ts">
+	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { P } from 'flowbite-svelte';
 	import { Feature } from 'ol';
 	import type { Coordinate } from 'ol/coordinate';
 	import { Point } from 'ol/geom';
 	import type { Point as PointGeoJSON } from '$lib/api';
 	import VectorSource from 'ol/source/Vector';
+	import { untrack } from 'svelte';
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 
 	let {
 		location = $bindable(),
 		mapCenter = [-74.006, 40.7128],
-		disabled = false
-	}: { location?: PointGeoJSON | null; mapCenter?: Coordinate; disabled?: boolean } = $props();
+		disabled = false,
+		...restProps
+	}: HTMLInputAttributes & { location?: PointGeoJSON | null; mapCenter?: Coordinate; } = $props();
 
 	let vectorSource = $state(new VectorSource());
 
-	if (location && location.coordinates) {
-		vectorSource.addFeature(new Feature({
-			geometry: new Point(location.coordinates)
-		}));
-	}
+	untrack(() => {
+		if (location && location.coordinates) {
+			vectorSource.addFeature(new Feature({
+				geometry: new Point(location.coordinates)
+			}));
+		}
+	});
 
 	const onDrawEnd = ({ feature }: { feature: Feature<Point> }) => {
 		vectorSource.clear();

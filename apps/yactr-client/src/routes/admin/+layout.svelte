@@ -5,43 +5,35 @@
 	
 	let { children } = $props();
 
-	const site = {
-		name: 'YACTR',
-		href: '/admin'
-	};
-
-	const locationRoutes = ['areas', 'sectors', 'routes', 'pitches', 'ascents'];
-	const organizationRoutes = ['organizations', 'teams', 'users'];
-
 	const climbingNavItems = [
     {
       title: "Areas",
-      url: "admin/areas",
+      url: "/admin/areas",
       icon: MapsEditingIcon,
     },
 		{
 			title: "Sectors",
-			url: "admin/sectors",
+			url: "/admin/sectors",
 			icon: PinLocation02Icon,
 		},
 		{
 			title: "Routes",
-			url: "admin/routes",
+			url: "/admin/routes",
 			icon: CurvyUpDownDirectionIcon,
 		},
 		{
 			title: "Pitches",
-			url: "admin/pitches",
+			url: "/admin/pitches",
 			icon: AutoConversationsIcon,
 		}
   ];
 </script>
 
 <Sidebar.Provider>
-  <Sidebar.Root>
+  <Sidebar.Root collapsible="icon">
     <Sidebar.Header>
 			<div class="flex items-center justify-center gap-2">
-				<span>Y A C T R</span><span>|</span><span class="text-xs text-gray-500">Admin</span>
+				<span>Y A C T R</span>
 			</div>
 		</Sidebar.Header>
 		<Sidebar.Content>
@@ -73,9 +65,11 @@
 				</Sidebar.GroupLabel>
 			</Sidebar.Group>
 		</Sidebar.Content>
+		<Sidebar.Footer />
+		<Sidebar.Rail>
+		</Sidebar.Rail>
   </Sidebar.Root>
-  <main>
-	<Sidebar.Trigger />
+  <main class="p-4 w-full relative">
     {@render children()}
   </main>
 </Sidebar.Provider>

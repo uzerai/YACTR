@@ -3,6 +3,7 @@
 	import type { Coordinate } from 'ol/coordinate';
 	import { LineString } from 'ol/geom';
 	import { Feature } from 'ol';
+	import { untrack } from 'svelte';
 	import { Interaction, Layer, View, Map } from 'svelte-openlayers';
 	import type { LineString as LineStringGeoJSON } from '$lib/api';
 
@@ -20,13 +21,15 @@
 
 	let vectorSource = $state(new VectorSource());
 
-	if (line && line.coordinates) {
-		vectorSource.addFeatures(
-			line.coordinates.map(coordinate => new Feature({
-				geometry: new LineString([coordinate])
-			}))
-		)
-	}
+	untrack(() => {
+		if (line && line.coordinates) {
+			vectorSource.addFeatures(
+				line.coordinates.map(coordinate => new Feature({
+					geometry: new LineString([coordinate])
+				}))
+			)
+		}
+	});
 
 	const onDrawEnd = ({ feature }: { feature: Feature<LineString> }) => {
 		vectorSource.clear();
