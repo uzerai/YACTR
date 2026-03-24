@@ -3,10 +3,11 @@
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 	import VectorSource from 'ol/source/Vector';
 	import type { MultiPolygon } from '$lib/api';
-	import { Button, P } from 'flowbite-svelte';
+	import { Button } from '$lib/components/ui/button';
 	import { Polygon } from 'ol/geom';
 	import { Feature } from 'ol';
 	import { untrack } from 'svelte';
+	import type { ReactiveCollection } from 'svelte-openlayers/utils';
 
 	let {
 		boundary = $bindable(),
@@ -20,6 +21,7 @@
 	} = $props();
 
 	let vectorSource = $state(new VectorSource());
+	let selectedFeatures: ReactiveCollection | null = $state(null);
 	
 	untrack(() => {
 		if (boundary && boundary.coordinates) {
@@ -40,8 +42,8 @@
 			boundary = {
 				type: "MultiPolygon",
 				coordinates: [
-					...vectorSource.getFeatures().map(feature => (feature.getGeometry() as Polygon).getCoordinates() as Coordinate[][]),
-					feature.getGeometry()!.getCoordinates() as Coordinate[][]
+					...vectorSource.getFeatures().map(feature => (feature.getGeometry() as Polygon).getCoordinates()),
+					feature.getGeometry()!.getCoordinates()
 				]
 			}
 		}
@@ -51,7 +53,7 @@
 		boundary = {
 				type: "MultiPolygon",
 				coordinates: [
-					...vectorSource.getFeatures().map(feature => (feature.getGeometry() as Polygon).getCoordinates() as Coordinate[][])
+					...vectorSource.getFeatures().map(feature => (feature.getGeometry() as Polygon).getCoordinates())
 				]
 			}
 	};
@@ -61,25 +63,16 @@
 	{#if disabled}
 		<div class="absolute top-0 right-0 z-20 h-full w-full cursor-not-allowed bg-gray-300 opacity-30"></div>
 	{/if}
-	<div class="absolute top-0 right-0 z-20 m-4 p-2 flex bg-gray-200/50 dark:bg-gray-700/50 rounded-lg">
+	<div class="absolute top-0 right-0 z-20 m-4 p-2 flex bg-gray-200/75 dark:bg-gray-700/50 rounded-lg">
 		<div class="flex flex-col gap-1">
 			<div class="flex gap-2">
-				<Button color="primary" onclick={() => isDrawing = true} disabled={isDrawing}>
+				<Button variant="outline" onclick={() => isDrawing = true} disabled={isDrawing}>
 					Draw Polygon
 				</Button>
-				<Button color="secondary" onclick={() => vectorSource.clear()} disabled={isDrawing}>
-					Clear
+				<Button variant="destructive" onclick={() => vectorSource.removeFeatures(selectedFeatures?.getArray()!)} disabled={isDrawing || (selectedFeatures?.getLength() ?? 0) < 1}>
+					Delete
 				</Button>
 			</div>
-			<P size="sm">When drawing:</P>
-			<P size="sm">
-				<ul class="text-sm list-disc list-inside">
-					<li>Click to add points to the current polygon.</li>
-					<li>Double click last point to close the polygon</li>
-					<li>Polygon can be edited by clicking and dragging points/edges</li>
-					<li>Alt+click to remove a point when not drawing</li>
-				</ul>
-			</P>
 		</div>
 	</div>
 	<View center={mapCenter} zoom={12}>
@@ -90,6 +83,7 @@
 				{#if isDrawing}
 					<Interaction.Draw minPoints={3} type="Polygon" bind:source={vectorSource} onDrawEnd={onDrawEnd} />
 				{:else}
+					<Interaction.Select bind:selectedFeatures />
 					<Interaction.Modify bind:source={vectorSource} onModifyEnd={onModifyEnd} />
 				{/if}
 			</Layer.Vector>
