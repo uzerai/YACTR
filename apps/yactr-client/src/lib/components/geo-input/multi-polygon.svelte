@@ -9,10 +9,12 @@
 	import { untrack } from 'svelte';
 	import type { ReactiveCollection } from 'svelte-openlayers/utils';
 	import { m } from '$lib/paraglide/messages.js';
+	import type { View as OLView } from 'ol';
 
 	let {
 		boundary = $bindable(),
-		mapCenter = [-74.006, 40.7128],
+		mapCenter = [-74.006, 40.7128, 0],
+		zoom = 12,
 		disabled = false
 	}: {
 		boundary?: MultiPolygon | null;
@@ -23,6 +25,13 @@
 
 	let vectorSource = $state(new VectorSource());
 	let selectedFeatures: ReactiveCollection | null = $state(null);
+	let view = $state<OLView | null>(null);
+
+	$effect(() => {
+		if (mapCenter) {
+			view?.setCenter(mapCenter);
+		}
+	});
 	
 	untrack(() => {
 		if (boundary && boundary.coordinates) {
@@ -76,7 +85,7 @@
 			</div>
 		</div>
 	</div>
-	<View center={mapCenter} zoom={12}>
+	<View bind:view {zoom}>
 		<Map class="h-full w-full">
 			<Layer.Tile source="osm" />
 

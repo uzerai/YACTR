@@ -21,7 +21,7 @@ export const actions = {
       }
     });
 
-    if (!response.ok) {
+    if (error) {
       return fail(422, { error })
     }
   }

@@ -39,8 +39,12 @@
 								<Table.Cell>{area.id}</Table.Cell>
 								<Table.Cell>{area.name}</Table.Cell>
 								<Table.Cell>{area.description}</Table.Cell>
-								<Table.Cell>{area.created_at}</Table.Cell>
-								<Table.Cell>{area.updated_at}</Table.Cell>
+								<Table.Cell>
+									{area.created_at ? m.common_iso_datetime({ date: area.created_at }) : ''}
+								</Table.Cell>
+								<Table.Cell>
+									{area.updated_at ? m.common_iso_datetime({ date: area.updated_at }) : ''}
+								</Table.Cell>
 								<Table.Cell class="flex gap-1">
 									<Button href={`/admin/areas/${area.id}`} variant="outline">{m.admin_areas_edit()}</Button>
 									<form method="post" action="?/delete">

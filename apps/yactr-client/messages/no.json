@@ -1,6 +1,16 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from no!",
+	"common_iso_datetime": [
+		{
+			"declarations": [
+				"input date",
+				"local formatted = date: datetime dateStyle=medium timeStyle=short hourCycle=h24"
+			],
+			"match": {
+				"date=*": "{formatted}"
+			}
+		}
+	],
 	"admin_areas_title": "Områder",
 	"admin_areas_create_area": "Opprett område",
 	"admin_areas_table_id": "Id",
@@ -24,5 +34,32 @@
 	"admin_areas_error_not_found": "Ikke funnet",
 	"geo_map_point_hint": "Klikk hvor som helst på kartet for å plassere punktet.",
 	"geo_map_draw_polygon": "Tegn polygon",
-	"geo_map_delete": "Slett"
+	"geo_map_delete": "Slett",
+	"admin_sectors_title": "Sektorer",
+	"admin_sectors_create_sector": "Opprett sektor",
+	"admin_sectors_table_id": "Id",
+	"admin_sectors_table_name": "Navn",
+	"admin_sectors_table_area_id": "Område-id",
+	"admin_sectors_table_created_at": "Opprettet",
+	"admin_sectors_table_updated_at": "Oppdatert",
+	"admin_sectors_table_actions": "Handlinger",
+	"admin_sectors_edit": "Rediger",
+	"admin_sectors_delete": "Slett",
+	"admin_sectors_empty_title": "Ingen sektorer funnet",
+	"admin_sectors_empty_description": "Opprett en sektor for å komme i gang",
+	"admin_sectors_new_title": "Ny sektor",
+	"admin_sectors_form_label_area": "Område",
+	"admin_sectors_form_description_area": "Område sektoren skal tilhøre.",
+	"admin_sectors_form_select_area_placeholder": "Velg et område",
+	"admin_sectors_form_label_name": "Navn",
+	"admin_sectors_form_tab_polygon": "Område",
+	"admin_sectors_form_tab_entry": "Inngangspunkt",
+	"admin_sectors_form_tab_parking": "Parkering",
+	"admin_sectors_form_tab_approach": "Tilnærming",
+	"admin_sectors_form_images_heading": "Bilder",
+	"admin_sectors_form_save": "Lagre",
+	"admin_sectors_edit_badge": "Redigerer",
+	"admin_sectors_edit_tooltip": "Du redigerer denne sektoren",
+	"admin_sectors_error_not_found": "Ikke funnet",
+	"admin_sectors_images_dropzone": "Dra og slipp filer her eller klikk for å laste opp"
 }

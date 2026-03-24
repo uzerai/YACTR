@@ -3,14 +3,17 @@
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 	import VectorSource from 'ol/source/Vector';
 	import type { Polygon as PolygonGeoJson } from '$lib/api';
-	import { Button, P } from 'flowbite-svelte';
+	import { Button } from '$lib/components/ui/button';
 	import { Polygon } from 'ol/geom';
 	import { Feature } from 'ol';
 	import { untrack } from 'svelte';
+	import type { View as OLView } from 'ol';
+	import { m } from '$lib/paraglide/messages.js';
 
 	let {
 		boundary = $bindable(),
-		mapCenter = [-74.006, 40.7128],
+		mapCenter = [-74.006, 40.7128, 0],
+		zoom = 12,
 		disabled = false
 	}: {
 		boundary?: PolygonGeoJson | null;
@@ -20,7 +23,14 @@
 	} = $props();
 
 	let vectorSource = $state(new VectorSource());
-	
+	let view = $state<OLView | null>(null);
+
+	$effect(() => {
+		if (mapCenter) {
+			view?.setCenter(mapCenter);
+		}
+	});
+
 	untrack(() => {
 		if (boundary && boundary.coordinates) {
 			vectorSource.addFeature(
@@ -63,26 +73,15 @@
 	{/if}
 	<div class="absolute top-0 right-0 z-20 m-4 p-2 flex bg-gray-200/50 dark:bg-gray-700/50 rounded-lg">
 		<div class="flex flex-col gap-1">
-			<div class="flex gap-2">
-				<Button color="primary" onclick={() => isDrawing = true} disabled={isDrawing}>
-					Draw Polygon
-				</Button>
-				<Button color="secondary" onclick={() => vectorSource.clear()} disabled={isDrawing}>
-					Clear
-				</Button>
-			</div>
-			<P size="sm">When drawing:</P>
-			<P size="sm">
-				<ul class="text-sm list-disc list-inside">
-					<li>Click to add points to the current polygon.</li>
-					<li>Double click last point to close the polygon</li>
-					<li>Polygon can be edited by clicking and dragging points/edges</li>
-					<li>Alt+click to remove a point when not drawing</li>
-				</ul>
-			</P>
+			<Button variant="outline" onclick={() => isDrawing = true} disabled={isDrawing}>
+				{m.geo_map_draw_polygon()}
+			</Button>
+			<Button variant="destructive" onclick={() => vectorSource.clear()} disabled={isDrawing}>
+				{m.geo_map_delete()}
+			</Button>
 		</div>
 	</div>
-	<View center={mapCenter} zoom={12}>
+	<View bind:view {zoom}>
 		<Map class="h-full w-full">
 			<Layer.Tile source="osm" />
 

@@ -2,9 +2,9 @@ import {
   getAllAreas,
   getSectorById,
   uploadImage,
-  updateSector,
-  type SectorImageRequestData
+  updateSector
 } from "$lib/api";
+import { m } from "$lib/paraglide/messages.js";
 import { error, fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { zod4 } from "sveltekit-superforms/adapters";
@@ -13,16 +13,14 @@ import { sectorManagementFormDto } from "$lib/shared/dto/sector_management_form_
 
 export const load: PageServerLoad = async ({ params }) => {
 
-  const { data: sector } = await getSectorById({
+  const { data: sector, response } = await getSectorById({
     path: {
       sector_id: params.sector_id
     },
   });
 
-  if (sector === undefined) {
-    return error(404, {
-      message: 'Not found'
-    });
+  if (!response.ok || sector === undefined) {
+    throw error(404, { message: m.admin_sectors_error_not_found() });
   }
 
   const form = await superValidate(sector, zod4(sectorManagementFormDto));

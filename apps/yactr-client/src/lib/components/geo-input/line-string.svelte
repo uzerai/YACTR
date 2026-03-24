@@ -6,11 +6,12 @@
 	import { untrack } from 'svelte';
 	import { Interaction, Layer, View, Map } from 'svelte-openlayers';
 	import type { LineString as LineStringGeoJSON } from '$lib/api';
+	import type { View as OLView } from 'ol';
 
 	let {
 		line = $bindable(),
-		mapCenter: center = $bindable([-74.006, 40.7128]),
-		zoom = $bindable(12),
+		mapCenter = [-74.006, 40.7128, 0],
+		zoom = 12,
 		disabled = false
 	}: {
 		line?: LineStringGeoJSON | null;
@@ -20,6 +21,13 @@
 	} = $props();
 
 	let vectorSource = $state(new VectorSource());
+	let view = $state<OLView | null>(null);
+
+	$effect(() => {
+		if (mapCenter) {
+			view?.setCenter(mapCenter);
+		}
+	});
 
 	untrack(() => {
 		if (line && line.coordinates) {
@@ -64,7 +72,7 @@
 		</div>
 	{/if}
 	
-	<View bind:center bind:zoom>
+	<View bind:view {zoom}>
 		<Map class="h-full w-full">
 			<Layer.Tile source="osm" />
 

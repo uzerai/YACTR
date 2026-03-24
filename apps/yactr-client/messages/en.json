@@ -1,6 +1,16 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from en!",
+	"common_iso_datetime": [
+		{
+			"declarations": [
+				"input date",
+				"local formatted = date: datetime dateStyle=medium timeStyle=short hourCycle=h24"
+			],
+			"match": {
+				"date=*": "{formatted}"
+			}
+		}
+	],
 	"admin_areas_title": "Areas",
 	"admin_areas_create_area": "Create Area",
 	"admin_areas_table_id": "Id",
@@ -24,5 +34,32 @@
 	"admin_areas_error_not_found": "Not found",
 	"geo_map_point_hint": "Click anywhere on the map to place the point.",
 	"geo_map_draw_polygon": "Draw Polygon",
-	"geo_map_delete": "Delete"
+	"geo_map_delete": "Delete",
+	"admin_sectors_title": "Sectors",
+	"admin_sectors_create_sector": "Create Sector",
+	"admin_sectors_table_id": "Id",
+	"admin_sectors_table_name": "Name",
+	"admin_sectors_table_area_id": "Area Id",
+	"admin_sectors_table_created_at": "Created At",
+	"admin_sectors_table_updated_at": "Updated At",
+	"admin_sectors_table_actions": "Actions",
+	"admin_sectors_edit": "Edit",
+	"admin_sectors_delete": "Delete",
+	"admin_sectors_empty_title": "No sectors found",
+	"admin_sectors_empty_description": "Create a sector to get started",
+	"admin_sectors_new_title": "New Sector",
+	"admin_sectors_form_label_area": "Area",
+	"admin_sectors_form_description_area": "Area the sector should be part of.",
+	"admin_sectors_form_select_area_placeholder": "Select an area",
+	"admin_sectors_form_label_name": "Name",
+	"admin_sectors_form_tab_polygon": "Area",
+	"admin_sectors_form_tab_entry": "Entry point",
+	"admin_sectors_form_tab_parking": "Parking",
+	"admin_sectors_form_tab_approach": "Approach",
+	"admin_sectors_form_images_heading": "Images",
+	"admin_sectors_form_save": "Save",
+	"admin_sectors_edit_badge": "Editing",
+	"admin_sectors_edit_tooltip": "You are editing this sector",
+	"admin_sectors_error_not_found": "Not found",
+	"admin_sectors_images_dropzone": "Drag and drop files here or click to upload"
 }
