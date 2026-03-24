@@ -8,6 +8,7 @@
 	import { Feature } from 'ol';
 	import { untrack } from 'svelte';
 	import type { ReactiveCollection } from 'svelte-openlayers/utils';
+	import { m } from '$lib/paraglide/messages.js';
 
 	let {
 		boundary = $bindable(),
@@ -67,10 +68,10 @@
 		<div class="flex flex-col gap-1">
 			<div class="flex gap-2">
 				<Button variant="outline" onclick={() => isDrawing = true} disabled={isDrawing}>
-					Draw Polygon
+					{m.geo_map_draw_polygon()}
 				</Button>
 				<Button variant="destructive" onclick={() => vectorSource.removeFeatures(selectedFeatures?.getArray()!)} disabled={isDrawing || (selectedFeatures?.getLength() ?? 0) < 1}>
-					Delete
+					{m.geo_map_delete()}
 				</Button>
 			</div>
 		</div>

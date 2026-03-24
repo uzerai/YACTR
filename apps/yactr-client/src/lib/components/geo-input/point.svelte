@@ -8,6 +8,7 @@
 	import VectorSource from 'ol/source/Vector';
 	import { untrack } from 'svelte';
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
+	import { m } from '$lib/paraglide/messages.js';
 
 	let {
 		location = $bindable(),
@@ -48,7 +49,7 @@
 		></div>
 	{/if}
 	<div class="absolute top-0 right-0 z-20 m-4 flex">
-		<P class="rounded-lg bg-gray-200/50 dark:bg-gray-700/50 p-2 text-sm">Click anywhere on the map to place the point.</P>
+		<P class="rounded-lg bg-gray-200/50 dark:bg-gray-700/50 p-2 text-sm">{m.geo_map_point_hint()}</P>
 	</div>
 
 

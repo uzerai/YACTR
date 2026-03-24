@@ -3,6 +3,7 @@
 	import { Point as PointInput, MultiPolygon as MultiPolygonInput } from '$lib/components/geo-input';
 	import { z } from 'zod';
 	import { untrack } from 'svelte';
+	import { m } from '$lib/paraglide/messages.js';
 	import SuperDebug, { superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { zAreaRequestData } from '$lib/api/generated/zod.gen';
 	import * as Form from '$lib/components/ui/form';
@@ -27,7 +28,7 @@
 		<Form.Field {form} name="name">
 			<Form.Control>
 				{#snippet children({ props })}
-					<Form.Label>Name</Form.Label>
+					<Form.Label>{m.admin_areas_form_label_name()}</Form.Label>
 					<Input {...props} type="string" bind:value={$formData.name} />
 				{/snippet}
 			</Form.Control>
@@ -37,7 +38,7 @@
 		<Form.Field {form} name="description">
 			<Form.Control>
 				{#snippet children({ props })}
-					<Form.Label>Description</Form.Label>
+					<Form.Label>{m.admin_areas_form_label_description()}</Form.Label>
 					<Textarea {...props} class="w-full" rows={4} bind:value={$formData.description} />
 				{/snippet}
 			</Form.Control>
@@ -48,13 +49,13 @@
 			<Form.Field {form} name="location" class="w-full flex flex-col gap-2 md:w-1/2">
 				<Form.Control>
 					<span class="flex gap-4">
-						<Form.Label for="location">Location</Form.Label>
+						<Form.Label for="location">{m.admin_areas_form_label_location()}</Form.Label>
 						<Tooltip.Root>
 							<Tooltip.Trigger>
 								<Icon icon={HelpCircleIcon} class="size-4 shrink-0" />
 							</Tooltip.Trigger>
 							<Tooltip.Content>
-								<p>Position to be used (and searchable by) on world-map view.</p>
+								<p>{m.admin_areas_form_tooltip_location()}</p>
 							</Tooltip.Content>
 						</Tooltip.Root>
 					</span>
@@ -67,13 +68,13 @@
 			<Form.Field {form} name="boundary" class="flex w-full flex-col gap-2 md:w-1/2">
 				<Form.Control>
 					<span class="flex gap-4">
-						<Form.Label for="boundary">Boundary</Form.Label>
+						<Form.Label for="boundary">{m.admin_areas_form_label_boundary()}</Form.Label>
 						<Tooltip.Root>
 							<Tooltip.Trigger>
 								<Icon icon={HelpCircleIcon} class="size-4 shrink-0" />
 							</Tooltip.Trigger>
 							<Tooltip.Content>
-								<p>General area outline; used to enforce borders of sectors</p>
+								<p>{m.admin_areas_form_tooltip_boundary()}</p>
 							</Tooltip.Content>
 						</Tooltip.Root>
 					</span>
@@ -86,6 +87,6 @@
 		</div>
 	</div>
 	<div class="mt-4 flex justify-end">
-		<Button type="submit" color="primary">Save</Button>
+		<Button type="submit" color="primary">{m.admin_areas_form_save()}</Button>
 	</div>
 </form>
