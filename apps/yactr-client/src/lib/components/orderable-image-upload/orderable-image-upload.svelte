@@ -2,7 +2,7 @@
 	import type { ChangeEventHandler } from 'svelte/elements';
 	import { dragHandle, dragHandleZone } from 'svelte-dnd-action';
 	import { m } from '$lib/paraglide/messages.js';
-	import { HugeiconsIcon } from '@hugeicons/svelte';
+	import { HugeiconsIcon as Icon } from '@hugeicons/svelte';
 	import {
 		Delete02Icon,
 		DragDropVerticalIcon,
@@ -79,14 +79,11 @@
 </script>
 
 <div class="flex flex-col gap-4">
-	<div class="bg-muted overflow-hidden rounded-lg">
 		<img
 			src={focusedImage?.image_url}
 			alt={focusedImage?.image?.name ?? focusedImage?.image_id ?? ''}
-			class="bg-muted h-[min(600px,60dvh)] w-full object-contain"
+			class="bg-muted h-[min(600px,60dvh)] object-contain"
 		/>
-	</div>
-
 	<div
 		class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5"
 		use:dragHandleZone={{ items: images }}
@@ -100,7 +97,7 @@
 					aria-label="Drag handle for {image.image?.name ?? image.image_id}"
 					class="bg-muted absolute top-0 left-0 z-10 flex size-8 items-center justify-center rounded-br-lg"
 				>
-					<HugeiconsIcon icon={DragDropVerticalIcon} class="text-foreground size-5" />
+					<Icon icon={DragDropVerticalIcon} class="text-foreground size-5" />
 				</div>
 				<button
 					{disabled}
@@ -108,7 +105,7 @@
 					onclick={() => removeImage(image.order)}
 					class="absolute top-0 right-0 z-10 flex size-8 cursor-pointer items-center justify-center rounded-bl-lg bg-destructive/90 hover:bg-destructive"
 				>
-					<HugeiconsIcon icon={Delete02Icon} class="text-destructive-foreground size-5" />
+					<Icon icon={Delete02Icon} class="text-destructive-foreground size-5" />
 				</button>
 				<button
 					{disabled}
@@ -117,9 +114,9 @@
 					class="bg-muted/80 hover:bg-muted absolute right-0 bottom-0 z-10 flex size-8 cursor-pointer items-center justify-center rounded-tl-lg"
 				>
 					{#if image.is_primary}
-						<HugeiconsIcon icon={StarIcon} class="size-5 text-amber-500" />
+						<Icon icon={StarIcon} class="size-5 text-amber-500" />
 					{:else}
-						<HugeiconsIcon icon={StarOffIcon} class="text-muted-foreground size-5" />
+						<Icon icon={StarOffIcon} class="text-muted-foreground size-5" />
 					{/if}
 				</button>
 				<button

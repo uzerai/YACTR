@@ -4,7 +4,7 @@
 	import { z } from 'zod';
 	import { untrack } from 'svelte';
 	import { m } from '$lib/paraglide/messages.js';
-	import SuperDebug, { superForm, type SuperValidated } from 'sveltekit-superforms';
+	import { superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { zAreaRequestData } from '$lib/api/generated/zod.gen';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';

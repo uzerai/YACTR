@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AreaManagementForm from '../area_management_form.svelte';
+	import AreaManagementForm from '../area-management-form.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { m } from '$lib/paraglide/messages.js';
 

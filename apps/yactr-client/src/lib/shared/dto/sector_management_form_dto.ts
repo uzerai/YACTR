@@ -12,6 +12,8 @@ import z from "zod";
 export const sectorManagementFormDto = zSectorResponse
   .extend(zSectorRequestData.shape)
   .extend({
+    created_at: z.string().optional(),
+    updated_at: z.string().optional(),
     sector_images: z.array(
       z.object({
         order: z.number().refine(order => order >= 0, { message: "Order must be greater than or equal to 0" }),
