@@ -26,7 +26,7 @@
 		dataType: 'json'
 	});
 
-	const { form: formData, enhance, errors, allErrors, message } = form;
+	const { form: formData, enhance } = form;
 	const formDisabled = $derived(!$formData.area_id);
 	
 	let derived_map_center = $derived(
@@ -36,7 +36,6 @@
 	let sector_images = fieldProxy(form, 'sector_images');
 </script>
 
-<SuperDebug data={{ form: $formData, errors: $errors, allErrors: $allErrors, message: $message }} />
 <form method="post" enctype="multipart/form-data" use:enhance>
 	<div class="grid gap-6">
 		<Form.Field {form} name="area_id">
