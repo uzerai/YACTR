@@ -5,7 +5,7 @@
 	import { untrack } from 'svelte';
 	import { m } from '$lib/paraglide/messages.js';
 	import SuperDebug, { fieldProxy, superForm, type SuperValidated } from 'sveltekit-superforms';
-	import { sectorManagementFormDto } from '$lib/shared/dto/sector_management_form_dto';
+	import { sectorManagementFormDto } from '$lib/components/forms';
 	import SectorImagesManager from '$lib/components/orderable-image-upload/orderable-image-upload.svelte';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';

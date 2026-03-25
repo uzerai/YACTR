@@ -31,13 +31,14 @@
 
 	untrack(() => {
 		if (line && line.coordinates) {
-			vectorSource.addFeatures(
-				line.coordinates.map(coordinate => new Feature({
-					geometry: new LineString([coordinate])
-				}))
-			)
+			vectorSource.addFeature(
+				new Feature({
+					geometry: new LineString(line.coordinates)
+				}));
 		}
 	});
+
+	$inspect(vectorSource);
 
 	const onDrawEnd = ({ feature }: { feature: Feature<LineString> }) => {
 		vectorSource.clear();

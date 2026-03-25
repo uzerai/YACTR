@@ -122,7 +122,7 @@
 				</Item.Header>
 
 				<Item.Content>
-					<Item.Title class="text-xs overflow-hidden text-ellipsis">{image.image?.name ?? image.image_id}</Item.Title>
+					<Item.Title class="text-xs wrap-anywhere">{image.image?.name ?? image.image_id}</Item.Title>
 					<Item.Actions class="flex justify-between">
 						<Button variant="outline" onclick={() => setPrimary(image.order)} {disabled}>
 							{#if image.is_primary}

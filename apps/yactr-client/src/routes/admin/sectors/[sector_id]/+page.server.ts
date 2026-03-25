@@ -5,7 +5,7 @@ import {
   updateSector
 } from "$lib/api";
 import { m } from "$lib/paraglide/messages.js";
-import { error, fail } from "@sveltejs/kit";
+import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { superValidate, withFiles } from "sveltekit-superforms";
@@ -22,10 +22,14 @@ export const load: PageServerLoad = async ({ params }) => {
   if (!response.ok || sector === undefined) {
     throw error(404, { message: m.admin_sectors_error_not_found() });
   }
+  
+  // Do mapping for front-end primary image indication here.
+  sector.sector_images = sector.sector_images
+    .map(image => ({ ...image, is_primary: image.image_id === sector.primary_sector_image_id }))
+    .sort((a, b) => a.order - b.order);
 
   const form = await superValidate(sector, zod4(sectorManagementFormDto));
 
-  sector.sector_images.map(image => ({ ...image, is_primary: image.image_id === sector.primary_sector_image_id }));
 
   const { data: areas } = await getAllAreas();
 
@@ -83,7 +87,7 @@ export const actions = {
       return fail(422, withFiles({ form, error: updateError }));
     }
 
-    return { form };
+    return redirect(303, "/admin/sectors");
   }
 } satisfies Actions;
 
