@@ -1,12 +1,17 @@
 <script lang="ts">
-	import { Heading, Hr } from 'flowbite-svelte';
 	import type { PageProps } from './$types';
 	import { RouteManagementForm } from '$lib/components/forms';
+	import * as Card from '$lib/components/ui/card';
+
 	let { data }: PageProps = $props();
-	let route = $derived(data.route);
-	let sectors = $derived(data.sectors ?? []);
 </script>
 
-<Heading tag="h1">{data.route.name}</Heading>
-<Hr />
-<!-- <RouteManagementForm  {sectors} access_token={data.session?.access_token!} /> -->
+<div class="flex flex-col gap-6 p-4 max-w-7xl mx-auto">
+	<h1 class="text-4xl">{data.route.name}</h1>
+
+	<Card.Root>
+		<Card.Content>
+			<!-- <RouteManagementForm  {sectors} access_token={data.session?.access_token!} /> -->
+		</Card.Content>
+	</Card.Root>
+</div>

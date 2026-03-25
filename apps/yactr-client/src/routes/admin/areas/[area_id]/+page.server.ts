@@ -1,6 +1,6 @@
 import { getAreaById, updateArea } from "$lib/api";
 import { m } from "$lib/paraglide/messages.js";
-import { error, fail } from "@sveltejs/kit";
+import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
@@ -49,6 +49,6 @@ export const actions = {
       return fail(422, { form, error });
     }
 
-    return { form };
+    return redirect(303, "/admin/areas");
   }
 } satisfies Actions;

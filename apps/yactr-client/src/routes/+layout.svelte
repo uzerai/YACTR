@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 
 	import { overrideItemIdKeyNameBeforeInitialisingDndZones } from "svelte-dnd-action";
+	import { ModeWatcher } from 'mode-watcher';
 	
 	// Override the default item id key name for svelte-dnd-action to use "order" instead of "id" across
 	// the entire application. We want to maintain using "order" since "id" is UUIDv7 across the entire application API.
@@ -15,4 +16,5 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<ModeWatcher />
 {@render children?.()}

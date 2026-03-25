@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as Sidebar from '$lib/components/ui/sidebar';
+	import DarkmodeToggle from '$lib/components/darkmode-toggle/darkmode-toggle.svelte';
 	import { MapsEditingIcon, PinLocation02Icon, CurvyUpDownDirectionIcon, AutoConversationsIcon } from '@hugeicons/core-free-icons';
 	import { HugeiconsIcon as Icon } from '@hugeicons/svelte';
 	
@@ -65,7 +66,9 @@
 				</Sidebar.GroupLabel>
 			</Sidebar.Group>
 		</Sidebar.Content>
-		<Sidebar.Footer />
+		<Sidebar.Footer>
+			<DarkmodeToggle />
+		</Sidebar.Footer>
 		<Sidebar.Rail>
 		</Sidebar.Rail>
   </Sidebar.Root>

@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { RouteManagementForm } from '$lib/components/forms';
 	import type { PageProps } from './$types';
-	import { Heading, Hr } from 'flowbite-svelte';
+	import * as Card from '$lib/components/ui/card';
+
 	let { data }: PageProps = $props();
 </script>
 
-<Heading tag="h1">New Route</Heading>
-<Hr />
-<RouteManagementForm sectors={data.sectors!} data={data.form!} />
+<div class="flex flex-col gap-6 p-4 max-w-7xl mx-auto">
+	<h1 class="text-4xl">New Route</h1>
+	<Card.Root>
+		<Card.Content>
+			<RouteManagementForm sectors={data.sectors!} data={data.form!} />
+		</Card.Content>
+	</Card.Root>
+</div>
