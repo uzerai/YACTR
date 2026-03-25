@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SectorManagementForm from '../sector-management-form.svelte';
+	import { SectorManagementForm } from '$lib/components/forms';
 	import * as Card from '$lib/components/ui/card';
 	import { m } from '$lib/paraglide/messages.js';
 

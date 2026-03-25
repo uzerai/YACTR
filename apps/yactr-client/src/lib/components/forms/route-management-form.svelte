@@ -26,7 +26,7 @@
 	import { InfoCircleOutline } from 'flowbite-svelte-icons';
 	import { z } from 'zod';
 	import SuperDebug, { superForm, type SuperValidated } from 'sveltekit-superforms';
-	import type { routeManagementFormDto } from '$lib/shared/dto/route_management_form_dto';
+	import { routeManagementFormDto } from '$lib/components/forms';
 
 	let {
 		data,

@@ -1,19 +1,26 @@
-import { zSectorRequestData, zSectorResponse } from "$lib/api/generated/zod.gen";
+import { zPoint, zRouteRequestData, zRouteResponse, zSectorRequestData, zSectorResponse } from "$lib/api/generated/zod.gen";
+import SectorManagementForm from "./sector-management-form.svelte";
+import AreaManagementForm from "./area-management-form.svelte";
+import RouteManagementForm from "./route-management-form.svelte";
 import z from "zod";
 
 /**
  * This is a tailored merged object for creation and update.
+ * 
  * It contains the fields that are returned from zSectorResponse and zSectorRequestData, since it serves as
  * both the request and response schema for a form for managing sectors.
+ * 
  * Additionally it contains the fields that the user can input for creation (such as direct File uploads).
+ * 
  * Only really necessary because of the way superforms handles file uploads, and wanting to avoid uploading the 
  * files to the API before validation on the client-side server.
  */
-export const sectorManagementFormDto = zSectorResponse
+const sectorManagementFormDto = zSectorResponse
   .extend(zSectorRequestData.shape)
   .extend({
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
+    entry_point: zPoint,
     sector_images: z.array(
       z.object({
         order: z.number().refine(order => order >= 0, { message: "Order must be greater than or equal to 0" }),
@@ -24,3 +31,18 @@ export const sectorManagementFormDto = zSectorResponse
       }).refine(img => img.image_id !== undefined || img.image !== undefined, { message: "Image or image_id is required" })
     ),
 });
+
+const routeManagementFormDto = zRouteResponse
+  .extend(zRouteRequestData.shape)
+  .extend({
+    created_at: z.string().optional(),
+    updated_at: z.string().optional(),
+  });
+
+export {
+  sectorManagementFormDto,
+  SectorManagementForm,
+  AreaManagementForm,
+  routeManagementFormDto,
+  RouteManagementForm,
+}

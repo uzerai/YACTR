@@ -85,14 +85,14 @@ export const actions = {
 
     console.dir(body, { depth: 4 });
 
-    const { error, response } = await updateRoute({
-      path: { route_id: params.route_id },
-      body
-    });
+    // const { error, response } = await updateRoute({
+    //   path: { route_id: params.route_id },
+    //   body
+    // });
 
-    if (!response.ok) {
-      return fail(422, { error })
-    }
+    // if (!response.ok) {
+    //   return fail(422, { error })
+    // }
 
     return redirect(303, "/admin/routes");
   }

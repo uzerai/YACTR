@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import AreaManagementForm from '../area-management-form.svelte';
+	import { AreaManagementForm } from '$lib/components/forms';
 	import * as Card from '$lib/components/ui/card';
 
 	let { data }: PageProps = $props();

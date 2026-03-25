@@ -9,7 +9,7 @@ import { error, fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { superValidate, withFiles } from "sveltekit-superforms";
-import { sectorManagementFormDto } from "$lib/shared/dto/sector_management_form_dto";
+import { sectorManagementFormDto } from "$lib/components/forms";
 
 export const load: PageServerLoad = async ({ params }) => {
 

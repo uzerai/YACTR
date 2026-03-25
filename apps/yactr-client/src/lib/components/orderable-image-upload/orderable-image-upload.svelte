@@ -1,14 +1,16 @@
 <script lang="ts">
 	import type { ChangeEventHandler } from 'svelte/elements';
+	import * as Item from "$lib/components/ui/item";
 	import { dragHandle, dragHandleZone } from 'svelte-dnd-action';
 	import { m } from '$lib/paraglide/messages.js';
 	import { HugeiconsIcon as Icon } from '@hugeicons/svelte';
 	import {
 		Delete02Icon,
-		DragDropVerticalIcon,
+		DragDropHorizontalIcon,
 		StarIcon,
 		StarOffIcon
 	} from '@hugeicons/core-free-icons';
+	import { Button } from '$lib/components/ui/button';
 
 	type OrderableImageUploadItem = {
 		order: number;
@@ -73,7 +75,19 @@
 		}));
 	};
 
-	const handleDnd = (e: CustomEvent<{ items: OrderableImageUploadItem[] }>) => {
+	// Keep updating `images` during `consider` so the drag animation has the correct state.
+	// Persist/normalize the `order` fields only on `finalize`.
+	const handleDndConsider = (e: CustomEvent<{ items: OrderableImageUploadItem[] }>) => {
+		images = e.detail.items;
+	};
+
+	const handleDndFinalize = (e: CustomEvent<{ items: OrderableImageUploadItem[] }>) => {
+		// Normalize order so it's contiguous and matches the final visual order.
+		// Mutate in-place to avoid breaking references (e.g. if `focusedImage` points to one of these items).
+		e.detail.items.forEach((item, index) => {
+			item.order = index;
+		});
+
 		images = e.detail.items;
 	};
 </script>
@@ -87,51 +101,52 @@
 	<div
 		class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5"
 		use:dragHandleZone={{ items: images }}
-		onfinalize={handleDnd}
-		onconsider={handleDnd}
+		onfinalize={handleDndFinalize}
+		onconsider={handleDndConsider}
 	>
 		{#each images as image (image.order)}
-			<div class="relative h-96 w-full overflow-hidden rounded-lg border border-border">
-				<div
-					use:dragHandle
-					aria-label="Drag handle for {image.image?.name ?? image.image_id}"
-					class="bg-muted absolute top-0 left-0 z-10 flex size-8 items-center justify-center rounded-br-lg"
-				>
-					<Icon icon={DragDropVerticalIcon} class="text-foreground size-5" />
-				</div>
-				<button
-					{disabled}
-					type="button"
-					onclick={() => removeImage(image.order)}
-					class="absolute top-0 right-0 z-10 flex size-8 cursor-pointer items-center justify-center rounded-bl-lg bg-destructive/90 hover:bg-destructive"
-				>
-					<Icon icon={Delete02Icon} class="text-destructive-foreground size-5" />
-				</button>
-				<button
-					{disabled}
-					type="button"
-					onclick={() => setPrimary(image.order)}
-					class="bg-muted/80 hover:bg-muted absolute right-0 bottom-0 z-10 flex size-8 cursor-pointer items-center justify-center rounded-tl-lg"
-				>
-					{#if image.is_primary}
-						<Icon icon={StarIcon} class="size-5 text-amber-500" />
-					{:else}
-						<Icon icon={StarOffIcon} class="text-muted-foreground size-5" />
-					{/if}
-				</button>
-				<button
-					{disabled}
-					type="button"
-					onclick={() => (focusedImage = image)}
-					class="absolute inset-0 h-full w-full cursor-pointer rounded-lg border-0 bg-transparent p-0 hover:opacity-90"
-				>
-					<img
-						src={image.image_url}
-						alt={image.image?.name ?? image.image_id}
-						class="bg-muted h-full w-full rounded-lg object-cover"
-					/>
-				</button>
-			</div>
+			<Item.Root variant="outline">
+				<Item.Header class="aspect-square">
+					<button
+						{disabled}
+						type="button"
+						onclick={() => (focusedImage = image)}
+						class="h-full w-full cursor-pointer border-0 bg-transparent p-0 hover:opacity-90"
+					>
+						<img
+							src={image.image_url}
+							alt={image.image?.name ?? image.image_id}
+							class="bg-muted h-full w-full object-contain"
+						/>
+					</button>
+				</Item.Header>
+
+				<Item.Content>
+					<Item.Title class="text-xs overflow-hidden text-ellipsis">{image.image?.name ?? image.image_id}</Item.Title>
+					<Item.Actions class="flex justify-between">
+						<Button variant="outline" onclick={() => setPrimary(image.order)} {disabled}>
+							{#if image.is_primary}
+								<Icon icon={StarIcon} class="size-5 text-amber-500" />
+							{:else}
+								<Icon icon={StarOffIcon} class="text-muted-foreground size-5" />
+							{/if}
+						</Button>
+						<Button variant="destructive" onclick={() => removeImage(image.order)} {disabled}>
+							<Icon icon={Delete02Icon} class="text-destructive-foreground size-5" />
+						</Button>
+					</Item.Actions>
+				</Item.Content>
+			
+				<Item.Footer>
+					<div
+						use:dragHandle
+						aria-label="Drag handle for {image.image?.name ?? image.image_id}"
+						class="bg-muted w-full flex justify-center"
+					>
+						<Icon icon={DragDropHorizontalIcon} class="text-foreground size-5" />
+					</div>
+				</Item.Footer>
+			</Item.Root>
 		{/each}
 	</div>
 

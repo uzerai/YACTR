@@ -3,7 +3,7 @@ import { fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad, Actions } from "./$types";
 import { superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { routeManagementFormDto } from "$lib/shared/dto/route_management_form_dto";
+import { routeManagementFormDto } from "$lib/components/forms";
 
 export const load: PageServerLoad = async () => {
   const { data: sectors, response } = await getAllSectors();

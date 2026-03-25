@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RouteManagementForm from '../route_management_form.svelte';
+	import { RouteManagementForm } from '$lib/components/forms';
 	import type { PageProps } from './$types';
 	import { Heading, Hr } from 'flowbite-svelte';
 	let { data }: PageProps = $props();
