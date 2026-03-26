@@ -13,6 +13,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as NativeSelect from '$lib/components/ui/native-select';
 	import { Separator } from '$lib/components/ui/separator';
+	import { useSuperDebugForm } from '$lib/components/forms/util/super-debug-helper';
 
 	let {
 		data,
@@ -27,6 +28,7 @@
 	});
 
 	const { form: formData, enhance } = form;
+	useSuperDebugForm(formData);
 	const formDisabled = $derived(!$formData.area_id);
 	
 	let derived_map_center = $derived(
