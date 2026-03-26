@@ -3,6 +3,7 @@
 	import DarkmodeToggle from '$lib/components/darkmode-toggle/darkmode-toggle.svelte';
 	import { MapsEditingIcon, PinLocation02Icon, CurvyUpDownDirectionIcon, AutoConversationsIcon } from '@hugeicons/core-free-icons';
 	import { HugeiconsIcon as Icon } from '@hugeicons/svelte';
+	import { UtilHelperButton } from '$lib/components/forms/util/util-helper';
 	
 	let { children } = $props();
 
@@ -75,4 +76,5 @@
   <main class="p-4 w-full relative">
     {@render children()}
   </main>
+	<UtilHelperButton class="absolute bottom-0 right-0 m-8" />
 </Sidebar.Provider>

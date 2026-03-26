@@ -18,6 +18,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
+	import { superDebugStore } from '$lib/components/forms/util/super-debug-display/super-debug-store';
 
 	let {
 		data,
@@ -31,8 +32,11 @@
 		dataType: 'json'
 	});
 
+	
 	const { form: formData, enhance, errors, allErrors, message } = form;
-
+	
+	$superDebugStore.form = $formData;
+	
 	const climbingTypes = Object.values(ClimbingType);
 	let formDisabled = $derived(!$formData.sector_id);
 
@@ -79,7 +83,6 @@
 	});
 </script>
 
-<!-- <SuperDebug data={{ form: $formData, errors: $errors, allErrors: $allErrors, message: $message }} /> -->
 <form method="post" class="flex flex-col gap-4" enctype="multipart/form-data" use:enhance>
 	<Form.Field {form} name="sector_id">
 		<Form.Control>
