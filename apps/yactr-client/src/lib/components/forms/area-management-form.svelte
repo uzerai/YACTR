@@ -13,7 +13,7 @@
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { HugeiconsIcon as Icon } from '@hugeicons/svelte';
 	import { HelpCircleIcon } from '@hugeicons/core-free-icons';
-	import { useSuperDebugForm } from '$lib/components/forms/util/super-debug-helper';
+	import { SuperDebugHelper, useSuperDebugForm } from '$lib/components/forms/util/super-debug-helper';
 	
 	let { data }: { data: SuperValidated<z.infer<typeof zAreaRequestData>> } = $props();
 
@@ -24,6 +24,8 @@
 	const { form: formData, enhance } = form;
 	useSuperDebugForm(formData);
 </script>
+
+<SuperDebugHelper class="fixed bottom-6 right-6 z-40" />
 
 <form method="post" use:enhance>
 	<div class="grid gap-6">

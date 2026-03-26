@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
+	import { m } from '$lib/paraglide/messages.js';
 	import {
 		Circle,
 		Layer,
@@ -244,11 +245,15 @@
 		updated.splice(nearestSegmentIndex + 1, 0, rawPosition);
 		points = updated;
 	};
+
+	const setStageCursor = (e: KonvaMouseEvent | KonvaTouchEvent, cursor: string) => {
+		e.target.getStage()?.container()?.style.setProperty('cursor', cursor);
+	};
 </script>
 
 {#if overlaySource}
 	<img
-		alt="Route drawing svg, indicating the route itself"
+		alt={m.topo_editor_svg_overlay_image_alt()}
 		class="pointer-events-none absolute top-0 right-0 bottom-0 left-0 z-10 select-none"
 		src={overlaySource}
 		width={viewport.canvasWidth}
@@ -260,9 +265,15 @@
 	<Stage
 		width={viewport.canvasWidth}
 		height={viewport.canvasHeight}
+		onmouseenter={(e) => {
+			if (!isDrawingLine && safePoints.length < 1) {
+				setStageCursor(e, 'crosshair');
+			}
+		}}
 		onmousedown={mouseDown}
 		onmousemove={mouseMove}
-		onmouseleave={() => {
+		onmouseleave={(e) => {
+			setStageCursor(e, 'default');
 			if (isDrawingLine) {
 				isDrawingLine = false;
 				lineStartPoint = undefined;
@@ -401,8 +412,8 @@
 	</Stage>
 {/if}
 
-<div class="absolute right-2 bottom-2 z-20">
-	<Button variant="destructive" type="button" size="sm" onclick={clearPoints} disabled={safePoints.length < 1}>
-		Clear topo
+<div class="absolute right-2 bottom-2 z-20 bg-accent rounded-lg">
+	<Button variant="destructive" type="button" size="lg" onclick={clearPoints} disabled={safePoints.length < 1}>
+		{m.topo_editor_svg_overlay_clear_topo()}
 	</Button>
 </div>

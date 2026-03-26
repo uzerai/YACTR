@@ -76,5 +76,4 @@
   <main class="p-4 w-full relative">
     {@render children()}
   </main>
-	<SuperDebugHelper class="fixed bottom-6 right-6 z-40" />
 </Sidebar.Provider>

@@ -13,7 +13,7 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import * as NativeSelect from '$lib/components/ui/native-select';
 	import { Separator } from '$lib/components/ui/separator';
-	import { useSuperDebugForm } from '$lib/components/forms/util/super-debug-helper';
+	import { SuperDebugHelper, useSuperDebugForm } from '$lib/components/forms/util/super-debug-helper';
 
 	let {
 		data,
@@ -38,6 +38,7 @@
 	let sector_images = fieldProxy(form, 'sector_images');
 </script>
 
+<SuperDebugHelper class="fixed bottom-6 right-6 z-40" />
 <form method="post" enctype="multipart/form-data" use:enhance>
 	<div class="grid gap-6">
 		<Form.Field {form} name="area_id">

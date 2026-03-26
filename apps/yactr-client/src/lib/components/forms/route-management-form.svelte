@@ -18,7 +18,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { useSuperDebugForm } from '$lib/components/forms/util/super-debug-helper';
+	import { SuperDebugHelper, useSuperDebugForm } from '$lib/components/forms/util/super-debug-helper';
 
 	let {
 		data,
@@ -32,7 +32,6 @@
 		dataType: 'json'
 	});
 
-	
 	const { form: formData, enhance, errors, allErrors, message } = form;
 
 	useSuperDebugForm(formData);
@@ -51,44 +50,43 @@
 	
 	let selectedSectorTopoImage = $derived<string | undefined>(
 		sectorImages?.find((image) => image.image_id === $formData.sector_topo_image_id)?.image_url);
+	let routeTopoSource = $derived<File | string | undefined>(
+		$formData.topo_image ?? $formData.topo_image_url ?? undefined
+	);
 
-	$effect(() => {
-		const sectorId = $formData.sector_id;
-		if (!sectorId) return;
-
-		let isCurrent = true;
-
-		(async () => {
-			try {
-				const result = await getSectorById({
-					path: {
-						sector_id: sectorId
-					}
-				});
-
-				if (!isCurrent || !result?.response) return;
-
-				if (result.response.ok && result.data) {
-					selectedSector = result.data;
-					$formData.sector_topo_image_id = result.data.primary_sector_image_id;
-				}
-			} catch (error) {
-				console.warn('[RouteManagementForm] getSectorById failed', { sectorId, error });
+	const updateSelectedSector = async (sectorId: string) => {
+		const result = await getSectorById({
+			path: {
+				sector_id: sectorId
 			}
-		})();
+		});
 
-		return () => {
-			isCurrent = false;
-		};
-	});
+		if (result.response.ok && result.data) {
+			selectedSector = result.data;
+			$formData.sector_topo_image_id = result.data.primary_sector_image_id;
+		}
+	};
+
+	const handleSectorChange = (event: Event) => {
+		const select = event.currentTarget as HTMLSelectElement | null;
+		if (!select?.value) return;
+		void updateSelectedSector(select.value);
+	};
+
+	const handleRouteTopoFileChange = (event: Event) => {
+		const input = event.currentTarget as HTMLInputElement | null;
+		const file = input?.files?.[0];
+		$formData.topo_image = file;
+	};
 </script>
 
+<SuperDebugHelper class="fixed bottom-6 right-6 z-40" />
 <form method="post" class="flex flex-col gap-4" enctype="multipart/form-data" use:enhance>
 	<Form.Field {form} name="sector_id">
 		<Form.Control>
 			{#snippet children({ props })}
 				<Form.Label>{m.admin_routes_form_label_sector()}</Form.Label>
-				<Select.Root class="w-full min-w-0" {...props} bind:value={$formData.sector_id} required>
+				<Select.Root class="w-full min-w-0" {...props} bind:value={$formData.sector_id} required onchange={handleSectorChange}>
 					<Select.Option value="">{m.admin_routes_form_select_sector_placeholder()}</Select.Option>
 					{#each sectors as sector (sector.id)}
 						<Select.Option value={sector.id}>{sector.name}</Select.Option>
@@ -205,7 +203,9 @@
 							<Select.Root class="w-full min-w-0" {...props} bind:value={$formData.sector_topo_image_id} required disabled={formDisabled}>
 								<Select.Option value="">{m.admin_routes_form_select_sector_image_placeholder()}</Select.Option>
 								{#each sectorImages as sectorImage (sectorImage.image_id)}
-									<Select.Option value={sectorImage.image_id}>{`${sectorImage.order}${sectorImage.is_primary ? ' (Primary)' : ''}`}</Select.Option>
+									<Select.Option value={sectorImage.image_id}
+										>{`${sectorImage.order}${sectorImage.is_primary ? ` ${m.admin_routes_form_sector_image_primary_badge()}` : ''}`}</Select.Option
+									>
 								{/each}
 							</Select.Root>
 						{/snippet}
@@ -222,48 +222,40 @@
 				</TopoEditor.Root>
 			</div>
 		</Tabs.Content>
-		<!-- <TabItem title="Route unique topo" disabled={form_disabled}>
+		<Tabs.Content value="route_topo" class="w-full">
 			<div class="flex flex-col gap-2">
-				<Label for="route_image_uploader">Route unique topo image upload</Label>
-				<P size="xs">Intended for if the sector image doesn't depict the route in full</P>
-				<Fileupload
-					id="route_image_uploader"
-					type="file"
-					name="route_image_uploader"
-					accept=".jpeg,.jpg,.png,.webp"
-					onchange={(event) => {
-						// If this upload changes; duplicate the files to route_image_input_html input.
-						if (event.currentTarget && event.currentTarget.files && route_image_input_html) {
-							const dataTransfer = new DataTransfer();
+				<Form.Field {form} name="topo_image">
+					<Form.Control>
+						{#snippet children({ props })}
+							<Form.Label>{m.admin_routes_form_label_route_topo_image_upload()}</Form.Label>
+							<Input
+								{...props}
+								type="file"
+								accept=".jpeg,.jpg,.png,.webp"
+								class="h-auto"
+								disabled={formDisabled}
+								onchange={handleRouteTopoFileChange}
+							/>
+						{/snippet}
+					</Form.Control>
+					<Form.Description>
+						{m.admin_routes_form_description_route_topo_image_upload()}
+					</Form.Description>
+					<Form.FieldErrors />
+				</Form.Field>
 
-							if (event.currentTarget.files[0]) {
-								dataTransfer.items.add(event.currentTarget.files[0]);
-								console.info(
-									'Setting html files for route_image_input_html',
-									dataTransfer.files
-								);
-								route_image_input_html.files = dataTransfer.files;
-
-								const reader = new FileReader();
-								reader.onload = (event) => {
-									route.topo_image_url = event.target?.result as string;
-								};
-								reader.readAsDataURL(event.currentTarget.files[0]);
-							}
-						}
-					}}
-					disabled={form_disabled}
-				/>
-				<RouteEditor
-					bind:image={$formData.topo_image_url}
-					bind:points={route.topo_line_points}
-					bind:svg_file={$formData.topo_image}
-					bind:svg_output_file_upload={route_image_overlay_input_html}
-				/>
+				<TopoEditor.Root class="min-h-[300px]">
+					<TopoEditor.TopoImage src={routeTopoSource} />
+					<TopoEditor.SvgOverlay
+						bind:points={$formData.topo_line_points}
+						bind:output={$formData.topo_image_overlay}
+						debug={true}
+					/>
+				</TopoEditor.Root>
 			</div>
-		</TabItem> -->
+		</Tabs.Content>
 	</Tabs.Root>
 	<div class="mt-4 flex justify-end">
-		<Button type="submit">Save</Button>
+		<Button type="submit">{m.admin_routes_form_save()}</Button>
 	</div>
 </form>

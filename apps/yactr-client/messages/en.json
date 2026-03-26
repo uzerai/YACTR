@@ -87,8 +87,13 @@
 	"admin_routes_form_tab_sector_topo": "Sector topo",
 	"admin_routes_form_tab_route_topo": "Route specific topo",
 	"admin_routes_form_label_sector_topo_image": "Sector image",
+	"admin_routes_form_label_route_topo_image_upload": "Upload specific topo image",
+	"admin_routes_form_description_route_topo_image_upload": "Intended for cases where the sector image does not depict the full route.",
 	"admin_routes_form_select_sector_image_placeholder": "Select an image",
+	"admin_routes_form_sector_image_primary_badge": "(Primary)",
 	"admin_routes_form_sector_image_primary_prefix": "Primary:",
 	"admin_routes_form_sector_image_secondary_prefix": "Secondary:",
-	"admin_routes_form_save": "Save"
+	"admin_routes_form_save": "Save",
+	"topo_editor_svg_overlay_image_alt": "Route drawing SVG overlay",
+	"topo_editor_svg_overlay_clear_topo": "Clear topo"
 }
