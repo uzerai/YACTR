@@ -14,7 +14,10 @@ public class PitchDataMapper : Mapper<PitchRequestData, PitchResponse, Pitch>
         RouteId = r.RouteId,
     };
 
-    public override PitchResponse FromEntity(Pitch e) => new(e.Id, e.SectorId, e.RouteId, e.Name, e.Type, e.Description, e.Grade, e.PitchOrder);
+    public override PitchResponse FromEntity(Pitch e) => new(e.Id, e.RouteId, e.SectorId, e.Name, e.Type, e.Description, e.Grade, e.PitchOrder);
+
+    public override Task<PitchResponse> FromEntityAsync(Pitch e, CancellationToken ct = default)
+        => Task.FromResult(FromEntity(e));
 
     public override Pitch UpdateEntity(PitchRequestData r, Pitch e) => new()
     {
