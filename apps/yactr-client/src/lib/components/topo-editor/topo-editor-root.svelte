@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, P } from 'flowbite-svelte';
+	import { Button } from '$lib/components/ui/button';
 	import {
 		Layer,
 		Stage,
@@ -11,7 +11,7 @@
 	import type { TopoEditorPoint } from '.';
 
 	let {
-		image = $bindable<string | undefined>(),
+		image = $bindable<string | File | undefined>(),
 		points = $bindable<TopoEditorPoint[]>(),
 		svg_file = $bindable<string | undefined>(),
 		svg_output_file_upload = $bindable<HTMLInputElement>()
@@ -298,29 +298,26 @@
 	{/if}
 	<div class="flex gap-2">
 		{#if (points && points.length > 0) || is_drawing_line}
-			<Button color="red" type="button" size="sm" onclick={clear_points}>Clear topo</Button>
+			<Button variant="destructive" type="button" size="sm" onclick={clear_points}>Clear topo</Button>
 		{:else}
 			<Button
-				color="blue"
+				variant="default"
 				type="button"
-				size="sm"
 				onclick={() => (is_drawing_line = true)}
 				disabled={!image}>Draw topo</Button
 			>
 		{/if}
 		{#if !svg_file}
 			<Button
+				variant="secondary"
 				type="button"
-				size="sm"
-				color="green"
 				onclick={render_and_save}
 				disabled={(points?.length ?? 0) < 2}>Save and Render</Button
 			>
 		{:else}
 			<Button
 				type="button"
-				size="sm"
-				color="gray"
+				variant="destructive"
 				onclick={() => {
 					if (svg_output_file_upload) {
 						svg_output_file_upload.files = new DataTransfer().files;
@@ -330,5 +327,4 @@
 			>
 		{/if}
 	</div>
-	<P size="xs">Dot indicators on route line will not be rendered in final output.</P>
 </div>
