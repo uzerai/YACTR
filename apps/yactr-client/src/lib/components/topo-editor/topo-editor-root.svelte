@@ -8,11 +8,11 @@
 		type KonvaMouseEvent,
 		type KonvaTouchEvent
 	} from 'svelte-konva';
-	import type { RouteEditorPoint } from './route_topo_editor_types.ts';
+	import type { TopoEditorPoint } from '.';
 
 	let {
 		image = $bindable<string | undefined>(),
-		points = $bindable<RouteEditorPoint[]>(),
+		points = $bindable<TopoEditorPoint[]>(),
 		svg_file = $bindable<string | undefined>(),
 		svg_output_file_upload = $bindable<HTMLInputElement>()
 	} = $props();
@@ -23,8 +23,8 @@
 
 	// Drawing state
 	let is_drawing_line = $state(false);
-	let line_start_point = $state<RouteEditorPoint>();
-	let line_hover_point = $state<RouteEditorPoint>();
+	let line_start_point = $state<TopoEditorPoint>();
+	let line_hover_point = $state<TopoEditorPoint>();
 	let line_stroke_color = $state('#df4b26');
 	let line_stroke_width = $state(5);
 
@@ -37,7 +37,7 @@
 	const render_and_save = () => {
 		const svg_string = `<?xml version="1.0" encoding="utf-8"?>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${original_image_width} ${original_image_height}">
-      <polyline points="${points?.map((point: RouteEditorPoint) => `${point.x},${point.y}`).join(' ')}" fill="none" stroke="red" stroke-width="${line_stroke_width / scale_x}" />
+      <polyline points="${points?.map((point: TopoEditorPoint) => `${point.x},${point.y}`).join(' ')}" fill="none" stroke="red" stroke-width="${line_stroke_width / scale_x}" />
     </svg>`;
 
 		const file = new File([svg_string], 'route_topo.svg', { type: 'image/svg+xml' });
@@ -53,7 +53,7 @@
 	const is_close_to_end_point = (
 		click_x: number,
 		click_y: number,
-		points: RouteEditorPoint[],
+		points: TopoEditorPoint[],
 		threshold: number = 120
 	) => {
 		if (points.length < 1) return false;
@@ -125,18 +125,18 @@
 		points[point_index] = { x: new_x, y: new_y };
 	};
 
-	const apply_scaling = (point: RouteEditorPoint) => {
+	const apply_scaling = (point: TopoEditorPoint) => {
 		return {
 			x: point.x * scale_x,
 			y: point.y * scale_y
-		} as RouteEditorPoint;
+		} as TopoEditorPoint;
 	};
 
-	const remove_scaling = (point: RouteEditorPoint) => {
+	const remove_scaling = (point: TopoEditorPoint) => {
 		return {
 			x: point.x / scale_x,
 			y: point.y / scale_y
-		} as RouteEditorPoint;
+		} as TopoEditorPoint;
 	};
 </script>
 
@@ -190,7 +190,7 @@
 						<!-- Drawn Line -->
 						{#if points && points.length >= 2}
 							<Line
-								points={points?.flatMap((point: RouteEditorPoint) => {
+								points={points?.flatMap((point: TopoEditorPoint) => {
 									const scaled = apply_scaling(point);
 									return [scaled.x, scaled.y];
 								})}

@@ -35,6 +35,9 @@ const sectorManagementFormDto = zSectorResponse
 const routeManagementFormDto = zRouteResponse
   .extend(zRouteRequestData.shape)
   .extend({
+    topo_image: z.instanceof(File).optional(), // file holder for route topo image
+    topo_image_overlay: z.instanceof(File).optional(), // file holder for svg overlay on route topo
+    sector_topo_image_overlay: z.instanceof(File).optional(), // file holder for svg overlay on sector topo
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
   });

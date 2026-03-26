@@ -6,7 +6,7 @@
 	} from '$lib/api';
 	import { ClimbingType } from '$lib/api/generated/types.gen';
 	import { m } from '$lib/paraglide/messages.js';
-	import RouteEditor from '$lib/components/RouteTopoEditor/route_topo_editor.svelte';
+	import { TopoEditor } from '$lib/components/topo-editor';
 	import { untrack } from 'svelte';
 	import { z } from 'zod';
 	import SuperDebug, { superForm, type SuperValidated } from 'sveltekit-superforms';
@@ -46,7 +46,7 @@
 	);
 	
 	let selectedSectorTopoImage = $derived<string | undefined>(
-		sectorImages?.find((image) => image.image_id === $formData.sector_topo_image_id || image.is_primary)?.image_url);
+		sectorImages?.find((image) => image.image_id === $formData.sector_topo_image_id)?.image_url);
 
 	$effect(() => {
 		if ($formData.sector_id) {
@@ -56,15 +56,18 @@
 				}
 			}).then((result: Awaited<ReturnType<typeof getSectorById>>) => {
 				const { data, response } = result;
+
 				if (response.ok) {
 					selectedSector = data;
 				}
+
+				$formData.sector_topo_image_id = selectedSector?.primary_sector_image_id;
 			});
 		}
 	});
 </script>
 
-<!-- <SuperDebug data={{ form: $formData, errors: $errors, allErrors: $allErrors, message: $message }} /> -->
+<SuperDebug data={{ form: $formData, errors: $errors, allErrors: $allErrors, message: $message }} />
 <form method="post" class="flex flex-col gap-4" enctype="multipart/form-data" use:enhance>
 	<Form.Field {form} name="sector_id">
 		<Form.Control>
@@ -194,10 +197,10 @@
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
-				<RouteEditor
+				<TopoEditor
 					bind:image={selectedSectorTopoImage}
 					bind:points={$formData.sector_topo_line_points}
-					bind:svg_file={$formData.sector_topo_image_overlay_url}
+					bind:svg_file={$formData.sector_topo_image_overlay}
 				/>
 			</div>
 		</Tabs.Content>
