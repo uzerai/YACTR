@@ -1,11 +1,13 @@
 import TopoEditorRoot from './topo-editor-root.svelte';
+import TopoEditorSvgOverlay from './topo-editor-svg-overlay.svelte';
+import TopoEditorTopoImage from './topo-editor-topo-image.svelte';
 
-interface TopoEditorPoint {
-  x: number;
-  y: number;
-}
+export type { TopoEditorPoint } from './topo-editor-types';
 
-export {
-  type TopoEditorPoint,
-  TopoEditorRoot as TopoEditor,
-}
+export const TopoEditor = {
+  Root: TopoEditorRoot,
+  SvgOverlay: TopoEditorSvgOverlay,
+  TopoImage: TopoEditorTopoImage
+};
+
+export { TopoEditorRoot, TopoEditorSvgOverlay, TopoEditorTopoImage };

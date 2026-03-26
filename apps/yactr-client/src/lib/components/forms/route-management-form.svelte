@@ -49,25 +49,37 @@
 		sectorImages?.find((image) => image.image_id === $formData.sector_topo_image_id)?.image_url);
 
 	$effect(() => {
-		if ($formData.sector_id) {
-			getSectorById({
-				path: {
-					sector_id: $formData.sector_id
-				}
-			}).then((result: Awaited<ReturnType<typeof getSectorById>>) => {
-				const { data, response } = result;
+		const sectorId = $formData.sector_id;
+		if (!sectorId) return;
 
-				if (response.ok) {
-					selectedSector = data;
-				}
+		let isCurrent = true;
 
-				$formData.sector_topo_image_id = selectedSector?.primary_sector_image_id;
-			});
-		}
+		(async () => {
+			try {
+				const result = await getSectorById({
+					path: {
+						sector_id: sectorId
+					}
+				});
+
+				if (!isCurrent || !result?.response) return;
+
+				if (result.response.ok && result.data) {
+					selectedSector = result.data;
+					$formData.sector_topo_image_id = result.data.primary_sector_image_id;
+				}
+			} catch (error) {
+				console.warn('[RouteManagementForm] getSectorById failed', { sectorId, error });
+			}
+		})();
+
+		return () => {
+			isCurrent = false;
+		};
 	});
 </script>
 
-<SuperDebug data={{ form: $formData, errors: $errors, allErrors: $allErrors, message: $message }} />
+<!-- <SuperDebug data={{ form: $formData, errors: $errors, allErrors: $allErrors, message: $message }} /> -->
 <form method="post" class="flex flex-col gap-4" enctype="multipart/form-data" use:enhance>
 	<Form.Field {form} name="sector_id">
 		<Form.Control>
@@ -197,11 +209,14 @@
 					</Form.Control>
 					<Form.FieldErrors />
 				</Form.Field>
-				<TopoEditor
-					bind:image={selectedSectorTopoImage}
-					bind:points={$formData.sector_topo_line_points}
-					bind:svg_file={$formData.sector_topo_image_overlay}
-				/>
+				<TopoEditor.Root class="min-h-[300px]">
+					<TopoEditor.TopoImage src={selectedSectorTopoImage} />
+					<TopoEditor.SvgOverlay
+						bind:points={$formData.sector_topo_line_points}
+						bind:output={$formData.sector_topo_image_overlay}
+						debug={true}
+					/>
+				</TopoEditor.Root>
 			</div>
 		</Tabs.Content>
 		<!-- <TabItem title="Route unique topo" disabled={form_disabled}>
