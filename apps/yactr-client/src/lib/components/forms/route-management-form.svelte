@@ -7,9 +7,9 @@
 	import { ClimbingType } from '$lib/api/generated/types.gen';
 	import { m } from '$lib/paraglide/messages.js';
 	import { TopoEditor } from '$lib/components/topo-editor';
-	import { untrack } from 'svelte';
+	import { onDestroy, untrack } from 'svelte';
 	import { z } from 'zod';
-	import SuperDebug, { superForm, type SuperValidated } from 'sveltekit-superforms';
+	import { superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { routeManagementFormDto } from '$lib/components/forms';
 	import * as Form from '$lib/components/ui/form';
 	import * as Select from '$lib/components/ui/native-select';
@@ -18,7 +18,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import { superDebugStore } from '$lib/components/forms/util/super-debug-display/super-debug-store';
+	import { superDebugStore } from '$lib/components/util/super-debug-display/super-debug-store';
 
 	let {
 		data,
@@ -34,8 +34,21 @@
 
 	
 	const { form: formData, enhance, errors, allErrors, message } = form;
-	
-	$superDebugStore.form = $formData;
+
+	const unsubscribeSuperDebug = formData.subscribe((value) => {
+		superDebugStore.update((store) => ({
+			...store,
+			form: value
+		}));
+	});
+
+	onDestroy(() => {
+		unsubscribeSuperDebug();
+		superDebugStore.update((store) => ({
+			...store,
+			form: undefined
+		}));
+	});
 	
 	const climbingTypes = Object.values(ClimbingType);
 	let formDisabled = $derived(!$formData.sector_id);

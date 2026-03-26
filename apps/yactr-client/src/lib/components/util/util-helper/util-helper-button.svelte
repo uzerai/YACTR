@@ -13,9 +13,9 @@
   <Popover.Trigger class={cn(buttonVariants({ variant: "outline" }), className)}
     >Debug</Popover.Trigger
   >
-  <Popover.Content align="end" >
+  <Popover.Content align="end" interactOutsideBehavior="ignore">
     {#if $superDebugStore.form}
-      <SuperDebug data={{ form: $superDebugStore.form }} />
+      <SuperDebug data={$superDebugStore.form} />
     {/if}
     
     <Label>Enable super debug</Label>

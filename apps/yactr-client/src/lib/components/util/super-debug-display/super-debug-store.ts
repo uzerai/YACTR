@@ -1,9 +1,8 @@
-import type { SuperForm } from 'sveltekit-superforms';
 import { writable } from 'svelte/store';
 
 export interface SuperDebugStore {
   enabled: boolean;
-  form: SuperForm<Record<string, unknown>, unknown> | undefined;
+  form: unknown;
 }
 
 export const superDebugStore = writable<SuperDebugStore>({
