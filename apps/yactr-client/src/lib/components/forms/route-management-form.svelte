@@ -32,7 +32,7 @@
 		dataType: 'json'
 	});
 
-	const { form: formData, enhance, errors, allErrors, message } = form;
+	const { form: formData, enhance } = form;
 
 	useSuperDebugForm(formData);
 	
@@ -49,7 +49,8 @@
 	);
 	
 	let selectedSectorTopoImage = $derived<string | undefined>(
-		sectorImages?.find((image) => image.image_id === $formData.sector_topo_image_id)?.image_url);
+		sectorImages?.find((image) => image.image_id === $formData.sector_topo_image_id)?.image_url ?? $formData.sector_topo_image_url ?? undefined);
+
 	let routeTopoSource = $derived<File | string | undefined>(
 		$formData.topo_image ?? $formData.topo_image_url ?? undefined
 	);
@@ -249,7 +250,6 @@
 					<TopoEditor.SvgOverlay
 						bind:points={$formData.topo_line_points}
 						bind:output={$formData.topo_image_overlay}
-						debug={true}
 					/>
 				</TopoEditor.Root>
 			</div>
