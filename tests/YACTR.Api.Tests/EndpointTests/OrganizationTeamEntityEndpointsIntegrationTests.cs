@@ -56,7 +56,7 @@ public class OrganizationTeamEntityEndpointsIntegrationTests(ApiTestClassFixture
 
         // Act
         var getRequest = new GetAllOrganizationTeamsRequest(_organization.Id);
-        var (response, result) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeam>>(getRequest);
+        var (response, result) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeamResponse>>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -80,7 +80,7 @@ public class OrganizationTeamEntityEndpointsIntegrationTests(ApiTestClassFixture
 
         // Act
         var getRequest = new GetAllOrganizationTeamsRequest(invalidOrgId);
-        var (response, _) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeam>>(getRequest);
+        var (response, _) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeamResponse>>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -98,7 +98,7 @@ public class OrganizationTeamEntityEndpointsIntegrationTests(ApiTestClassFixture
         var createRequest = new CreateOrganizationTeamRequest(_organization.Id, "Test Team");
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeamResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -120,7 +120,7 @@ public class OrganizationTeamEntityEndpointsIntegrationTests(ApiTestClassFixture
         var createRequest = new CreateOrganizationTeamRequest(_organization.Id, "Test Team");
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeamResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -137,7 +137,7 @@ public class OrganizationTeamEntityEndpointsIntegrationTests(ApiTestClassFixture
         var createRequest = new CreateOrganizationTeamRequest(_organization.Id, "");
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeam>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeamResponse>(createRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);

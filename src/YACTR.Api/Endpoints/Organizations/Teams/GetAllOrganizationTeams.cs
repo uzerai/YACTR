@@ -26,6 +26,6 @@ public class GetAllOrganizationTeams(IEntityRepository<OrganizationTeam> organiz
             .Where(e => e.OrganizationId == req.OrganizationId)
             .ToListAsync(ct);
 
-        await Send.OkAsync(teams.Select(e => new OrganizationTeamResponse(e.Id, e.Name)).ToList(), cancellation: ct);
+        await Send.OkAsync(teams.Select(e => new OrganizationTeamResponse(e.Id, e.OrganizationId, e.Name)).ToList(), cancellation: ct);
     }
 }

@@ -61,6 +61,7 @@ public record RouteResponse(
     int InSectorOrder,
     int? Grade = null,
     int? GearCount = null,
+    int? Height = null,
     Instant? FirstAscentDate = null,
     string? FirstAscentClimberName = null,
     string? BolterName = null,
@@ -95,6 +96,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             Name = p.Name,
             Type = p.Type,
             Height = p.Height,
+            GearCount = p.GearCount,
             PitchOrder = p.PitchOrder,
             SectorId = r.SectorId, // Pitch should always be in the same sector as the route.
             Description = p.Description,
@@ -141,6 +143,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
                         Type = p.Type,
                         Name = p.Name,
                         Height = p.Height,
+                        GearCount = p.GearCount,
                         PitchOrder = p.PitchOrder,
                         SectorId = r.SectorId,
                         Description = p.Description
@@ -152,6 +155,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
                     Type = p.Type,
                     Name = p.Name,
                     Height = p.Height,
+                    GearCount = p.GearCount,
                     PitchOrder = p.PitchOrder,
                     SectorId = r.SectorId,
                     Description = p.Description
@@ -167,6 +171,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
                     Type = r.Type,
                     Description = r.Description,
                     Height = r.Height,
+                    GearCount = r.GearCount,
                     SectorId = r.SectorId
                 }
             ];
@@ -191,6 +196,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
             e.InSectorOrder,
             e.Grade,
             e.Pitches.Sum(p => p.GearCount),
+            e.Pitches.Sum(p => p.Height),
             e.FirstAscentDate,
             e.FirstAscentClimberName,
             e.BolterName,
