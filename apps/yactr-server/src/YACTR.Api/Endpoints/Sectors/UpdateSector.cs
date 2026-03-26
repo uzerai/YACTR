@@ -1,8 +1,10 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Authorization.Permissions;
 using YACTR.Infrastructure.Database.Repository.Interface;
+using YACTR.Infrastructure.Database.QueryExtensions;
 
 namespace YACTR.Api.Endpoints.Sectors;
 
@@ -28,7 +30,13 @@ public class UpdateSector : AuthenticatedEndpoint<UpdateSectorRequest, EmptyResp
 
     public override async Task HandleAsync(UpdateSectorRequest req, CancellationToken ct)
     {
-        var existingSector = await SectorRepository.GetByIdAsync(req.SectorId, ct);
+        // Load with tracking so the join entities (`sector_images`) can be updated in-place
+        // instead of EF attempting to re-insert duplicate pivot rows.
+        var existingSector = await SectorRepository.BuildTrackedQuery()
+            .WhereAvailable()
+            .Where(e => e.Id == req.SectorId)
+            .Include("SectorImages")
+            .FirstOrDefaultAsync(ct);
         if (existingSector == null)
         {
             await Send.NotFoundAsync(ct);
@@ -37,7 +45,7 @@ public class UpdateSector : AuthenticatedEndpoint<UpdateSectorRequest, EmptyResp
 
         Map.UpdateEntity(req.Data, existingSector);
 
-        await SectorRepository.UpdateAsync(existingSector, ct);
+        await SectorRepository.SaveAsync(ct);
 
         await Send.NoContentAsync(ct);
     }

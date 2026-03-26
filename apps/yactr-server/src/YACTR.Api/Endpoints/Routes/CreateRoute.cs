@@ -29,6 +29,7 @@ public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, RouteResponse
                 Name = req.Name,
                 Type = req.Type,
                 Height = req.Height,
+                GearCount = req.GearCount,
                 Description = req.Description,
                 PitchOrder = 0,
                 RouteId = createdRoute.Id,
@@ -43,6 +44,7 @@ public class CreateRoute : AuthenticatedEndpoint<RouteRequestData, RouteResponse
                 Type = pitchReq.Type,
                 Description = pitchReq.Description,
                 Height = pitchReq.Height,
+                GearCount = pitchReq.GearCount,
                 PitchOrder = pitchReq.PitchOrder,
                 RouteId = createdRoute.Id,
                 SectorId = createdRoute.SectorId

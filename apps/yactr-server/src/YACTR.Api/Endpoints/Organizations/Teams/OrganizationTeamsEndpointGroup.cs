@@ -4,6 +4,7 @@ namespace YACTR.Api.Endpoints.Organizations;
 
 public record OrganizationTeamResponse(
     Guid Id,
+    Guid OrganizationId,
     string Name
 );
 

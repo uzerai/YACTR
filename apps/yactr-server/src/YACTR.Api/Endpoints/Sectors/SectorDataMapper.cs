@@ -54,21 +54,34 @@ public record SectorResponse(
 
 public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector>
 {
-    public override Sector ToEntity(SectorRequestData r) => new()
+    public override Sector ToEntity(SectorRequestData r)
     {
-        Name = r.Name,
-        SectorArea = r.SectorArea,
-        EntryPoint = r.EntryPoint,
-        RecommendedParkingLocation = r.RecommendedParkingLocation,
-        ApproachPath = r.ApproachPath,
-        AreaId = r.AreaId,
-        PrimarySectorImageId = r.PrimarySectorImageId,
-        SectorImages = r.SectorImages?.Select(s => new SectorImage()
+        var sectorImages = r.SectorImages?
+            .Select(s => new SectorImage
+            {
+                ImageId = s.ImageId,
+                Order = s.Order
+            })
+            .ToList() ?? [];
+
+        var primarySectorImageId = r.PrimarySectorImageId
+            ?? sectorImages
+                .OrderBy(si => si.Order)
+                .Select(si => (Guid?)si.ImageId)
+                .FirstOrDefault();
+
+        return new()
         {
-            ImageId = s.ImageId,
-            Order = s.Order
-        }).ToList() ?? [],
-    };
+            Name = r.Name,
+            SectorArea = r.SectorArea,
+            EntryPoint = r.EntryPoint,
+            RecommendedParkingLocation = r.RecommendedParkingLocation,
+            ApproachPath = r.ApproachPath,
+            AreaId = r.AreaId,
+            PrimarySectorImageId = primarySectorImageId,
+            SectorImages = sectorImages,
+        };
+    }
 
     public override async Task<SectorResponse> FromEntityAsync(Sector e, CancellationToken ct = default)
     {
@@ -100,11 +113,49 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
         e.RecommendedParkingLocation = r.RecommendedParkingLocation;
         e.ApproachPath = r.ApproachPath;
         e.PrimarySectorImageId = r.PrimarySectorImageId;
-        e.SectorImages = r.SectorImages?.Select(s => new SectorImage()
+
+        // Update the sector images collection in-place since EF is fucking stupid as fuck.
+        if (r.SectorImages != null)
         {
-            ImageId = s.ImageId,
-            Order = s.Order
-        }).ToList() ?? e.SectorImages;
+            var requested = r.SectorImages.ToDictionary(x => x.ImageId, x => x.Order);
+
+            // Update existing in case order has updated.
+            foreach (var existing in e.SectorImages.ToList())
+            {
+                if (requested.TryGetValue(existing.ImageId, out var requestedOrder))
+                {
+                    existing.Order = requestedOrder;
+                }
+                else
+                {
+                    e.SectorImages.Remove(existing);
+                }
+            }
+
+            // Add missing relations.
+            foreach (var (imageId, order) in requested)
+            {
+                if (e.SectorImages.All(si => si.ImageId != imageId))
+                {
+                    e.SectorImages.Add(new SectorImage
+                    {
+                        SectorId = e.Id,
+                        ImageId = imageId,
+                        Order = order
+                    });
+                }
+            }
+
+            // If no primary image is explicitly requested, default to the first image (lowest order)
+            // from the provided SectorImages list.
+            if (r.PrimarySectorImageId == null)
+            {
+                e.PrimarySectorImageId = r.SectorImages
+                    .OrderBy(si => si.Order)
+                    .Select(si => (Guid?)si.ImageId)
+                    .FirstOrDefault();
+            }
+        }
 
         return e;
     }

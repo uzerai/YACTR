@@ -27,10 +27,9 @@ public class UserEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
 
         var client = fixture.CreateAuthenticatedClient(expectedUser);
         // Act
-        var (res, result) = await client.GETAsync<GetCurrentUser, EmptyRequest, User>(new());
+        var (res, result) = await client.GETAsync<GetCurrentUser, EmptyRequest, CurrentUserResponse>(new());
         res.IsSuccessStatusCode.ShouldBeTrue();
 
-        result.Auth0UserId.ShouldBe(expectedUser.Auth0UserId);
         result.Username.ShouldBe(expectedUser.Username);
     }
 
@@ -41,7 +40,7 @@ public class UserEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         using var client = fixture.CreateClient();
 
         // Act
-        var (response, _) = await client.GETAsync<GetCurrentUser, EmptyRequest, User>(new());
+        var (response, _) = await client.GETAsync<GetCurrentUser, EmptyRequest, CurrentUserResponse>(new());
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -63,7 +62,7 @@ public class UserEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         using var client = fixture.CreateAuthenticatedClient(adminUser);
 
         // Act
-        var (response, result) = await client.GETAsync<GetAllUsers, EmptyRequest, IEnumerable<User>>(new());
+        var (response, result) = await client.GETAsync<GetAllUsers, EmptyRequest, IEnumerable<UserResponse>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -85,7 +84,7 @@ public class UserEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         using var client = fixture.CreateAuthenticatedClient(regularUser);
 
         // Act
-        var (response, _) = await client.GETAsync<GetAllUsers, EmptyRequest, IEnumerable<User>>(new());
+        var (response, _) = await client.GETAsync<GetAllUsers, EmptyRequest, IEnumerable<UserResponse>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -99,7 +98,7 @@ public class UserEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         using var client = fixture.CreateClient();
 
         // Act
-        var (response, _) = await client.GETAsync<GetAllUsers, EmptyRequest, IEnumerable<User>>(new());
+        var (response, _) = await client.GETAsync<GetAllUsers, EmptyRequest, IEnumerable<UserResponse>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

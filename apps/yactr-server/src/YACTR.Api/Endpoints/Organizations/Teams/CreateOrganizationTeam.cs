@@ -28,6 +28,6 @@ public class CreateOrganizationTeam(IEntityRepository<OrganizationTeam> organiza
 
         var createdTeam = await organizationTeamRepository.CreateAsync(team, ct);
 
-        await Send.OkAsync(new OrganizationTeamResponse(createdTeam.Id, createdTeam.Name), cancellation: ct);
+        await Send.OkAsync(new OrganizationTeamResponse(createdTeam.Id, createdTeam.OrganizationId, createdTeam.Name), cancellation: ct);
     }
 }
