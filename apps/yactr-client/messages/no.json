@@ -109,6 +109,12 @@
 	"admin_routes_form_sector_image_primary_prefix": "Primær:",
 	"admin_routes_form_sector_image_secondary_prefix": "Sekundær:",
 	"admin_routes_form_save": "Lagre",
+	"admin_layout_nav_areas": "Områder",
+	"admin_layout_nav_sectors": "Sektorer",
+	"admin_layout_nav_routes": "Ruter",
+	"admin_layout_nav_pitches": "Taulengder",
+	"admin_layout_group_climbing": "Klatring",
+	"admin_layout_group_administration": "Administrasjon",
 	"topo_editor_svg_overlay_image_alt": "Rute-tegning SVG-overlegg",
 	"topo_editor_svg_overlay_clear_topo": "Tøm topo"
 }

@@ -3,45 +3,46 @@
 	import DarkmodeToggle from '$lib/components/darkmode-toggle/darkmode-toggle.svelte';
 	import { MapsEditingIcon, PinLocation02Icon, CurvyUpDownDirectionIcon, AutoConversationsIcon } from '@hugeicons/core-free-icons';
 	import { HugeiconsIcon as Icon } from '@hugeicons/svelte';
-	import { SuperDebugHelper } from '$lib/components/forms/util/super-debug-helper';
+	import { m } from '$lib/paraglide/messages.js';
+	import { resolve } from '$app/paths';
 	
 	let { children } = $props();
 
 	const climbingNavItems = [
     {
-      title: "Areas",
+      title: m.admin_layout_nav_areas(),
       url: "/admin/areas",
       icon: MapsEditingIcon,
     },
 		{
-			title: "Sectors",
+			title: m.admin_layout_nav_sectors(),
 			url: "/admin/sectors",
 			icon: PinLocation02Icon,
 		},
 		{
-			title: "Routes",
+			title: m.admin_layout_nav_routes(),
 			url: "/admin/routes",
 			icon: CurvyUpDownDirectionIcon,
 		},
 		{
-			title: "Pitches",
+			title: m.admin_layout_nav_pitches(),
 			url: "/admin/pitches",
 			icon: AutoConversationsIcon,
 		}
-  ];
+  ] as const;
 </script>
 
 <Sidebar.Provider>
   <Sidebar.Root collapsible="icon">
     <Sidebar.Header>
-			<div class="flex items-center justify-center gap-2">
+			<a href={resolve('/')} class="flex items-center justify-center gap-2">
 				<span>Y A C T R</span>
-			</div>
+			</a>
 		</Sidebar.Header>
 		<Sidebar.Content>
 			<Sidebar.Group>
 				<Sidebar.GroupLabel>
-					Climbing
+					{m.admin_layout_group_climbing()}
 				</Sidebar.GroupLabel>
 				<Sidebar.GroupContent>
 					<Sidebar.Menu>
@@ -49,7 +50,7 @@
 							<Sidebar.MenuItem>
 								<Sidebar.MenuButton>
 									{#snippet child({ props })}
-										<a href={item.url} {...props}>
+										<a href={resolve(item.url)} {...props}>
 											<Icon icon={item.icon} />
 											<span>{item.title}</span>
 										</a>
@@ -63,7 +64,7 @@
 			<Sidebar.Separator />
 			<Sidebar.Group>
 				<Sidebar.GroupLabel>
-					Administration
+					{m.admin_layout_group_administration()}
 				</Sidebar.GroupLabel>
 			</Sidebar.Group>
 		</Sidebar.Content>

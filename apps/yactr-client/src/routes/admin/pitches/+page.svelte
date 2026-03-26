@@ -1,66 +1,65 @@
 <script lang="ts">
-	import {
-		Table,
-		TableBodyRow,
-		TableHeadCell,
-		TableBody,
-		TableHead,
-		TableBodyCell
-	} from 'flowbite-svelte';
+	import * as Table from '$lib/components/ui/table';
+	import * as Card from '$lib/components/ui/card';
+	import * as Empty from '$lib/components/ui/empty';
+	import { Button } from '$lib/components/ui/button';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 </script>
 
-<div class="flex flex-col gap-4">
-	<div class="flex justify-between">
-		<h1 class="text-2xl font-bold text-slate-900">Pitches</h1>
-		<div class="flex">
-			<a
-				href="/admin/pitches/new"
-				class="rounded-md bg-fire-engine-red px-4 py-2 text-antiflash-white">Create Pitch</a
-			>
-		</div>
+<div class="mx-auto flex max-w-7xl flex-col gap-6 p-4">
+	<div class="flex items-center justify-between">
+		<h1 class="text-4xl">Pitches</h1>
 	</div>
-	<hr />
 
 	{#if data.pitches && data.pitches.length > 0}
-		<Table>
-			<TableHead>
-				<TableHeadCell>Id</TableHeadCell>
-				<TableHeadCell>Name</TableHeadCell>
-				<TableHeadCell>Type</TableHeadCell>
-				<TableHeadCell>Sector Id</TableHeadCell>
-				<TableHeadCell>Description</TableHeadCell>
-				<TableHeadCell>Created At</TableHeadCell>
-				<TableHeadCell>Updated At</TableHeadCell>
-				<TableHeadCell>Actions</TableHeadCell>
-			</TableHead>
-			<TableBody>
-				{#each data.pitches as pitch}
-					<TableBodyRow>
-						<TableBodyCell>{pitch.id}</TableBodyCell>
-						<TableBodyCell>{pitch.name}</TableBodyCell>
-						<TableBodyCell>{pitch.type}</TableBodyCell>
-						<TableBodyCell>{pitch.sector_id}</TableBodyCell>
-						<TableBodyCell>{pitch.description}</TableBodyCell>
-						<TableBodyCell>{pitch.created_at}</TableBodyCell>
-						<TableBodyCell>{pitch.updated_at}</TableBodyCell>
-						<TableBodyCell class="flex gap-1">
-							<form method="post" action="?/delete">
-								<input type="hidden" name="pitch_id" value={pitch.id} />
-								<button
-									type="submit"
-									class="cursor-pointer rounded-md bg-fire-engine-red px-4 py-2 text-antiflash-white"
-									>Delete</button
-								>
-							</form>
-						</TableBodyCell>
-					</TableBodyRow>
-				{/each}
-			</TableBody>
-		</Table>
+		<Card.Root>
+			<Card.Header>
+				<Card.CardAction>
+					<Button href="/admin/pitches/new" variant="default">Create Pitch</Button>
+				</Card.CardAction>
+			</Card.Header>
+			<Card.Content>
+				<Table.Root>
+					<Table.Header>
+						<Table.Row>
+							<Table.Head>Id</Table.Head>
+							<Table.Head>Name</Table.Head>
+							<Table.Head>Type</Table.Head>
+							<Table.Head>Sector Id</Table.Head>
+							<Table.Head>Description</Table.Head>
+							<Table.Head>Actions</Table.Head>
+						</Table.Row>
+					</Table.Header>
+					<Table.Body>
+						{#each data.pitches as pitch (pitch.id)}
+							<Table.Row>
+								<Table.Cell>{pitch.id}</Table.Cell>
+								<Table.Cell>{pitch.name}</Table.Cell>
+								<Table.Cell>{pitch.type}</Table.Cell>
+								<Table.Cell>{pitch.sector_id}</Table.Cell>
+								<Table.Cell>{pitch.description}</Table.Cell>
+								<Table.Cell class="flex gap-1">
+									<Button href={`/admin/pitches/${pitch.id}`} variant="outline">Edit</Button>
+									<form method="post" action="?/delete">
+										<input type="hidden" name="pitch_id" value={pitch.id} />
+										<Button type="submit" variant="destructive">Delete</Button>
+									</form>
+								</Table.Cell>
+							</Table.Row>
+						{/each}
+					</Table.Body>
+				</Table.Root>
+			</Card.Content>
+		</Card.Root>
 	{:else}
-		<p>No pitches found</p>
+		<Empty.Root>
+			<Empty.Title>No pitches yet</Empty.Title>
+			<Empty.Description>Create the first pitch to get started.</Empty.Description>
+			<Empty.Content>
+				<Button href="/admin/pitches/new">Create Pitch</Button>
+			</Empty.Content>
+		</Empty.Root>
 	{/if}
 </div>

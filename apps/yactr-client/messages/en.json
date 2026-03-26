@@ -109,6 +109,12 @@
 	"admin_routes_form_sector_image_primary_prefix": "Primary:",
 	"admin_routes_form_sector_image_secondary_prefix": "Secondary:",
 	"admin_routes_form_save": "Save",
+	"admin_layout_nav_areas": "Areas",
+	"admin_layout_nav_sectors": "Sectors",
+	"admin_layout_nav_routes": "Routes",
+	"admin_layout_nav_pitches": "Pitches",
+	"admin_layout_group_climbing": "Climbing",
+	"admin_layout_group_administration": "Administration",
 	"topo_editor_svg_overlay_image_alt": "Route drawing SVG overlay",
 	"topo_editor_svg_overlay_clear_topo": "Clear topo"
 }

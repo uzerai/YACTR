@@ -2,6 +2,7 @@ import { zPoint, zRouteRequestData, zRouteResponse, zSectorRequestData, zSectorR
 import SectorManagementForm from "./sector-management-form.svelte";
 import AreaManagementForm from "./area-management-form.svelte";
 import RouteManagementForm from "./route-management-form.svelte";
+import PitchManagementForm from "./pitch-management-form.svelte";
 import z from "zod";
 
 /**
@@ -48,4 +49,5 @@ export {
   AreaManagementForm,
   routeManagementFormDto,
   RouteManagementForm,
+  PitchManagementForm,
 }
