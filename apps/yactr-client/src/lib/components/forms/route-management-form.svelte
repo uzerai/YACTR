@@ -7,7 +7,7 @@
 	import { ClimbingType } from '$lib/api/generated/types.gen';
 	import { m } from '$lib/paraglide/messages.js';
 	import { TopoEditor } from '$lib/components/topo-editor';
-	import { untrack } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { z } from 'zod';
 	import { superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { routeManagementFormDto } from '$lib/components/forms';
@@ -55,7 +55,10 @@
 		$formData.topo_image ?? $formData.topo_image_url ?? undefined
 	);
 
-	const updateSelectedSector = async (sectorId: string) => {
+	const updateSelectedSector = async (
+		sectorId: string,
+		options: { preserveTopoSelection?: boolean } = {}
+	): Promise<boolean> => {
 		const result = await getSectorById({
 			path: {
 				sector_id: sectorId
@@ -64,15 +67,30 @@
 
 		if (result.response.ok && result.data) {
 			selectedSector = result.data;
-			$formData.sector_topo_image_id = result.data.primary_sector_image_id;
+			if (!options.preserveTopoSelection || !$formData.sector_topo_image_id) {
+				$formData.sector_topo_image_id = result.data.primary_sector_image_id;
+			}
+			return true;
 		}
+		return false;
 	};
 
 	const handleSectorChange = (event: Event) => {
 		const select = event.currentTarget as HTMLSelectElement | null;
-		if (!select?.value) return;
-		void updateSelectedSector(select.value);
+		const sectorId = select?.value;
+
+		if (!sectorId) {
+			selectedSector = undefined;
+			return;
+		}
+
+		void updateSelectedSector(sectorId, { preserveTopoSelection: false });
 	};
+
+	onMount(() => {
+		if (!$formData.sector_id) return;
+		void updateSelectedSector($formData.sector_id, { preserveTopoSelection: true });
+	});
 
 	const handleRouteTopoFileChange = (event: Event) => {
 		const input = event.currentTarget as HTMLInputElement | null;

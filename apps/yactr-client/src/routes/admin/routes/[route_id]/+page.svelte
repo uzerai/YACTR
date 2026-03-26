@@ -7,11 +7,11 @@
 </script>
 
 <div class="flex flex-col gap-6 p-4 max-w-7xl mx-auto">
-	<h1 class="text-4xl">{data.route.name}</h1>
+	<h1 class="text-4xl">{data.route?.name}</h1>
 
 	<Card.Root>
 		<Card.Content>
-			<!-- <RouteManagementForm  {sectors} access_token={data.session?.access_token!} /> -->
+			<RouteManagementForm data={data.form!} sectors={data.sectors!} />
 		</Card.Content>
 	</Card.Root>
 </div>

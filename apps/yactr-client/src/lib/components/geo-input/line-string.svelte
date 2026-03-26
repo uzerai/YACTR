@@ -38,8 +38,6 @@
 		}
 	});
 
-	$inspect(vectorSource);
-
 	const onDrawEnd = ({ feature }: { feature: Feature<LineString> }) => {
 		vectorSource.clear();
 

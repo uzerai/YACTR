@@ -1,6 +1,21 @@
 import { uploadImage, getRouteById, updateRoute, getAllSectors, type TopoLinePoint } from "$lib/api";
+import { routeManagementFormDto } from "$lib/components/forms";
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
+import { superValidate, withFiles } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
+
+const areTopoPointsEqual = (left?: TopoLinePoint[] | null, right?: TopoLinePoint[] | null): boolean => {
+  const leftPoints = left ?? [];
+  const rightPoints = right ?? [];
+
+  if (leftPoints.length !== rightPoints.length) return false;
+
+  return leftPoints.every((point, index) => {
+    const rightPoint = rightPoints[index];
+    return rightPoint != null && point.x === rightPoint.x && point.y === rightPoint.y;
+  });
+};
 
 export const load: PageServerLoad = async ({ params }) => {
   const { data: route } = await getRouteById({
@@ -9,90 +24,124 @@ export const load: PageServerLoad = async ({ params }) => {
 
   if (!route) return error(404, "Not found");
 
-  const { data: sectors } = await getAllSectors();
+  const { data: sectors, response: sectorsResponse } = await getAllSectors();
+  const form = await superValidate({
+    ...route,
+    pitches: (route.pitches ?? []).map((pitch, index) => ({
+      id: pitch.id ?? undefined,
+      name: pitch.name ?? "",
+      type: pitch.type ?? route.type,
+      pitch_order: pitch.pitch_order ?? index,
+      gear_count: pitch.gear_count ?? undefined,
+      description: pitch.description ?? undefined,
+      grade: pitch.grade ?? undefined,
+      height: pitch.height ?? undefined
+    })),
+    topo_line_points: route.topo_line_points ?? [],
+    sector_topo_line_points: route.sector_topo_line_points ?? []
+  }, zod4(routeManagementFormDto));
 
-  console.dir(route, { depth: 4 });
+  if (!sectorsResponse.ok || !sectors) {
+    return fail(500, { message: "Failed to fetch sectors", form });
+  }
 
-  return { route, sectors };
+  return { route, sectors, form };
 }
 
 export const actions = {
   default: async ({ request, params }) => {
-    const data = await request.formData();
+    const form = await superValidate(request, zod4(routeManagementFormDto));
 
-    if (!data.get("sector_id") || !data.get("name")) {
-      return fail(422, { sector_id: "sector_id", name: "name" })
+    if (!form.valid) {
+      return fail(422, withFiles({ form }));
     }
 
-    const route_image = data.get("route_image") as File;
-    const route_image_overlay = data.get("route_image_svg_overlay") as File;
-    const sector_image_overlay = data.get("sector_image_svg_overlay") as File;
+    const { data: existingRoute, response: existingRouteResponse } = await getRouteById({
+      path: { route_id: params.route_id },
+    });
 
-    let topo_image_id: string | undefined = data.get("topo_image_id")?.toString();
-    let topo_image_overlay_id: string | undefined;
-    let sector_topo_image_overlay_svg_id: string | undefined;
+    if (!existingRouteResponse.ok || !existingRoute) {
+      return fail(404, withFiles({ form, error: { message: "Route not found" } }));
+    }
 
-    if (route_image.size !== 0) {
-      const { data: route_image_data, response: route_image_upload_response } = await uploadImage({
-        body: { image: route_image },
+    const routeTopoPointsChanged = !areTopoPointsEqual(existingRoute.topo_line_points, form.data.topo_line_points);
+    const sectorTopoPointsChanged = !areTopoPointsEqual(existingRoute.sector_topo_line_points, form.data.sector_topo_line_points);
+
+    let topo_image_id = form.data.topo_image_id ?? undefined;
+    let topo_image_overlay_id = form.data.topo_image_overlay_id ?? undefined;
+    let sector_topo_image_overlay_svg_id = form.data.sector_topo_image_overlay_svg_id ?? undefined;
+
+    if (form.data.topo_image) {
+      const { data: uploadData, error: uploadError, response: uploadResponse } = await uploadImage({
+        body: { image: form.data.topo_image }
       });
-      topo_image_id = route_image_data?.image_id;
-      console.dir({ route_image_upload_response });
+
+      if (!uploadResponse.ok || !uploadData?.image_id) {
+        return fail(424, withFiles({ form, error: uploadError ?? { message: "Failed to upload route topo image" } }));
+      }
+
+      topo_image_id = uploadData.image_id;
     }
 
-    if (route_image_overlay.size !== 0) {
-      const { data: route_image_overlay_data, response: route_overlay_response } = await uploadImage({
-        body: { image: route_image_overlay },
+    if (routeTopoPointsChanged && form.data.topo_image_overlay) {
+      const { data: uploadData, error: uploadError, response: uploadResponse } = await uploadImage({
+        body: { image: form.data.topo_image_overlay }
       });
-      topo_image_overlay_id = route_image_overlay_data?.image_id;
-      console.dir({ route_overlay_response });
+
+      if (!uploadResponse.ok || !uploadData?.image_id) {
+        return fail(424, withFiles({ form, error: uploadError ?? { message: "Failed to upload route topo overlay" } }));
+      }
+
+      topo_image_overlay_id = uploadData.image_id;
     }
 
-    if (sector_image_overlay.size !== 0) {
-      const { data: sector_image_overlay_data, response: sector_overlay_response } = await uploadImage({
-        body: { image: sector_image_overlay }
+    if (sectorTopoPointsChanged && form.data.sector_topo_image_overlay) {
+      const { data: uploadData, error: uploadError, response: uploadResponse } = await uploadImage({
+        body: { image: form.data.sector_topo_image_overlay }
       });
-      sector_topo_image_overlay_svg_id = sector_image_overlay_data?.image_id;
-      console.dir({ sector_overlay_response });
-    }
 
-    let topo_line_points: TopoLinePoint[] = [];
-    console.log("topo_line_points", data.get("topo_line_points")?.toString());
-    if (data.get("topo_line_points")?.toString()) {
-      topo_line_points = JSON.parse(data.get("topo_line_points")!.toString())
-    }
+      if (!uploadResponse.ok || !uploadData?.image_id) {
+        return fail(424, withFiles({ form, error: uploadError ?? { message: "Failed to upload sector topo overlay" } }));
+      }
 
-    let sector_topo_line_points: TopoLinePoint[] = [];
-    if (data.get("sector_topo_line_points")?.toString()) {
-      sector_topo_line_points = JSON.parse(data.get("sector_topo_line_points")!.toString());
+      sector_topo_image_overlay_svg_id = uploadData.image_id;
     }
 
     const body = {
-      sector_id: data.get("sector_id")!.toString(),
-      name: data.get("name")!.toString(),
-      grade: data.get("grade") != null ? Number(data.get("grade")) : undefined,
-      pitches: [],
-      description: data.get("description")?.toString(),
-      first_ascent_climber_name: data.get("first_ascent_climber_name")?.toString(),
-      bolter_name: data.get("bolter_name")?.toString(),
+      sector_id: form.data.sector_id,
+      type: form.data.type,
+      name: form.data.name,
+      in_sector_order: form.data.in_sector_order ?? 0,
+      description: form.data.description ?? undefined,
+      height: form.data.height ?? undefined,
+      grade: form.data.grade ?? undefined,
+      gear_count: form.data.gear_count ?? undefined,
+      first_ascent_climber_name: form.data.first_ascent_climber_name ?? undefined,
+      bolter_name: form.data.bolter_name ?? undefined,
+      pitches: (form.data.pitches ?? []).map((pitch) => ({
+        ...pitch,
+        id: pitch.id ?? undefined,
+        gear_count: pitch.gear_count ?? undefined,
+        description: pitch.description ?? undefined,
+        grade: pitch.grade ?? undefined,
+        height: pitch.height ?? undefined
+      })),
       topo_image_id,
       topo_image_overlay_id,
-      sector_topo_image_id: data.get("sector_topo_image_id")?.toString(),
+      sector_topo_image_id: form.data.sector_topo_image_id ?? undefined,
       sector_topo_image_overlay_svg_id,
-      topo_line_points,
-      sector_topo_line_points
+      topo_line_points: form.data.topo_line_points ?? [],
+      sector_topo_line_points: form.data.sector_topo_line_points ?? []
     };
 
-    console.dir(body, { depth: 4 });
+    const { error: updateError, response: updateResponse } = await updateRoute({
+      path: { route_id: params.route_id },
+      body
+    });
 
-    // const { error, response } = await updateRoute({
-    //   path: { route_id: params.route_id },
-    //   body
-    // });
-
-    // if (!response.ok) {
-    //   return fail(422, { error })
-    // }
+    if (!updateResponse.ok) {
+      return fail(422, withFiles({ form, error: updateError }));
+    }
 
     return redirect(303, "/admin/routes");
   }
