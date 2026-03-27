@@ -1,0 +1,636 @@
+# Instincts generated from https://github.com/uzerai/YACTR
+# Generated: 2026-03-27T09:51:49.373Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: YACTR-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat, fix, chore
+
+## Evidence
+
+- 183 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat(pagination): update pagination logic across all listing endpoints, fix(pitches): implement async pitch mapper and correct response field mapping
+
+---
+id: YACTR-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Commit Length
+
+## Action
+
+Write moderate-length commit messages (~84 characters)
+
+## Evidence
+
+- Average commit message length: 84 chars
+- Based on 183 commits
+
+---
+id: YACTR-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Naming Files
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: PascalCase
+
+---
+id: YACTR-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: YACTR-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: YACTR-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: YACTR-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Test Naming
+
+## Action
+
+Name test files using the pattern: *Tests.cs
+
+## Evidence
+
+- File pattern: *Tests.cs
+- Consistent across test files
+
+---
+id: YACTR-workflow-database-migration
+trigger: "when modifying the database schema or adding tables"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Workflow Database Migration
+
+## Action
+
+Follow the database-migration workflow:
+1. Create migration file
+2. Update schema definitions
+3. Generate/update types
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: 
+
+---
+id: YACTR-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~14x per month
+- Files: **/*.test.*, **/api/**
+
+---
+id: YACTR-workflow-add-or-update-api-endpoint
+trigger: "when doing add or update api endpoint"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Workflow Add Or Update Api Endpoint
+
+## Action
+
+Follow the add-or-update-api-endpoint workflow:
+1. Create or update endpoint handler file in src/YACTR.Api/Endpoints/{Entity}/
+2. Update or create data mapper in src/YACTR.Api/Endpoints/{Entity}/{Entity}DataMapper.cs
+3. Update or create request/response DTOs in src/YACTR.Api/Endpoints/{Entity}/
+4. Update or create endpoint group in src/YACTR.Api/Endpoints/{Entity}/{Entity}EndpointGroup.cs
+5. Update or create integration tests in tests/YACTR.Api.Tests/EndpointTests/{Entity}EntityEndpointsIntegrationTests.cs
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: src/YACTR.Api/Endpoints/*/*.cs, src/YACTR.Api/Endpoints/*/*DataMapper.cs, src/YACTR.Api/Endpoints/*/*EndpointGroup.cs
+
+---
+id: YACTR-workflow-database-schema-change-with-migration
+trigger: "when doing database schema change with migration"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Workflow Database Schema Change With Migration
+
+## Action
+
+Follow the database-schema-change-with-migration workflow:
+1. Update or create model/entity in src/YACTR.Domain/Model/**.cs
+2. Generate and add migration in src/YACTR.Infrastructure/Database/Migrations/*.cs
+3. Update table configuration in src/YACTR.Infrastructure/Database/Table/**.cs
+4. Update repository or query extensions in src/YACTR.Infrastructure/Database/Repository/**.cs or QueryExtensions/**.cs
+5. Update DatabaseContextModelSnapshot.cs
+6. Update or create integration tests if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/YACTR.Domain/Model/**/*.cs, src/YACTR.Infrastructure/Database/Migrations/*.cs, src/YACTR.Infrastructure/Database/Table/*.cs
+
+---
+id: YACTR-workflow-api-dto-contract-refactor
+trigger: "when doing api dto contract refactor"
+confidence: 0.55
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Workflow Api Dto Contract Refactor
+
+## Action
+
+Follow the api-dto-contract-refactor workflow:
+1. Update endpoint request/response DTOs in src/YACTR.Api/Endpoints/**
+2. Update data mappers to map between domain and API models
+3. Update tests to check for domain model usage in DTOs (e.g., NoDomainDTOsTest)
+4. Update integration tests to use new DTOs
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~1x per month
+- Files: src/YACTR.Api/Endpoints/**/*.cs, tests/YACTR.Api.Tests/NoDomainDTOsTest.cs, tests/YACTR.Api.Tests/EndpointTests/*EntityEndpointsIntegrationTests.cs
+
+---
+id: YACTR-workflow-feature-development-implementation-tests
+trigger: "when doing feature development implementation tests"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Workflow Feature Development Implementation Tests
+
+## Action
+
+Follow the feature-development-implementation-tests workflow:
+1. Implement or update feature in src/YACTR.Api/Endpoints/** or src/YACTR.Domain/Model/**
+2. Update or add data mappers if necessary
+3. Update or add integration/unit tests in tests/YACTR.Api.Tests/ or tests/YACTR.Domain.Tests/
+4. Update or add documentation if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: src/YACTR.Api/Endpoints/**/*.cs, src/YACTR.Domain/Model/**/*.cs, tests/YACTR.Api.Tests/**/*.cs
+
+---
+id: YACTR-workflow-pagination-standardization
+trigger: "when doing pagination standardization"
+confidence: 0.55
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/uzerai/YACTR
+---
+
+# YACTR Workflow Pagination Standardization
+
+## Action
+
+Follow the pagination-standardization workflow:
+1. Update listing endpoint handlers in src/YACTR.Api/Endpoints/*/GetAll*.cs
+2. Update or create pagination utility classes in src/YACTR.Api/Pagination/
+3. Update repository methods to return IQueryable or support pagination in src/YACTR.Infrastructure/Database/Repository/**.cs
+4. Update or add integration tests for endpoints in tests/YACTR.Api.Tests/EndpointTests/*EntityEndpointsIntegrationTests.cs
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~1x per month
+- Files: src/YACTR.Api/Endpoints/*/GetAll*.cs, src/YACTR.Api/Pagination/*.cs, src/YACTR.Infrastructure/Database/Repository/**/*.cs
+
+---
+id: yactr-instinct-file-naming-pascalcase
+trigger: "When creating or renaming a file in the codebase"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct File Naming Pascalcase
+
+## Action
+
+Use PascalCase for file names
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.files
+- All files in src and tests use PascalCase
+
+---
+id: yactr-instinct-function-naming-camelcase
+trigger: "When defining a function or method"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Function Naming Camelcase
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.functions
+
+---
+id: yactr-instinct-class-naming-pascalcase
+trigger: "When defining a class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Class Naming Pascalcase
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.classes
+
+---
+id: yactr-instinct-constant-naming-screaming-snake-case
+trigger: "When defining a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Constant Naming Screaming Snake Case
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.constants
+
+---
+id: yactr-instinct-imports-relative
+trigger: "When importing modules in C# files"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Imports Relative
+
+## Action
+
+Use relative imports
+
+## Evidence
+
+- Pattern in codeStyle.importStyle
+
+---
+id: yactr-instinct-exports-named
+trigger: "When exporting modules or classes"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Exports Named
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in codeStyle.exportStyle
+
+---
+id: yactr-instinct-test-file-pattern
+trigger: "When creating a test file"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Test File Pattern
+
+## Action
+
+Name the file with the pattern *Tests.cs
+
+## Evidence
+
+- Pattern in testing.filePattern
+- Files like tests/YACTR.Api.Tests/EndpointTests/*EntityEndpointsIntegrationTests.cs
+
+---
+id: yactr-instinct-test-types-unit
+trigger: "When writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Test Types Unit
+
+## Action
+
+Write unit tests as the primary test type
+
+## Evidence
+
+- Pattern in testing.testTypes
+- Presence of tests/YACTR.Domain.Tests/
+
+---
+id: yactr-instinct-test-coverage-config
+trigger: "When configuring tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Test Coverage Config
+
+## Action
+
+Ensure test coverage is configured
+
+## Evidence
+
+- Pattern in testing.coverageConfig
+
+---
+id: yactr-instinct-commit-conventional-format
+trigger: "When making a git commit"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Commit Conventional Format
+
+## Action
+
+Use Conventional Commits format with prefixes: feat, fix, chore
+
+## Evidence
+
+- Pattern in commits.type and commits.prefixes
+- Examples: feat(pagination): ..., fix(api-dtos): ...
+
+---
+id: yactr-instinct-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Commit Length
+
+## Action
+
+Keep the commit message around 80-90 characters
+
+## Evidence
+
+- Pattern in commits.averageLength
+
+---
+id: yactr-instinct-add-or-update-api-endpoint
+trigger: "When someone wants to add a new API endpoint or modify an existing one"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Add Or Update Api Endpoint
+
+## Action
+
+Follow the workflow: update/create endpoint handler, data mapper, DTOs, endpoint group, and integration tests in the specified locations
+
+## Evidence
+
+- Workflow: add-or-update-api-endpoint
+- Pattern in files: src/YACTR.Api/Endpoints/*/*.cs, tests/YACTR.Api.Tests/EndpointTests/*EntityEndpointsIntegrationTests.cs
+
+---
+id: yactr-instinct-database-schema-change-with-migration
+trigger: "When someone wants to add, remove, or alter a database table or column"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Database Schema Change With Migration
+
+## Action
+
+Update/create model, generate migration, update table config, repository, snapshot, and tests as per workflow
+
+## Evidence
+
+- Workflow: database-schema-change-with-migration
+- Pattern in files: src/YACTR.Domain/Model/**/*.cs, src/YACTR.Infrastructure/Database/Migrations/*.cs
+
+---
+id: yactr-instinct-api-dto-contract-refactor
+trigger: "When someone wants to enforce or improve separation between API DTOs and domain models"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Api Dto Contract Refactor
+
+## Action
+
+Update DTOs, data mappers, and tests to ensure no domain model usage in API contracts
+
+## Evidence
+
+- Workflow: api-dto-contract-refactor
+- Pattern in files: src/YACTR.Api/Endpoints/**/*.cs, tests/YACTR.Api.Tests/NoDomainDTOsTest.cs
+
+---
+id: yactr-instinct-feature-development-implementation-tests
+trigger: "When someone wants to add a new feature or fix a bug with proper test coverage"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Feature Development Implementation Tests
+
+## Action
+
+Implement/update feature, update/add data mappers, write integration/unit tests, and update documentation if needed
+
+## Evidence
+
+- Workflow: feature-development-implementation-tests
+- Pattern in files: src/YACTR.Api/Endpoints/**/*.cs, tests/YACTR.Api.Tests/**/*.cs
+
+---
+id: yactr-instinct-pagination-standardization
+trigger: "When someone wants to ensure consistent pagination across API endpoints"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: uzerai/YACTR
+---
+
+# Yactr Instinct Pagination Standardization
+
+## Action
+
+Update listing endpoints, pagination utilities, repository methods, and integration tests for pagination consistency
+
+## Evidence
+
+- Workflow: pagination-standardization
+- Pattern in files: src/YACTR.Api/Endpoints/*/GetAll*.cs, src/YACTR.Api/Pagination/*.cs
+
