@@ -21,9 +21,8 @@ public interface IRepository<T>
     /// <summary>
     /// Get all entities of type T.
     /// </summary>
-    /// <param name="ct">Cancellation token</param>
     /// <returns>A collection of all entities.</returns>
-    Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default);
+    IQueryable<T> All();
 
     /// <summary>
     /// Create a new entity in the database.

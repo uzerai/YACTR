@@ -1,4 +1,5 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Database.Repository.Interface;
 
@@ -17,7 +18,7 @@ public class GetAllPitches : Endpoint<EmptyRequest, List<PitchResponse>, PitchDa
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var pitches = await PitchRepository.GetAllAsync(ct);
+        var pitches = await PitchRepository.All().ToListAsync(ct);
         await Send.OkAsync([.. await Task.WhenAll(pitches.Select(async e => await Map.FromEntityAsync(e, ct)))], cancellation: ct);
     }
 }

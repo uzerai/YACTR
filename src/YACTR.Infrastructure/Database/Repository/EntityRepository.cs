@@ -23,9 +23,9 @@ public class EntityRepository<T> : BaseRepository<T>, IEntityRepository<T> where
 
     public override async Task<T> CreateAsync(T entity, CancellationToken ct = default)
     {
-        await _context.Set<T>()
+        await context.Set<T>()
             .AddAsync(entity, ct);
-        await _context.SaveChangesAsync(ct);
+        await context.SaveChangesAsync(ct);
 
         return entity;
     }
@@ -40,28 +40,26 @@ public class EntityRepository<T> : BaseRepository<T>, IEntityRepository<T> where
         }
 
         entityToDelete.DeletedAt = _clock.GetCurrentInstant();
-        await _context.SaveChangesAsync(ct);
+        await context.SaveChangesAsync(ct);
 
         return true;
     }
 
-    public override async Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default)
+    public override IQueryable<T> All()
     {
-        return await _context.Set<T>()
-            .ToListAsync(ct);
+        return context.Set<T>()
+            .AsNoTracking();
     }
 
-    public virtual async Task<IEnumerable<T>> GetAllAvailableAsync(CancellationToken ct = default)
+    public virtual IQueryable<T> AllAvailable()
     {
-        return await _context.Set<T>()
-            .AsNoTracking()
-            .WhereAvailable()
-            .ToListAsync(ct);
+        return context.Set<T>()
+            .WhereAvailable();
     }
 
     public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
-        return await _context.Set<T>()
+        return await context.Set<T>()
             .AsNoTracking()
             .WhereAvailable()
             .FirstOrDefaultAsync(x => x.Id == id, ct);
@@ -69,7 +67,7 @@ public class EntityRepository<T> : BaseRepository<T>, IEntityRepository<T> where
 
     public virtual async Task<T?> GetByIdTrackingAsync(Guid id, CancellationToken ct = default)
     {
-        return await _context.Set<T>()
+        return await context.Set<T>()
             .AsTracking()
             .FirstOrDefaultAsync(x => x.Id == id, ct);
     }

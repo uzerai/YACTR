@@ -27,6 +27,9 @@ public class AreaDataMapper : Mapper<AreaRequestData, AreaResponse, Area>
 
     public override AreaResponse FromEntity(Area e) => new(e.Id, e.Name, e.Description, e.Location, e.Boundary, e.CreatedAt, e.UpdatedAt);
 
+    public override Task<AreaResponse> FromEntityAsync(Area e, CancellationToken ct = default)
+        => Task.FromResult(FromEntity(e));
+
     public override Area UpdateEntity(AreaRequestData r, Area e)
     {
         e.Name = r.Name;
