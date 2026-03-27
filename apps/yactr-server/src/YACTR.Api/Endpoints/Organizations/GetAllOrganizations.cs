@@ -1,11 +1,14 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
+using YACTR.Api.Pagination;
 using YACTR.Domain.Model.Organizations;
 using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Organizations;
 
-public class GetAllOrganizations(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<EmptyRequest, List<OrganizationResponse>>
+public class GetAllOrganizationsRequest : PaginationRequest {}
+
+public class GetAllOrganizations(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>
 {
     public override void Configure()
     {
@@ -13,9 +16,13 @@ public class GetAllOrganizations(IEntityRepository<Organization> organizationRep
         Group<OrganizationsEndpointGroup>();
     }
 
-    public override async Task HandleAsync(EmptyRequest request, CancellationToken ct)
+    public override async Task HandleAsync(GetAllOrganizationsRequest request, CancellationToken ct)
     {
-        var organizations = await organizationRepository.All().ToListAsync(ct);
-        await Send.OkAsync(organizations.Select(e => new OrganizationResponse(e.Id, e.Name)).ToList(), ct);
+        var organizations = organizationRepository.All()
+            .AsNoTracking()
+            .OrderBy(e => e.Id)
+            .ToPaginatedResponse(e => new OrganizationResponse(e.Id, e.Name), request);
+
+        await Send.OkAsync(organizations, ct);
     }
 }

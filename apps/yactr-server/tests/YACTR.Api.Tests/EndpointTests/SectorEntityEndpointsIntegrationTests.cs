@@ -3,6 +3,7 @@ using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Api.Endpoints.Sectors;
+using YACTR.Api.Pagination;
 
 namespace YACTR.Api.Tests.EndpointTests;
 
@@ -15,11 +16,100 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
         using var client = fixture.CreateAuthenticatedClient();
 
         // Act
-        var (response, result) = await client.GETAsync<GetAllSectors, EmptyRequest, List<SectorResponse>>(new());
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task GetAll_WithPagination_ReturnsRequestedPageAndTotalCount()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new()
+        {
+            Page = 1,
+            PageSize = 1
+        });
+        baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
+        baselineResult.ShouldNotBeNull();
+
+        for (var i = 0; i < 3; i++)
+        {
+            await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        }
+
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new()
+        {
+            Page = 2,
+            PageSize = 2
+        });
+
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.TotalCount.ShouldBe(baselineResult.TotalCount + 3);
+        var expectedPageCount = Math.Clamp(result.TotalCount - 2, 0, 2);
+        result.Items.Count.ShouldBe(expectedPageCount);
+    }
+
+    [Fact]
+    public async Task GetAll_WithPageSizeBelowMinimum_ClampsToMinimum()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new()
+        {
+            Page = 1,
+            PageSize = 1
+        });
+        baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
+        baselineResult.ShouldNotBeNull();
+
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new()
+        {
+            Page = 1,
+            PageSize = 0
+        });
+
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.TotalCount.ShouldBe(baselineResult.TotalCount);
+        result.Items.Count.ShouldBe(1);
+        result.Items.Single().Id.ShouldBe(baselineResult.Items.Single().Id);
+    }
+
+    [Fact]
+    public async Task GetAll_WithDifferentPages_ReturnsDifferentItems()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        for (var i = 0; i < 2; i++)
+        {
+            await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        }
+
+        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new()
+        {
+            Page = 1,
+            PageSize = 1
+        });
+
+        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new()
+        {
+            Page = 2,
+            PageSize = 1
+        });
+
+        pageOneResponse.IsSuccessStatusCode.ShouldBeTrue();
+        pageTwoResponse.IsSuccessStatusCode.ShouldBeTrue();
+        pageOneResult.ShouldNotBeNull();
+        pageTwoResult.ShouldNotBeNull();
+        pageOneResult.TotalCount.ShouldBe(pageTwoResult.TotalCount);
+        pageOneResult.Items.Count.ShouldBe(1);
+        pageTwoResult.Items.Count.ShouldBe(1);
+        pageOneResult.Items.Single().Id.ShouldNotBe(pageTwoResult.Items.Single().Id);
     }
 
     [Fact]
