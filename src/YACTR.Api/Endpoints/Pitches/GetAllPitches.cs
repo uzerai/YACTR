@@ -1,11 +1,14 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
+using YACTR.Api.Pagination;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Pitches;
 
-public class GetAllPitches : Endpoint<EmptyRequest, List<PitchResponse>, PitchDataMapper>
+public class GetAllPitchesRequest : PaginationRequest {}
+
+public class GetAllPitches : Endpoint<GetAllPitchesRequest, PaginatedResponse<PitchResponse>, PitchDataMapper>
 {
     public required IEntityRepository<Pitch> PitchRepository { get; init; }
 
@@ -16,9 +19,13 @@ public class GetAllPitches : Endpoint<EmptyRequest, List<PitchResponse>, PitchDa
         Group<PitchesEndpointGroup>();
     }
 
-    public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
+    public override async Task HandleAsync(GetAllPitchesRequest req, CancellationToken ct)
     {
-        var pitches = await PitchRepository.All().ToListAsync(ct);
-        await Send.OkAsync([.. await Task.WhenAll(pitches.Select(async e => await Map.FromEntityAsync(e, ct)))], cancellation: ct);
+        var pitches = await PitchRepository.All()
+            .AsNoTracking()
+            .OrderBy(e => e.Id)
+            .ToPaginatedResponseAsync(Map.FromEntityAsync, req, ct);
+
+        await Send.OkAsync(pitches, cancellation: ct);
     }
 }

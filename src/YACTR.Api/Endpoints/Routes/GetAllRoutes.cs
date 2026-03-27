@@ -1,11 +1,14 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
+using YACTR.Api.Pagination;
 using YACTR.Infrastructure.Database.Repository.Interface;
 using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Routes;
 
-public class GetAllRoutes : Endpoint<EmptyRequest, IEnumerable<RouteResponse>, RouteDataMapper>
+public class GetAllRoutesRequest : PaginationRequest {}
+
+public class GetAllRoutes : Endpoint<GetAllRoutesRequest, PaginatedResponse<RouteResponse>, RouteDataMapper>
 {
     public required IEntityRepository<Route> RouteRepository { get; init; }
 
@@ -16,12 +19,14 @@ public class GetAllRoutes : Endpoint<EmptyRequest, IEnumerable<RouteResponse>, R
         Group<RoutesEndpointGroup>();
     }
 
-    public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
+    public override async Task HandleAsync(GetAllRoutesRequest req, CancellationToken ct)
     {
         var routes = await RouteRepository
             .AllAvailable()
             .AsNoTracking()
-            .ToListAsync(ct);
-        await Send.OkAsync(await Task.WhenAll(routes.Select(async e => await Map.FromEntityAsync(e, ct))), cancellation: ct);
+            .OrderBy(e => e.Id)
+            .ToPaginatedResponseAsync(Map.FromEntityAsync, req, ct);
+
+        await Send.OkAsync(routes, cancellation: ct);
     }
 }

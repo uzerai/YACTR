@@ -3,6 +3,7 @@ using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
 using YACTR.Api.Endpoints.Routes;
+using YACTR.Api.Pagination;
 using YACTR.Domain.Model.Climbing;
 
 namespace YACTR.Api.Tests.EndpointTests;
@@ -16,10 +17,94 @@ public class RouteEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) :
     {
         using var client = fixture.CreateAuthenticatedClient();
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, EmptyRequest, List<Route>>(new());
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new());
 
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task GetAll_WithPagination_ReturnsRequestedPageAndTotalCount()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new()
+        {
+            Page = 1,
+            PageSize = 1
+        });
+        baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
+        baselineResult.ShouldNotBeNull();
+
+        var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+        var createdRouteCount = routes.Count;
+
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new()
+        {
+            Page = 2,
+            PageSize = 2
+        });
+
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.TotalCount.ShouldBe(baselineResult.TotalCount + createdRouteCount);
+        var expectedPageCount = Math.Clamp(result.TotalCount - 2, 0, 2);
+        result.Items.Count.ShouldBe(expectedPageCount);
+    }
+
+    [Fact]
+    public async Task GetAll_WithPageSizeBelowMinimum_ClampsToMinimum()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new()
+        {
+            Page = 1,
+            PageSize = 1
+        });
+        baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
+        baselineResult.ShouldNotBeNull();
+
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new()
+        {
+            Page = 1,
+            PageSize = 0
+        });
+
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.TotalCount.ShouldBe(baselineResult.TotalCount);
+        result.Items.Count.ShouldBe(1);
+        result.Items.Single().Id.ShouldBe(baselineResult.Items.Single().Id);
+    }
+
+    [Fact]
+    public async Task GetAll_WithDifferentPages_ReturnsDifferentItems()
+    {
+        using var client = fixture.CreateAuthenticatedClient();
+        await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
+
+        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new()
+        {
+            Page = 1,
+            PageSize = 1
+        });
+
+        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new()
+        {
+            Page = 2,
+            PageSize = 1
+        });
+
+        pageOneResponse.IsSuccessStatusCode.ShouldBeTrue();
+        pageTwoResponse.IsSuccessStatusCode.ShouldBeTrue();
+        pageOneResult.ShouldNotBeNull();
+        pageTwoResult.ShouldNotBeNull();
+        pageOneResult.TotalCount.ShouldBe(pageTwoResult.TotalCount);
+        pageOneResult.Items.Count.ShouldBe(1);
+        pageTwoResult.Items.Count.ShouldBe(1);
+        pageOneResult.Items.Single().Id.ShouldNotBe(pageTwoResult.Items.Single().Id);
     }
 
     [Fact]
