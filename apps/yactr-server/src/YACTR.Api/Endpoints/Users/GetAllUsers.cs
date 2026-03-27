@@ -1,4 +1,5 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Infrastructure.Authorization.Permissions;
 using YACTR.Infrastructure.Database.Repository.Interface;
@@ -17,7 +18,7 @@ public class GetAllUsers(IEntityRepository<User> userRepository) : Authenticated
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var allUsers = await userRepository.GetAllAsync(ct);
+        var allUsers = await userRepository.All().ToListAsync(ct);
 
         await Send.OkAsync(allUsers.Select(e => new UserResponse(e.Id, e.Username)), ct);
     }

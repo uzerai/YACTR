@@ -1,4 +1,5 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using YACTR.Infrastructure.Database.Repository.Interface;
 using Route = YACTR.Domain.Model.Climbing.Route;
 
@@ -17,7 +18,10 @@ public class GetAllRoutes : Endpoint<EmptyRequest, IEnumerable<RouteResponse>, R
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var routes = await RouteRepository.GetAllAvailableAsync(ct);
+        var routes = await RouteRepository
+            .AllAvailable()
+            .AsNoTracking()
+            .ToListAsync(ct);
         await Send.OkAsync(await Task.WhenAll(routes.Select(async e => await Map.FromEntityAsync(e, ct))), cancellation: ct);
     }
 }

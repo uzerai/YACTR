@@ -1,4 +1,5 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using YACTR.Domain.Model.Organizations;
 using YACTR.Infrastructure.Database.Repository.Interface;
 
@@ -14,7 +15,7 @@ public class GetAllOrganizations(IEntityRepository<Organization> organizationRep
 
     public override async Task HandleAsync(EmptyRequest request, CancellationToken ct)
     {
-        var organizations = await organizationRepository.GetAllAsync(ct);
+        var organizations = await organizationRepository.All().ToListAsync(ct);
         await Send.OkAsync(organizations.Select(e => new OrganizationResponse(e.Id, e.Name)).ToList(), ct);
     }
 }

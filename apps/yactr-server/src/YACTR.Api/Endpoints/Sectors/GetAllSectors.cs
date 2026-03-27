@@ -1,4 +1,5 @@
 using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Database.Repository.Interface;
 
@@ -17,7 +18,9 @@ public class GetAllSectors : Endpoint<EmptyRequest, List<SectorResponse>, Sector
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
     {
-        var sectors = await SectorRepository.GetAllAvailableAsync(ct);
+        var sectors = await SectorRepository.AllAvailable()
+            .AsNoTracking()
+            .ToListAsync(ct);
         var response = sectors.Select(async (e) => await Map.FromEntityAsync(e, ct));
 
         await Task.WhenAll(response);

@@ -25,7 +25,6 @@ public interface IEntityRepository<T> : IRepository<T> where T : BaseEntity
     /// <summary>
     /// Get all available (where deleted at is null) entities.
     /// </summary>
-    /// <param name="ct">Cancellation token</param>
     /// <returns>A collection of all available entities.</returns>
-    Task<IEnumerable<T>> GetAllAvailableAsync(CancellationToken ct = default);
+    IQueryable<T> AllAvailable();
 }

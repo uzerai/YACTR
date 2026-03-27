@@ -75,7 +75,7 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
 
         // Act
         var getRequest = new GetSectorByIdRequest(invalidId);
-        var (response, _) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, Sector>(getRequest);
+        var (response, _) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, SectorResponse>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
