@@ -35,6 +35,8 @@ public static class RepositoryServicesConfigurationExtensions
         // Ascent repository - using IRepository since Ascent doesn't inherit from BaseEntity
         services.AddTransient<IRepository<Ascent>, BaseRepository<Ascent>>();
 
+        services.AddTransient<IRepository<CountryData>, BaseRepository<CountryData>>();
+
         return services;
     }
 }

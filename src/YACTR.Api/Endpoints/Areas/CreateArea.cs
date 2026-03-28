@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using YACTR.Domain.Model;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Authorization.Permissions;
@@ -8,6 +10,7 @@ namespace YACTR.Api.Endpoints.Areas;
 public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, AreaDataMapper>
 {
     public required IEntityRepository<Area> AreaRepository { get; init; }
+    public required IRepository<CountryData> CountryDataRepository { get; init; }
 
     public override void Configure()
     {
@@ -18,7 +21,21 @@ public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, A
 
     public override async Task HandleAsync(AreaRequestData req, CancellationToken ct)
     {
-        var createdArea = await AreaRepository.CreateAsync(Map.ToEntity(req), ct);
+        var possibleCountry = await CountryDataRepository.BuildReadonlyQuery()
+            .FirstOrDefaultAsync(e => e.Geometry.Contains(req.Location), ct);
+
+        if (possibleCountry == null)
+        {
+            await Send.NotFoundAsync(ct);
+            return;
+        }
+
+        var newEntity = Map.ToEntity(req);
+        
+        newEntity.CountryId = possibleCountry.Id;
+        newEntity.Country = possibleCountry;
+
+        var createdArea = await AreaRepository.CreateAsync(newEntity, ct);
 
         await Send.CreatedAtAsync<GetAreaById>(createdArea.Id, Map.FromEntity(createdArea), cancellation: ct);
     }

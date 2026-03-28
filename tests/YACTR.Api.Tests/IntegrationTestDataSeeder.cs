@@ -43,12 +43,28 @@ public class IntegrationTestDataSeeder(
     {
         User user = await SeedUserAsync();
 
+        CountryData country = new()
+        {
+            CountryName = "Test Country",
+            AdminName = "Test Admin",
+            Code = "TEST",
+            Continent = "Test Continent",
+            Region = "Test Region",
+            Subregion = "Test Subregion",
+            WorldBlock = "Test WorldBlock",
+            Geometry = testDataFactory.NewMultiPolygon()
+        };
+
+        await context.AddAsync(country);
+
         Area area = new()
         {
             Name = "Test Area",
             Description = "Test area description",
             Location = testDataFactory.NewPoint(),
-            Boundary = testDataFactory.NewMultiPolygon()
+            Boundary = testDataFactory.NewMultiPolygon(),
+            CountryId = country.Id,
+            Country = country
         };
 
         await context.AddAsync(area);

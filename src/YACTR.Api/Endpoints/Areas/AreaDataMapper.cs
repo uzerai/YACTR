@@ -23,6 +23,8 @@ public class AreaDataMapper : Mapper<AreaRequestData, AreaResponse, Area>
         Description = r.Description,
         Location = r.Location,
         Boundary = r.Boundary,
+        CountryId = 0,
+        Country = null!,
     };
 
     public override AreaResponse FromEntity(Area e) => new(e.Id, e.Name, e.Description, e.Location, e.Boundary, e.CreatedAt, e.UpdatedAt);

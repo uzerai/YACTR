@@ -19,6 +19,11 @@ public static class AreaConfigurationExtension
             .HasMany(e => e.Sectors)
             .WithOne(e => e.Area);
 
+        modelBuilder.Entity<Area>()
+            .HasOne(e => e.Country)
+            .WithMany()
+            .HasForeignKey(e => e.CountryId);
+
         return modelBuilder;
     }
 }
