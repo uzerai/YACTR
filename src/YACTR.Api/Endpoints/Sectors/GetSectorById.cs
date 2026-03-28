@@ -25,6 +25,7 @@ public class GetSectorById : Endpoint<GetSectorByIdRequest, SectorResponse, Sect
             .BuildReadonlyQuery()
             .WhereAvailable()
             .Where(e => e.Id == req.SectorId)
+            .Include(e => e.Area)
             .Include("SectorImages")
             .FirstOrDefaultAsync(ct);
 

@@ -31,9 +31,8 @@ public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, A
         }
 
         var newEntity = Map.ToEntity(req);
-        
+
         newEntity.CountryId = possibleCountry.Id;
-        newEntity.Country = possibleCountry;
 
         var createdArea = await AreaRepository.CreateAsync(newEntity, ct);
 
