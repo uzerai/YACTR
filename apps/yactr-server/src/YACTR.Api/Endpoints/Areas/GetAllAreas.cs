@@ -52,7 +52,7 @@ public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<AreaRe
     {
         if (req.Name is not null)
         {
-            query = query.Where(e => e.Name.Contains(req.Name));
+            query = query.Where(e => EF.Functions.ILike(e.Name, "%" + req.Name + "%"));
         }
 
         if (req.CreatedBefore is not null)
