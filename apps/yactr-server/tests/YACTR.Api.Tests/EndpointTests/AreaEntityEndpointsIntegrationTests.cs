@@ -149,7 +149,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         );
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -176,7 +176,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
             boundary
         );
 
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
 
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -196,7 +196,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
             boundary
         );
 
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
 
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -216,7 +216,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
             boundary
         );
 
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
 
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -236,7 +236,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
             boundary
         );
 
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
 
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -255,7 +255,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
             boundary
         );
 
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
 
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -274,7 +274,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
             fixture.TestDataFactory.EmptyMultiPolygon()
         );
 
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
 
         response.IsSuccessStatusCode.ShouldBeFalse();
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -304,7 +304,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
         );
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateArea, AreaRequestData, Area>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -319,7 +319,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
 
         // Act
         var getRequest = new GetAreaByIdRequest(area.Id);
-        var (response, result) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, Area>(getRequest);
+        var (response, result) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, AreaResponse>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -339,7 +339,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
 
         // Act
         var getRequest = new GetAreaByIdRequest(invalidId);
-        var (response, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, Area>(getRequest);
+        var (response, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, AreaResponse>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -462,7 +462,7 @@ public class AreaEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : 
 
         // Verify the area is actually deleted
         var getRequest = new GetAreaByIdRequest(area.Id);
-        var (getResponse, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, Area>(getRequest);
+        var (getResponse, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, AreaResponse>(getRequest);
         getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 

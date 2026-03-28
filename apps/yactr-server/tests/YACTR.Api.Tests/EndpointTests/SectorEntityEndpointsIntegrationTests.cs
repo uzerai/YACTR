@@ -131,7 +131,7 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
         );
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, SectorResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, CreatedSectorResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -287,13 +287,14 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
         );
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, SectorResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, CreatedSectorResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
-        result.SectorImages.ShouldNotBeNull();
-        result.SectorImages.Count().ShouldBe(2);
+        result.SectorImageIds.Count().ShouldBe(2);
+        result.SectorImageIds.ShouldContain(image1.Id);
+        result.SectorImageIds.ShouldContain(image2.Id);
         result.PrimarySectorImageId.ShouldBe(image1.Id);
     }
 
@@ -322,11 +323,12 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
         );
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, SectorResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, CreatedSectorResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
+        result.SectorImageIds.Count().ShouldBe(2);
         result.PrimarySectorImageId.ShouldBe(image1.Id); // Should use first image as primary
     }
 
@@ -354,7 +356,7 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
             image1.Id
         );
 
-        var (createResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, SectorResponse>(createRequest);
+        var (createResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, CreatedSectorResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act
@@ -396,7 +398,7 @@ public class SectorEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) 
             image1.Id // Primary image
         );
 
-        var (createResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, SectorResponse>(createRequest);
+        var (createResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, CreatedSectorResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act - update with the same image IDs but flipped order
