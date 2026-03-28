@@ -24,7 +24,7 @@ public class GetAllUsers(IEntityRepository<User> userRepository) : Authenticated
         var allUsers = userRepository.All()
             .AsNoTracking()
             .OrderBy(e => e.Id)
-            .ToPaginatedResponse(e => new UserResponse(e.Id, e.Username), req);
+            .ToPaginatedResponse(e => new UserResponse(e.Id, e.Username, e.CreatedAt), req);
 
         await Send.OkAsync(allUsers, ct);
     }

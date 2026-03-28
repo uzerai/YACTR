@@ -1,7 +1,6 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Database.Repository.Interface;
