@@ -1,18 +1,21 @@
 using FastEndpoints;
+using NodaTime;
 using YACTR.Domain.Model.Authorization.Permissions;
 
 namespace YACTR.Api.Endpoints.Users;
 
 public record CurrentUserResponse(
+    ICollection<Permission> PlatformPermissions,
+    ICollection<Permission> AdminPermissions,
     Guid Id,
     string Username,
-    ICollection<Permission> PlatformPermissions,
-    ICollection<Permission> AdminPermissions
-);
+    Instant CreatedAt
+) : UserResponse(Id, Username, CreatedAt);
 
 public record UserResponse(
     Guid Id,
-    string Username
+    string Username,
+    Instant CreatedAt
 );
 
 public class UsersEndpointGroup : Group

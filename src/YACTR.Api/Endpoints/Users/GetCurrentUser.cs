@@ -25,10 +25,11 @@ public class GetCurrentUser : AuthenticatedEndpoint<EmptyRequest, CurrentUserRes
         }
 
         await Send.OkAsync(new CurrentUserResponse(
+            PlatformPermissions: user.PlatformPermissions,
+            AdminPermissions: user.AdminPermissions,
             Id: CurrentUserId,
             Username: user.Username,
-            PlatformPermissions: user.PlatformPermissions,
-            AdminPermissions: user.AdminPermissions
+            CreatedAt: user.CreatedAt
         ), ct);
     }
 }
