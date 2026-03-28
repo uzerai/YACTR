@@ -15,6 +15,9 @@ coverage-report
 *.user
 *.userosscache
 *.sln.docstates
+*.cursor
+*.claude
+*.codex
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
