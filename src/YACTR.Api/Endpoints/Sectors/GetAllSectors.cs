@@ -1,6 +1,7 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Database.Repository.Interface;
@@ -58,12 +59,12 @@ public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<Se
     {
         if (req.Name is not null)
         {
-            query = query.Where(e => e.Name.Contains(req.Name));
+            query = query.Where(e => EF.Functions.ILike(e.Name, "%" + req.Name + "%"));
         }
 
         if (req.AreaName is not null)
         {
-            query = query.Where(e => e.Area.Name.Contains(req.AreaName));
+            query = query.Where(e => EF.Functions.ILike(e.Area.Name, "%" + req.AreaName + "%"));
         }
 
         if (req.CreatedBefore is not null)

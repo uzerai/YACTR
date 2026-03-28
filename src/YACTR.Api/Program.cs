@@ -204,8 +204,12 @@ app.UseCors("ConfiguredCors");
 
 app.UseAuthentication()
     .UseAuthorization()
-    .UseFastEndpoints(fastEndpointsSettings => {
+    .UseFastEndpoints(fastEndpointsSettings =>
+    {
         fastEndpointsSettings.Endpoints.ShortNames = true;
+        // Apply JsonSerializerOptions.PropertyNamingPolicy (snake_case) to query, form, route, and headers,
+        // not only JSON bodies — so e.g. area_name binds to AreaName.
+        fastEndpointsSettings.Binding.UsePropertyNamingPolicy = true;
     })
     .UseSwaggerGen();
 
