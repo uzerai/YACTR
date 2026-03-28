@@ -15,19 +15,20 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options, IClock c
     // ############################################################
     // ##########  ENTITY SETS   ##################################
     // ############################################################
-    public DbSet<User> Users { get; set; }
-    public DbSet<Organization> Organizations { get; set; }
-    public DbSet<OrganizationUser> OrganizationUsers { get; set; }
-    public DbSet<OrganizationTeam> OrganizationTeams { get; set; }
-    public DbSet<OrganizationTeamUser> OrganizationTeamUsers { get; set; }
-    public DbSet<Area> Areas { get; set; }
-    public DbSet<Sector> Sectors { get; set; }
-    public DbSet<Route> Routes { get; set; }
-    public DbSet<Pitch> Pitches { get; set; }
-    public DbSet<Image> Images { get; set; }
-    public DbSet<Ascent> Ascents { get; set; }
-    public DbSet<RouteRating> RouteRatings { get; set; }
-    public DbSet<RouteLike> RouteLikes { get; set; }
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Organization> Organizations { get; set; } = null!;
+    public DbSet<OrganizationUser> OrganizationUsers { get; set; } = null!;
+    public DbSet<OrganizationTeam> OrganizationTeams { get; set; } = null!;
+    public DbSet<OrganizationTeamUser> OrganizationTeamUsers { get; set; } = null!;
+    public DbSet<Area> Areas { get; set; } = null!;
+    public DbSet<Sector> Sectors { get; set; } = null!;
+    public DbSet<Route> Routes { get; set; } = null!;
+    public DbSet<Pitch> Pitches { get; set; } = null!;
+    public DbSet<Image> Images { get; set; } = null!;
+    public DbSet<Ascent> Ascents { get; set; } = null!;
+    public DbSet<RouteRating> RouteRatings { get; set; } = null!;
+    public DbSet<RouteLike> RouteLikes { get; set; } = null!;
+    public DbSet<CountryData> CountryData { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,13 +38,17 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options, IClock c
         // For inherited abstract models.
         modelBuilder.ConfigureBaseEntityAbstractModel();
 
-        // Regular model configurations.
+        // Non-entity model configurations (usually read-only data)
+        modelBuilder.ConfigureCountryDataModel();
+
+        // Auth / Organization model configurations.
         modelBuilder.ConfigureUserModel();
         modelBuilder.ConfigureOrganizationModel();
         modelBuilder.ConfigureOrganizationUserModel();
         modelBuilder.ConfigureOrganizationTeamModel();
         modelBuilder.ConfigureOrganizationTeamUserModel();
 
+        // Climbing model entities
         modelBuilder.ConfigureAreaModel();
         modelBuilder.ConfigureSectorModel();
         modelBuilder.ConfigureSectorImageModel();
@@ -51,10 +56,9 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options, IClock c
         modelBuilder.ConfigurePitchModel();
         modelBuilder.ConfigureRouteRatingModel();
         modelBuilder.ConfigureRouteLikeModel();
+        modelBuilder.ConfigureAscentModel();
 
         modelBuilder.ConfigureImageModel();
-
-        modelBuilder.ConfigureAscentModel();
     }
 
     /// <summary>
