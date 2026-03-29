@@ -13,7 +13,7 @@ public class GetRouteById([Required] IEntityRepository<Route> routeRepository) :
 {
     public override void Configure()
     {
-        Get("/{RouteId}");
+        Get("/{route_id}");
         Group<RoutesEndpointGroup>();
     }
 

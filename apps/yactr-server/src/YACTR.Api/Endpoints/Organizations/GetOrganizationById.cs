@@ -9,7 +9,7 @@ public class GetOrganizationById(IEntityRepository<Organization> organizationRep
 {
     public override void Configure()
     {
-        Get("/{OrganizationId}");
+        Get("/{organization_id}");
         Group<OrganizationsEndpointGroup>();
     }
 

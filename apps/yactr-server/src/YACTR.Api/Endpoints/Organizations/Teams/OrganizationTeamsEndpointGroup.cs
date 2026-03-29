@@ -12,6 +12,6 @@ public class OrganizationTeamsEndpointGroup : SubGroup<OrganizationsEndpointGrou
 {
     public OrganizationTeamsEndpointGroup()
     {
-        Configure("/{OrganizationId}/teams", ep => { });
+        Configure("/{organization_id}/teams", ep => { });
     }
 }

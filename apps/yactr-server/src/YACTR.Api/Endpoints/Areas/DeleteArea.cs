@@ -14,7 +14,7 @@ public class DeleteArea : AuthenticatedEndpoint<DeleteAreaRequest, EmptyResponse
 
     public override void Configure()
     {
-        Delete("/{AreaId}");
+        Delete("/{area_id}");
         Group<AreasEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.AreasWrite)));
     }

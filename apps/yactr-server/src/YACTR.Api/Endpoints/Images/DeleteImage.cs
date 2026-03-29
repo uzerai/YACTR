@@ -18,7 +18,7 @@ public class DeleteImage : AuthenticatedEndpoint<ImageDeleteRequest, ImageRespon
 
     public override void Configure()
     {
-        Delete("/{ImageId}");
+        Delete("/{image_id}");
         Group<ImagesEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.ImagesWrite)));
     }

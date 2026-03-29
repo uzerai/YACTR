@@ -14,7 +14,7 @@ public class UpdatePitch : AuthenticatedEndpoint<UpdatePitchRequest, EmptyRespon
 
     public override void Configure()
     {
-        Put("/{PitchId}");
+        Put("/{pitch_id}");
         Group<PitchesEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.PitchesWrite)));
     }

@@ -14,7 +14,7 @@ public class GetSectorById : Endpoint<GetSectorByIdRequest, SectorResponse, Sect
 
     public override void Configure()
     {
-        Get("/{SectorId}");
+        Get("/{sector_id}");
         Group<SectorsEndpointGroup>();
         AllowAnonymous();
     }

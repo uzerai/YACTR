@@ -12,7 +12,7 @@ public class GetPitchById : Endpoint<GetPitchByIdRequest, PitchResponse, PitchDa
 
     public override void Configure()
     {
-        Get("/{PitchId}");
+        Get("/{pitch_id}");
         Group<PitchesEndpointGroup>();
     }
 

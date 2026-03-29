@@ -13,7 +13,7 @@ public class GetAscentById : Endpoint<GetAscentByIdRequest, AscentResponse>
 
     public override void Configure()
     {
-        Get("/{AscentId}");
+        Get("/{ascent_id}");
         Group<AscentsEndpointGroup>();
     }
 

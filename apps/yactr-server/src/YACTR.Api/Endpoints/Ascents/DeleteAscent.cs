@@ -14,7 +14,7 @@ public class DeleteAscent : AuthenticatedEndpoint<DeleteAscentRequest, AscentRes
 
     public override void Configure()
     {
-        Delete("/{AscentId}");
+        Delete("/{ascent_id}");
         Group<AscentsEndpointGroup>();
     }
 

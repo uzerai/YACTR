@@ -29,7 +29,7 @@ public class UpdateArea : AuthenticatedEndpoint<UpdateAreaRequest, EmptyResponse
 
     public override void Configure()
     {
-        Put("/{AreaId}");
+        Put("/{area_id}");
         Group<AreasEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.AreasWrite)));
     }

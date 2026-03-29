@@ -12,7 +12,7 @@ public class GetAreaById : Endpoint<GetAreaByIdRequest, AreaResponse, AreaDataMa
 
     public override void Configure()
     {
-        Get("/{AreaId}");
+        Get("/{area_id}");
         Group<AreasEndpointGroup>();
     }
 

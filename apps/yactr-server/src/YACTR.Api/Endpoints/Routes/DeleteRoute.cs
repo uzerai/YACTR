@@ -14,7 +14,7 @@ public class DeleteRoute : AuthenticatedEndpoint<DeleteRouteRequest, EmptyRespon
 
     public override void Configure()
     {
-        Delete("/{RouteId}");
+        Delete("/{route_id}");
         Group<RoutesEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.RoutesWrite)));
     }

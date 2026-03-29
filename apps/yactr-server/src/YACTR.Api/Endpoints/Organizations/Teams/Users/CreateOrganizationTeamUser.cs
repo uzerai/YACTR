@@ -18,7 +18,7 @@ public class CreateOrganizationTeamUser(
 {
     public override void Configure()
     {
-        Post("/{TeamId}/users");
+        Post("/{team_id}/users");
         Group<OrganizationTeamsEndpointGroup>();
         Options(b => b.WithMetadata(new OrganizationPermissionRequiredAttribute(Permission.TeamsWrite)));
     }
