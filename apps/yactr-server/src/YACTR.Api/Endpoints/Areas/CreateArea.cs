@@ -23,18 +23,20 @@ public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, A
     {
         var newEntity = Map.ToEntity(req);
 
-        var possibleCountry = await CountryDataRepository.BuildReadonlyQuery()
-            .FirstOrDefaultAsync(e => e.Geometry.Contains(newEntity.Location), ct);
+        // Closest country to the area's location.
+        var nearestCountry = await CountryDataRepository.BuildReadonlyQuery()
+            .Where(e => e.Geometry.IsWithinDistance(newEntity.Location, 10000))
+            .OrderBy(e => e.Geometry.Distance(newEntity.Location))
+            .FirstOrDefaultAsync(ct);
 
-        if (possibleCountry == null)
+        if (nearestCountry == null)
         {
-            // The area isn't in a country; so we don't create it.
-            // Stops allowing accidental locations in the middle of the ocean and such.
+            // The area is > 10km from any country, so we don't create it.
             await Send.NotFoundAsync(ct);
             return;
         }
 
-        newEntity.CountryId = possibleCountry.Id;
+        newEntity.CountryId = nearestCountry.Id;
 
         var createdArea = await AreaRepository.CreateAsync(newEntity, ct);
 
