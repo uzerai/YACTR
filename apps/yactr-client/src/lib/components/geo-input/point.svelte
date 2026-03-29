@@ -9,6 +9,7 @@
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 	import { m } from '$lib/paraglide/messages.js';
 	import type { View as OLView } from 'ol';
+	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '.';
 
 	let {
 		location = $bindable(),
@@ -24,14 +25,14 @@
 
 	$effect(() => {
 		if (mapCenter) {
-			view?.setCenter(mapCenter);
+			view?.setCenter(fromSRID4326ToEPSG3857(mapCenter));
 		}
 	});
 
 	untrack(() => {
 		if (location && location.coordinates) {
 			vectorSource.addFeature(new Feature({
-				geometry: new Point(location.coordinates)
+				geometry: new Point(fromSRID4326ToEPSG3857(location.coordinates))
 			}));
 		}
 	});
@@ -42,10 +43,7 @@
 		if (feature.getGeometry() !== undefined) {
 			location = {
 				type: "Point",
-				coordinates: [
-					...(feature.getGeometry()!.getCoordinates() as [number, number]),
-					0
-				]
+				coordinates: [...fromEPSG3857ToSRID4326(feature.getGeometry()!.getCoordinates()), 0] as [number, number, number]
 			};
 		}
 	};
@@ -60,7 +58,6 @@
 	<div class="absolute top-0 right-0 z-20 m-4 flex">
 		<p class="rounded-lg bg-gray-200/50 dark:bg-gray-700/50 p-2 text-sm">{m.geo_map_point_hint()}</p>
 	</div>
-
 
 	<View bind:view {zoom}>
 		<Map class="h-full w-full">
