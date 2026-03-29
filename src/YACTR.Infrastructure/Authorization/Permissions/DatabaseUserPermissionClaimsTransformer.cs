@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using YACTR.Domain.Model.Authentication;
+using YACTR.Domain.Model.Authorization;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Infrastructure.Database.QueryExtensions;
 using YACTR.Infrastructure.Database.Repository.Interface;
@@ -73,7 +74,7 @@ public sealed class DatabaseUserPermissionClaimsTransformer(
 
             ArgumentNullException.ThrowIfNull(nameIdentifier);
 
-            logger.LogInformation("User {NameIdentifier} token used.", nameIdentifier);
+            logger.LogDebug("User {NameIdentifier} token used.", nameIdentifier);
             if (transformerCache.TryGetValue(TransformerCacheKey(nameIdentifier), out ClaimsPrincipal? cachedPrincipal))
             {
                 if (cachedPrincipal != null)
@@ -121,13 +122,12 @@ public sealed class DatabaseUserPermissionClaimsTransformer(
             {
                 principal.AddIdentity(new ClaimsIdentity(
                 [
-                    new Claim(ClaimTypes.AuthenticationMethod, "PlatformOrganization"),
                     new Claim(ClaimTypes.NameIdentifier, orgUser.OrganizationId.ToString()),
                     new Claim(ClaimTypes.Role, "User"),
                     .. orgUser.Permissions.Select(
-                        permission => new Claim(PermissionLevel.OrganizationPermission.ToString(), permission.ToString()!)
+                        permission => new Claim(nameof(PermissionLevel.OrganizationPermission), permission.ToString()!)
                     )
-                ], ClaimTypes.AuthenticationMethod, ClaimTypes.NameIdentifier, ClaimTypes.Role));
+                ], nameof(YactrAuthenticationType.Organization), ClaimTypes.NameIdentifier, ClaimTypes.Role));
             }
 
             transformerCache.Set(TransformerCacheKey(nameIdentifier), principal, TimeSpan.FromMinutes(1));
@@ -139,22 +139,19 @@ public sealed class DatabaseUserPermissionClaimsTransformer(
     private ClaimsIdentity CreatePlatformClaimsIdentity(User user)
     {
         logger.LogDebug("Adding platform identity claims for authenticated user: {UserId}", user.Id);
-        ClaimsIdentity results = new([], ClaimTypes.AuthenticationMethod, ClaimTypes.Name, ClaimTypes.Role);
-
-        results.AddClaims([
-              new Claim(ClaimTypes.Name, user.Username),
+        ClaimsIdentity results = new([
+            new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Sid, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.AuthenticationMethod, "Platform"),
             new Claim(ClaimTypes.AuthenticationInstant, user.LastLogin.ToUnixTimeMilliseconds().ToString()),
             new Claim(ClaimTypes.Role, user.AdminPermissions.Count != 0 ? "Admin" : "User"),
             .. user.PlatformPermissions.Select(
-                permission => new Claim(PermissionLevel.PlatformPermission.ToString(), permission.ToString())
+                permission => new Claim(nameof(PermissionLevel.PlatformPermission), permission.ToString())
             ),
             .. user.AdminPermissions.Select(
-                permission => new Claim(PermissionLevel.AdminPermission.ToString(), permission.ToString())
+                permission => new Claim(nameof(PermissionLevel.AdminPermission), permission.ToString())
             )
-        ]);
+        ], nameof(YactrAuthenticationType.Platform), ClaimTypes.Name, ClaimTypes.Role);
 
         return results;
     }

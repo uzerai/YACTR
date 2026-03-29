@@ -12,7 +12,7 @@ public static class PermissionsAuthorizationHandlingConfigurationExtensions
         
         services.AddTransient<IAuthorizationHandler, AdminPermissionsAuthorizationHandler>();
         services.AddTransient<IAuthorizationHandler, PlatformPermissionsAuthorizationHandler>();
-        services.AddTransient<IAuthorizationHandler, OrganizationPermissionsAuthorizationHandler>();
+        // services.AddTransient<IAuthorizationHandler, OrganizationPermissionsAuthorizationHandler>();
 
         return services;
     }
