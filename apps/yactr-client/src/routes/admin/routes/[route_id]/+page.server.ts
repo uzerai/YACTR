@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ params }) => {
     path: { route_id: params.route_id },
   });
 
-  if (!route) return error(404, "Not found");
+  if (!route) throw error(404, { message: "Route not found" });
 
   const { data: sectors, response: sectorsResponse } = await getAllSectors();
   const form = await superValidate({

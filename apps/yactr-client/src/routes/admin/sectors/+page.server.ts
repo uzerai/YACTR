@@ -3,10 +3,14 @@ import type { PageServerLoad } from "./$types";
 import { deleteSector, getAllSectors } from "$lib/api";
 
 export const load: PageServerLoad = async () => {
-  const { data: sectors } = await getAllSectors();
+  const { data } = await getAllSectors();
+
+  if (data === undefined) {
+    return fail(500, "Failed to fetch sectors");
+  }
 
   return {
-    sectors
+    sectors: data.items
   }
 }
 

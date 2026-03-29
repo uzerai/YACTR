@@ -1,15 +1,20 @@
 import { getAllAreas, uploadImage, createSector, type SectorImageRequestData } from "$lib/api";
-import { fail, redirect } from "@sveltejs/kit";
+import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { superValidate, withFiles } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { sectorManagementFormDto } from "$lib/components/forms";
 
 export const load: PageServerLoad = async () => {
-  const { data: areas } = await getAllAreas();
+  const { data  } = await getAllAreas();
+
+  if (data === undefined) {
+    throw error(500, "Failed to fetch areas");
+  }
+
   const form = await superValidate(zod4(sectorManagementFormDto));
 
-  return { areas, form };
+  return { areas: data.items, form };
 }
 
 export const actions = {

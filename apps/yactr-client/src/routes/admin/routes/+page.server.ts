@@ -1,12 +1,16 @@
 import { deleteRoute, getAllRoutes } from "$lib/api";
-import { fail } from "@sveltejs/kit";
+import { error, fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async () => {
-  const { data: routes } = await getAllRoutes();
+  const { data } = await getAllRoutes();
+
+  if (data === undefined) {
+    throw error(500, { message: "Failed to fetch routes" });
+  }
 
   return {
-    routes,
+    routes: data.items
   }
 }
 

@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ params }) => {
   });
 
   if (!response.ok) {
-    return error(404, { message: m.admin_areas_error_not_found() });
+    throw error(404, { message: m.admin_areas_error_not_found() });
   }
 
   const form = await superValidate(area, zod4(zAreaRequestData));

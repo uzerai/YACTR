@@ -7,6 +7,7 @@
 	import { Interaction, Layer, View, Map } from 'svelte-openlayers';
 	import type { LineString as LineStringGeoJSON } from '$lib/api';
 	import type { View as OLView } from 'ol';
+	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
 
 	let {
 		line = $bindable(),
@@ -25,7 +26,7 @@
 
 	$effect(() => {
 		if (mapCenter) {
-			view?.setCenter(mapCenter);
+			view?.setCenter(fromSRID4326ToEPSG3857(mapCenter));
 		}
 	});
 
@@ -33,7 +34,7 @@
 		if (line && line.coordinates) {
 			vectorSource.addFeature(
 				new Feature({
-					geometry: new LineString(line.coordinates)
+					geometry: new LineString(line.coordinates.map(fromSRID4326ToEPSG3857))
 				}));
 		}
 	});
@@ -45,7 +46,8 @@
 			line = {
 				type: "LineString",
 				coordinates: [
-					...feature.getGeometry()!.getCoordinates() as Coordinate[]
+					...feature.getGeometry()!.getCoordinates()
+						.map(fromEPSG3857ToSRID4326)
 				]
 			}
 		}
@@ -56,7 +58,9 @@
 
 		line = {
 				type: "LineString",
-				coordinates: (vectorSource.getFeatures().at(0)?.getGeometry() as LineString)?.getCoordinates() as Coordinate[] ?? []
+				coordinates: (vectorSource.getFeatures()
+					.at(0)?.getGeometry() as LineString)?.getCoordinates()
+					.map(fromEPSG3857ToSRID4326) ?? []
 			}
 	};
 </script>

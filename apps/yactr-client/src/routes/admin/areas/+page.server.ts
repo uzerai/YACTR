@@ -1,12 +1,16 @@
-import { fail } from "@sveltejs/kit";
+import { error, fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { deleteArea, getAllAreas } from "$lib/api";
 
 export const load: PageServerLoad = async () => {
-  const { data: areas } = await getAllAreas();
+  const { data } = await getAllAreas();
+
+  if (data === undefined) {
+    throw error(500, { message: "Failed to fetch areas" });
+  }
 
   return {
-    areas
+    areas: data.items
   }
 }
 

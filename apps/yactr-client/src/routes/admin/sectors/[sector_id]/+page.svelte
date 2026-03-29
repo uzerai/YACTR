@@ -13,7 +13,7 @@
 
 <div class="mx-auto flex max-w-7xl flex-col gap-6 p-4">
 	<div class="flex flex-wrap items-center gap-2">
-		<h1 class="text-4xl">{data.sector.name}</h1>
+		<h1 class="text-4xl">{data?.sector?.name}</h1>
 		<Tooltip.Root>
 			<Tooltip.Trigger class="inline-flex items-center gap-1.5">
 				<Badge variant="secondary">{m.admin_sectors_edit_badge()}</Badge>

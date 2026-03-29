@@ -30,13 +30,16 @@ export const load: PageServerLoad = async ({ params }) => {
 
   const form = await superValidate(sector, zod4(sectorManagementFormDto));
 
+  const { data: areasData } = await getAllAreas();
 
-  const { data: areas } = await getAllAreas();
+  if (areasData === undefined) {
+    throw error(500, { message: "Failed to fetch areas" });
+  }
 
   return {
     form,
     sector,
-    areas
+    areas: areasData.items
   }
 }
 

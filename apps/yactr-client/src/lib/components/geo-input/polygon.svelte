@@ -9,6 +9,7 @@
 	import { untrack } from 'svelte';
 	import type { View as OLView } from 'ol';
 	import { m } from '$lib/paraglide/messages.js';
+	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
 
 	let {
 		boundary = $bindable(),
@@ -27,7 +28,7 @@
 
 	$effect(() => {
 		if (mapCenter) {
-			view?.setCenter(mapCenter);
+			view?.setCenter(fromSRID4326ToEPSG3857(mapCenter));
 		}
 	});
 
@@ -35,7 +36,10 @@
 		if (boundary && boundary.coordinates) {
 			vectorSource.addFeature(
 				new Feature({
-					geometry: new Polygon(boundary.coordinates)
+					geometry: new Polygon(boundary.coordinates
+						.map(ring => ring
+							.map(coordinate => fromSRID4326ToEPSG3857(coordinate))
+						))
 				})
 			)
 		}
@@ -51,6 +55,7 @@
 			boundary = {
 				type: "Polygon",
 				coordinates: feature.getGeometry()!.getCoordinates()
+					.map(coord => coord.map(fromEPSG3857ToSRID4326))
 			}
 		}
 	};
@@ -62,7 +67,8 @@
 
 		boundary = {
       type: "Polygon",
-      coordinates: (singleFeature.getGeometry() as Polygon)!.getCoordinates() as Coordinate[][]
+      coordinates: (singleFeature.getGeometry() as Polygon)!.getCoordinates()
+				.map(coord => coord.map(fromEPSG3857ToSRID4326))
     }
 	};
 </script>

@@ -10,6 +10,7 @@
 	import type { ReactiveCollection } from 'svelte-openlayers/utils';
 	import { m } from '$lib/paraglide/messages.js';
 	import type { View as OLView } from 'ol';
+	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
 
 	let {
 		boundary = $bindable(),
@@ -29,7 +30,7 @@
 
 	$effect(() => {
 		if (mapCenter) {
-			view?.setCenter(mapCenter);
+			view?.setCenter(fromSRID4326ToEPSG3857(mapCenter));
 		}
 	});
 	
@@ -37,7 +38,9 @@
 		if (boundary && boundary.coordinates) {
 			vectorSource.addFeatures(
 				boundary.coordinates.map(polygon => new Feature({
-					geometry: new Polygon(polygon)
+					geometry: new Polygon(polygon
+						.map(ring => ring
+							.map(coordinate => fromSRID4326ToEPSG3857(coordinate))))
 				}))
 			)
 		}
@@ -53,7 +56,7 @@
 				type: "MultiPolygon",
 				coordinates: [
 					...vectorSource.getFeatures().map(feature => (feature.getGeometry() as Polygon).getCoordinates()),
-					feature.getGeometry()!.getCoordinates()
+					feature.getGeometry()!.getCoordinates().map(coordinate => coordinate.map(fromEPSG3857ToSRID4326))
 				]
 			}
 		}
@@ -63,7 +66,10 @@
 		boundary = {
 				type: "MultiPolygon",
 				coordinates: [
-					...vectorSource.getFeatures().map(feature => (feature.getGeometry() as Polygon).getCoordinates())
+					...vectorSource.getFeatures()
+						.map(feature => (feature.getGeometry() as Polygon)
+							.getCoordinates().map(coordinate => coordinate
+								.map(fromEPSG3857ToSRID4326)))
 				]
 			}
 	};

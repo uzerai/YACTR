@@ -6,16 +6,14 @@ import { zod4 } from "sveltekit-superforms/adapters";
 import { routeManagementFormDto } from "$lib/components/forms";
 
 export const load: PageServerLoad = async () => {
-  const { data: sectors, response } = await getAllSectors();
+  const { data, response } = await getAllSectors();
   const form = await superValidate(zod4(routeManagementFormDto));
 
- 
-  if (!response.ok || !sectors) {
+  if (!response.ok || data === undefined) {
     return fail(500, { message: "Failed to fetch sectors", form });
   }
 
-
-  return { sectors, form };
+  return { sectors: data.items, form };
 }
 
 export const actions: Actions = {
