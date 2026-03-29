@@ -16,12 +16,17 @@ public class GetAllAreasRequest : PaginationRequest {
     /// <summary>
     /// Areas created before the given instant.
     /// </summary>
-    public Instant? CreatedBefore { get;init; }
+    public Instant? CreatedBefore { get; init; }
 
     /// <summary>
     /// Areas created after the given instant.
     /// </summary>
-    public Instant? CreatedAfter { get;init; }
+    public Instant? CreatedAfter { get; init; }
+
+    /// <summary>
+    /// Country name to filter by.
+    /// </summary>
+    public string? CountryName { get; init;}
 };
 
 public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<AreaResponse>, AreaDataMapper>
@@ -63,6 +68,11 @@ public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<AreaRe
         if (req.CreatedAfter is not null)
         {
             query = query.Where(e => e.CreatedAt > req.CreatedAfter);
+        }
+
+        if (req.CountryName is not null)
+        {
+            query = query.Where(e => e.Country.CountryName == req.CountryName);
         }
 
         return query;

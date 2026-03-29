@@ -14,7 +14,7 @@ public class DeleteSector : AuthenticatedEndpoint<DeleteSectorRequest, EmptyResp
 
     public override void Configure()
     {
-        Delete("/{SectorId}");
+        Delete("/{sector_id}");
         Group<SectorsEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.SectorsWrite)));
     }

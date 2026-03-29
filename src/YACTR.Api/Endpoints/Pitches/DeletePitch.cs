@@ -14,7 +14,7 @@ public class DeletePitch : AuthenticatedEndpoint<DeletePitchRequest, EmptyRespon
 
     public override void Configure()
     {
-        Delete("/{PitchId}");
+        Delete("/{pitch_id}");
         Group<PitchesEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.PitchesWrite)));
     }

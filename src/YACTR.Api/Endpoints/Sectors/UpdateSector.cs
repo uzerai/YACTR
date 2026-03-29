@@ -23,7 +23,7 @@ public class UpdateSector : AuthenticatedEndpoint<UpdateSectorRequest, EmptyResp
 
     public override void Configure()
     {
-        Put("/{SectorId}");
+        Put("/{sector_id}");
         Group<SectorsEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.SectorsWrite)));
     }

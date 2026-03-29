@@ -18,7 +18,7 @@ public class UpdateAscent : AuthenticatedEndpoint<UpdateAscentRequest, EmptyResp
 
     public override void Configure()
     {
-        Put("/{AscentId}");
+        Put("/{ascent_id}");
         Group<AscentsEndpointGroup>();
     }
 

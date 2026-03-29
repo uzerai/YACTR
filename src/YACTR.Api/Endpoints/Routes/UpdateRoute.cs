@@ -23,7 +23,7 @@ public class UpdateRoute : AuthenticatedEndpoint<UpdateRouteRequest, EmptyRespon
 
     public override void Configure()
     {
-        Put("/{RouteId}");
+        Put("/{route_id}");
         Group<RoutesEndpointGroup>();
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.RoutesWrite)));
     }

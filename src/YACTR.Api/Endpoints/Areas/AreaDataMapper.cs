@@ -17,15 +17,19 @@ public record AreaResponse(
 
 public class AreaDataMapper : Mapper<AreaRequestData, AreaResponse, Area>
 {
-    public override Area ToEntity(AreaRequestData r) => new()
-    {
-        Name = r.Name,
-        Description = r.Description,
-        Location = r.Location,
-        Boundary = r.Boundary,
-        CountryId = 0,
-        Country = null!,
-    };
+    public override Area ToEntity(AreaRequestData r) {
+        var newEntity = new Area()
+        {
+            Name = r.Name,
+            Description = r.Description,
+            Location = r.Location,
+            Boundary = r.Boundary,
+            CountryId = 1,
+            Country = null!,
+        };
+
+        return newEntity;
+    }
 
     public override AreaResponse FromEntity(Area e) => new(e.Id, e.Name, e.Description, e.Location, e.Boundary, e.CreatedAt, e.UpdatedAt);
 

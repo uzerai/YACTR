@@ -21,8 +21,10 @@ public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, A
 
     public override async Task HandleAsync(AreaRequestData req, CancellationToken ct)
     {
+        var newEntity = Map.ToEntity(req);
+
         var possibleCountry = await CountryDataRepository.BuildReadonlyQuery()
-            .FirstOrDefaultAsync(e => e.Geometry.Contains(req.Location), ct);
+            .FirstOrDefaultAsync(e => e.Geometry.Contains(newEntity.Location), ct);
 
         if (possibleCountry == null)
         {
@@ -32,7 +34,6 @@ public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, A
             return;
         }
 
-        var newEntity = Map.ToEntity(req);
         newEntity.CountryId = possibleCountry.Id;
 
         var createdArea = await AreaRepository.CreateAsync(newEntity, ct);
