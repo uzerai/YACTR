@@ -1,18 +1,16 @@
 import { deletePitch, getAllPitches } from "$lib/api";
-import { fail } from "@sveltejs/kit";
+import { error, fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async (event) => {
-  const { session } = await event.parent();
+export const load: PageServerLoad = async () => {
+  const { data } = await getAllPitches();
 
-  const { data: pitches } = await getAllPitches({
-    headers: {
-      Authorization: `Bearer ${session!.access_token}`
-    }
-  });
+  if (data === undefined) {
+    throw error(500, { message: "Failed to fetch pitches" });
+  }
 
   return {
-    pitches
+    pitches: data.items
   }
 }
 

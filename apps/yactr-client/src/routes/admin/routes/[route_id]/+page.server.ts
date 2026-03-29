@@ -24,7 +24,8 @@ export const load: PageServerLoad = async ({ params }) => {
 
   if (!route) throw error(404, { message: "Route not found" });
 
-  const { data: sectors, response: sectorsResponse } = await getAllSectors();
+  const { data: sectorsData, response: sectorsResponse } = await getAllSectors();
+
   const form = await superValidate({
     ...route,
     pitches: (route.pitches ?? []).map((pitch, index) => ({
@@ -38,14 +39,15 @@ export const load: PageServerLoad = async ({ params }) => {
       height: pitch.height ?? undefined
     })),
     topo_line_points: route.topo_line_points ?? [],
-    sector_topo_line_points: route.sector_topo_line_points ?? []
+    sector_topo_line_points: route.sector_topo_line_points ?? [],
+    is_multipitch: (route.pitches?.length ?? 0) > 1
   }, zod4(routeManagementFormDto));
 
-  if (!sectorsResponse.ok || !sectors) {
+  if (!sectorsResponse.ok || !sectorsData) {
     return fail(500, { message: "Failed to fetch sectors", form });
   }
 
-  return { route, sectors, form };
+  return { route, sectors: sectorsData.items, form };
 }
 
 export const actions = {
@@ -107,6 +109,14 @@ export const actions = {
       sector_topo_image_overlay_svg_id = uploadData.image_id;
     }
 
+    if (!form.data.is_multipitch) {
+      if (form.data.pitches?.at(0)) {
+        form.data.pitches = [form.data.pitches.at(0)!];
+      } else {
+        form.data.pitches = [];
+      }
+    }
+
     const body = {
       sector_id: form.data.sector_id,
       type: form.data.type,
@@ -118,7 +128,7 @@ export const actions = {
       gear_count: form.data.gear_count ?? undefined,
       first_ascent_climber_name: form.data.first_ascent_climber_name ?? undefined,
       bolter_name: form.data.bolter_name ?? undefined,
-      pitches: (form.data.pitches ?? []).map((pitch) => ({
+      pitches: form.data.pitches.map((pitch) => ({
         ...pitch,
         id: pitch.id ?? undefined,
         gear_count: pitch.gear_count ?? undefined,

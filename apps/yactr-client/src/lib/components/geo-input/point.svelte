@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { Feature } from 'ol';
+	import { Feature, type View as OLView  } from 'ol';
 	import type { Coordinate } from 'ol/coordinate';
 	import { Point } from 'ol/geom';
 	import type { Point as PointGeoJSON } from '$lib/api';
@@ -8,8 +8,7 @@
 	import { untrack } from 'svelte';
 	import { Map, Layer, View, Interaction } from 'svelte-openlayers';
 	import { m } from '$lib/paraglide/messages.js';
-	import type { View as OLView } from 'ol';
-	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '.';
+	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
 
 	let {
 		location = $bindable(),

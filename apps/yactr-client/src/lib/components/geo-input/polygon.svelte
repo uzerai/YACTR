@@ -5,9 +5,8 @@
 	import type { Polygon as PolygonGeoJson } from '$lib/api';
 	import { Button } from '$lib/components/ui/button';
 	import { Polygon } from 'ol/geom';
-	import { Feature } from 'ol';
+	import { Feature, type View as OLView } from 'ol';
 	import { untrack } from 'svelte';
-	import type { View as OLView } from 'ol';
 	import { m } from '$lib/paraglide/messages.js';
 	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
 

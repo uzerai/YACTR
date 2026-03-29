@@ -2,11 +2,10 @@
 	import VectorSource from 'ol/source/Vector';
 	import type { Coordinate } from 'ol/coordinate';
 	import { LineString } from 'ol/geom';
-	import { Feature } from 'ol';
+	import { Feature, type View as OLView } from 'ol';
 	import { untrack } from 'svelte';
 	import { Interaction, Layer, View, Map } from 'svelte-openlayers';
 	import type { LineString as LineStringGeoJSON } from '$lib/api';
-	import type { View as OLView } from 'ol';
 	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
 
 	let {

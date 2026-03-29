@@ -5,11 +5,10 @@
 	import type { MultiPolygon } from '$lib/api';
 	import { Button } from '$lib/components/ui/button';
 	import { Polygon } from 'ol/geom';
-	import { Feature } from 'ol';
+	import { Feature, type View as OLView } from 'ol';
 	import { untrack } from 'svelte';
 	import type { ReactiveCollection } from 'svelte-openlayers/utils';
 	import { m } from '$lib/paraglide/messages.js';
-	import type { View as OLView } from 'ol';
 	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
 
 	let {
