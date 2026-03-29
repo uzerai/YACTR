@@ -26,12 +26,13 @@ public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, A
 
         if (possibleCountry == null)
         {
+            // The area isn't in a country; so we don't create it.
+            // Stops allowing accidental locations in the middle of the ocean and such.
             await Send.NotFoundAsync(ct);
             return;
         }
 
         var newEntity = Map.ToEntity(req);
-
         newEntity.CountryId = possibleCountry.Id;
 
         var createdArea = await AreaRepository.CreateAsync(newEntity, ct);
