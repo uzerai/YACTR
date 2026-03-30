@@ -69,4 +69,4 @@ db-rollback migration_name:
 [doc('Truncates all tables in the local database, development or test')]
 truncate-local-db environment='development':
     PGPASSWORD=yactr psql -h localhost -U yactr -d {{ if environment == 'development' {"yactr"} else {"yactr_test"} }} \
-    -c "DO \$\$ DECLARE r RECORD; BEGIN SET session_replication_role = replica; FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> 'migrations' AND tablename <> 'users') LOOP EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' CASCADE'; END LOOP; SET session_replication_role = DEFAULT; RAISE NOTICE 'All tables in public schema have been truncated successfully.'; END \$\$"
+    -c "DO \$\$ DECLARE r RECORD; BEGIN SET session_replication_role = replica; FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename <> 'migrations' AND tablename <> 'users' and tablename <> 'country_data') LOOP EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' CASCADE'; END LOOP; SET session_replication_role = DEFAULT; RAISE NOTICE 'All tables in public schema have been truncated successfully.'; END \$\$"

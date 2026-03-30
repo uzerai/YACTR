@@ -12,7 +12,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - Minio__Endpoint=file-bucket:9000
       - Minio__AccessKey=yactr
-      - Minio__SecretKey=yactr
+      - Minio__SecretKey=playground
       - ConnectionStrings__DatabaseContextConnection=Host=database;Database=yactr_dev;Username=yactr;Password=yactr;Port=5432
 
   database:
