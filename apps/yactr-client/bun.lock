@@ -21,7 +21,7 @@
         "@eslint/js": "^10.0.1",
         "@fontsource-variable/inter": "^5.2.8",
         "@hey-api/openapi-ts": "0.94.0",
-        "@hugeicons/core-free-icons": "^4.0.0",
+        "@hugeicons/core-free-icons": "^4.1.0",
         "@hugeicons/svelte": "^1.1.2",
         "@inlang/paraglide-js": "^2.13.2",
         "@internationalized/date": "^3.12.0",
@@ -186,7 +186,7 @@
 
     "@hey-api/types": ["@hey-api/types@0.1.3", "", { "peerDependencies": { "typescript": ">=5.5.3" } }, "sha512-mZaiPOWH761yD4GjDQvtjS2ZYLu5o5pI1TVSvV/u7cmbybv51/FVtinFBeaE1kFQCKZ8OQpn2ezjLBJrKsGATw=="],
 
-    "@hugeicons/core-free-icons": ["@hugeicons/core-free-icons@4.0.0", "", {}, "sha512-bzfbKumv3ke3ajbe2MyXi9i0I/cdsZ6n/mO9EfIPNSL++pHLqs7nSGRIVUtjF4xrrEyVkfhxssv4Jek8DPA6gA=="],
+    "@hugeicons/core-free-icons": ["@hugeicons/core-free-icons@4.1.0", "", {}, "sha512-DtD4f91epCs7xKP4DQ23GV1lOI6QGrJEMV4+csaFO3EYb0Rg3TWx75bKQ6kd009pIWMMr+Qiv6xBQwtXSina+A=="],
 
     "@hugeicons/svelte": ["@hugeicons/svelte@1.1.2", "", { "peerDependencies": { "svelte": "^5.0.0" } }, "sha512-yYmLFE+tq/mJmmjNaGxnaA99+H9yOzZmWJOMxKd9g9EJ8FCTCG8jpTgzVSv5bpuXDjQZFIGJz+Z/syiXhrS0mA=="],
 

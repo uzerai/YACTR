@@ -19,8 +19,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { SuperDebugHelper, useSuperDebugForm } from '$lib/components/forms/util/super-debug-helper';
-	import { Label } from '../ui/label';
-	import { Switch } from '../ui/switch';
+	import { Switch } from '$lib/components/ui/switch';
 
 	let {
 		data,

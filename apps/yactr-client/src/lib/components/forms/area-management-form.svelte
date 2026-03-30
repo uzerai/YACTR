@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { InfoCircleOutline } from 'flowbite-svelte-icons';
 	import { Point as PointInput, MultiPolygon as MultiPolygonInput } from '$lib/components/geo-input';
 	import { z } from 'zod';
 	import { untrack } from 'svelte';
