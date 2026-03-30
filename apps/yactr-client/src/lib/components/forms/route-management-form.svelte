@@ -304,7 +304,7 @@
 		<Tabs.Content value="pitches" class="w-full">
 			<div class="flex flex-col gap-4">
 				<div class="flex">
-					<Button variant="outline" onclick={addPitch}>Add Pitch</Button>
+					<Button variant="outline" onclick={addPitch}>{m.admin_routes_form_pitches_add_pitch()}</Button>
 				</div>
 				{#each $formData.pitches as _, index (index)}
 					<Separator />
@@ -313,7 +313,7 @@
 							<Form.Field {form} name={`pitches[${index}].name`}>
 								<Form.Control>
 									{#snippet children({ props })}
-										<Form.Label>Pitch name</Form.Label>
+										<Form.Label>{m.admin_routes_form_pitches_name()}</Form.Label>
 										<Input {...props} type="text" bind:value={$formData.pitches[index]!.name as string | undefined} required disabled={formDisabled} />
 									{/snippet}
 								</Form.Control>
@@ -323,7 +323,7 @@
 							<Form.Field {form} name={`pitches[${index}].description`}>
 								<Form.Control>
 									{#snippet children({ props })}
-										<Form.Label>Short description</Form.Label>
+										<Form.Label>{m.admin_routes_form_pitches_description()}</Form.Label>
 										<Input {...props} type="text" bind:value={$formData.pitches[index]!.description as string | undefined} required disabled={formDisabled} />
 									{/snippet}
 								</Form.Control>
@@ -335,7 +335,7 @@
 							<Form.Field {form} name={`pitches[${index}].pitch_order`}>
 								<Form.Control>
 									{#snippet children({ props })}
-										<Form.Label>Pitch order</Form.Label>
+										<Form.Label>{m.admin_routes_form_pitches_order()}</Form.Label>
 										<Input {...props} type="number" bind:value={$formData.pitches[index]!.pitch_order as number | undefined} required disabled />
 									{/snippet}
 								</Form.Control>
@@ -361,7 +361,7 @@
 							<Form.Field {form} name={`pitches[${index}].grade`}>
 								<Form.Control>
 									{#snippet children({ props })}
-										<Form.Label>Grade</Form.Label>
+										<Form.Label>{m.admin_routes_form_pitches_grade()}</Form.Label>
 										<Input {...props} type="number" bind:value={$formData.pitches[index]!.grade as number | undefined} required disabled={formDisabled} />
 									{/snippet}
 								</Form.Control>
@@ -371,7 +371,7 @@
 							<Form.Field {form} name={`pitches[${index}].height`}>
 								<Form.Control>
 									{#snippet children({ props })}
-										<Form.Label>Height</Form.Label>
+										<Form.Label>{m.admin_routes_form_pitches_height()}</Form.Label>
 										<Input {...props} type="number" bind:value={$formData.pitches[index]!.height as number | undefined} required disabled={formDisabled} />
 									{/snippet}
 								</Form.Control>
@@ -381,7 +381,7 @@
 							<Form.Field {form} name={`pitches[${index}].gear_count`}>
 								<Form.Control>
 									{#snippet children({ props })}
-										<Form.Label>Gear count</Form.Label>
+										<Form.Label>{m.admin_routes_form_pitches_gear_count()}</Form.Label>
 										<Input {...props} type="number" bind:value={$formData.pitches[index]!.gear_count as number | undefined} required disabled={formDisabled} />
 									{/snippet}
 								</Form.Control>

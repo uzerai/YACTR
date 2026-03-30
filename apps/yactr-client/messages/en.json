@@ -99,6 +99,13 @@
 	"admin_routes_form_label_pitch_grade": "Grade",
 	"admin_routes_form_label_pitch_gear_count": "Gear count",
 	"admin_routes_form_label_pitch_description": "Description",
+	"admin_routes_form_pitches_add_pitch": "Add pitch",
+	"admin_routes_form_pitches_name": "Pitch name",
+	"admin_routes_form_pitches_description": "Short description",
+	"admin_routes_form_pitches_order": "Pitch order",
+	"admin_routes_form_pitches_grade": "Grade",
+	"admin_routes_form_pitches_height": "Height",
+	"admin_routes_form_pitches_gear_count": "Gear count",
 	"admin_routes_form_tab_sector_topo": "Sector topo",
 	"admin_routes_form_tab_route_topo": "Route specific topo",
 	"admin_routes_form_label_sector_topo_image": "Sector image",
@@ -116,5 +123,8 @@
 	"admin_layout_group_climbing": "Climbing",
 	"admin_layout_group_administration": "Administration",
 	"topo_editor_svg_overlay_image_alt": "Route drawing SVG overlay",
-	"topo_editor_svg_overlay_clear_topo": "Clear topo"
+	"topo_editor_svg_overlay_clear_topo": "Clear topo",
+	"sign_in_title": "Permission required",
+	"sign_in_description": "Sign in to your account to continue",
+	"sign_in_button": "Sign in"
 }

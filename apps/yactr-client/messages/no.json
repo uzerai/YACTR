@@ -99,6 +99,13 @@
 	"admin_routes_form_label_pitch_grade": "Grad",
 	"admin_routes_form_label_pitch_gear_count": "Antall sikringer",
 	"admin_routes_form_label_pitch_description": "Beskrivelse",
+	"admin_routes_form_pitches_add_pitch": "Legg til taulengde",
+	"admin_routes_form_pitches_name": "Navn på taulengde",
+	"admin_routes_form_pitches_description": "Kort beskrivelse",
+	"admin_routes_form_pitches_order": "Rekkefølge",
+	"admin_routes_form_pitches_grade": "Grad",
+	"admin_routes_form_pitches_height": "Høyde",
+	"admin_routes_form_pitches_gear_count": "Antall sikringer",
 	"admin_routes_form_tab_sector_topo": "Sektortopo",
 	"admin_routes_form_tab_route_topo": "Rute-spesifikk topo",
 	"admin_routes_form_label_sector_topo_image": "Sektorbilde",
@@ -116,5 +123,8 @@
 	"admin_layout_group_climbing": "Klatring",
 	"admin_layout_group_administration": "Administrasjon",
 	"topo_editor_svg_overlay_image_alt": "Rute-tegning SVG-overlegg",
-	"topo_editor_svg_overlay_clear_topo": "Tøm topo"
+	"topo_editor_svg_overlay_clear_topo": "Tøm topo",
+	"sign_in_title": "Tilgang kreves",
+	"sign_in_description": "Logg inn på kontoen din for å fortsette",
+	"sign_in_button": "Logg inn"
 }
