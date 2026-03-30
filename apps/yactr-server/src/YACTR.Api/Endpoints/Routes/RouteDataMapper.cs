@@ -142,11 +142,12 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
                         Id = p.Id.Value,
                         Type = p.Type,
                         Name = p.Name,
+                        Description = p.Description,
                         Height = p.Height,
+                        Grade = p.Grade ?? 0,
                         GearCount = p.GearCount,
                         PitchOrder = p.PitchOrder,
-                        SectorId = r.SectorId,
-                        Description = p.Description
+                        SectorId = r.SectorId
                     };
                 }
 
@@ -154,11 +155,12 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
                 {
                     Type = p.Type,
                     Name = p.Name,
+                    Description = p.Description,
                     Height = p.Height,
+                    Grade = p.Grade ?? 0,
                     GearCount = p.GearCount,
                     PitchOrder = p.PitchOrder,
-                    SectorId = r.SectorId,
-                    Description = p.Description
+                    SectorId = r.SectorId
                 };
             })];
         }
@@ -171,6 +173,7 @@ public class RouteDataMapper : Mapper<RouteRequestData, RouteResponse, Route>
                     Type = r.Type,
                     Description = r.Description,
                     Height = r.Height,
+                    Grade = r.Grade ?? 0,
                     GearCount = r.GearCount,
                     SectorId = r.SectorId
                 }

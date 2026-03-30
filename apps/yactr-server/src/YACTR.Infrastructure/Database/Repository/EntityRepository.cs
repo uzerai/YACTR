@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using NodaTime;
 using YACTR.Domain.Model;
 using YACTR.Infrastructure.Database.QueryExtensions;

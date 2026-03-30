@@ -21,7 +21,7 @@ public class GetAllPitches : Endpoint<GetAllPitchesRequest, PaginatedResponse<Pi
 
     public override async Task HandleAsync(GetAllPitchesRequest req, CancellationToken ct)
     {
-        var pitches = await PitchRepository.All()
+        var pitches = await PitchRepository.AllAvailable()
             .AsNoTracking()
             .OrderBy(e => e.Id)
             .ToPaginatedResponseAsync(Map.FromEntityAsync, req, ct);
