@@ -32,8 +32,7 @@ public static class RepositoryServicesConfigurationExtensions
         services.AddTransient<IEntityRepository<RouteRating>, EntityRepository<RouteRating>>();
         services.AddTransient<IEntityRepository<RouteLike>, EntityRepository<RouteLike>>();
 
-        // Ascent repository - using IRepository since Ascent doesn't inherit from BaseEntity
-        services.AddTransient<IEntityRepository<Ascent>, EntityRepository<Ascent>>();
+        services.AddTransient<IRepository<Ascent>, BaseRepository<Ascent>>();
 
         services.AddTransient<IRepository<CountryData>, BaseRepository<CountryData>>();
 
