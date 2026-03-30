@@ -16,17 +16,12 @@ export const load: PageServerLoad = async () => {
 
 export const actions = {
   delete: async ({ locals, request }) => {
-    const session = await locals.auth();
-
     const data = await request.formData();
     const pitch_id = data.get("pitch_id")!.toString();
 
     const { error } = await deletePitch({
       path: {
         pitch_id
-      },
-      headers: {
-        Authorization: `Bearer ${session!.access_token}`
       }
     });
 

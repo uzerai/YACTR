@@ -30,7 +30,6 @@
 							<Table.Head>{m.admin_routes_table_grade()}</Table.Head>
 							<Table.Head>{m.admin_routes_table_first_ascent_by()}</Table.Head>
 							<Table.Head>{m.admin_routes_table_bolter()}</Table.Head>
-							<Table.Head>{m.admin_routes_table_description()}</Table.Head>
 							<Table.Head>{m.admin_routes_table_created_at()}</Table.Head>
 							<Table.Head>{m.admin_routes_table_updated_at()}</Table.Head>
 							<Table.Head>{m.admin_routes_table_actions()}</Table.Head>
@@ -44,7 +43,6 @@
 								<Table.Cell>{route.grade}</Table.Cell>
 								<Table.Cell>{route.first_ascent_climber_name}</Table.Cell>
 								<Table.Cell>{route.bolter_name}</Table.Cell>
-								<Table.Cell>{route.description}</Table.Cell>
 								<Table.Cell>
 									{route.created_at ? m.common_iso_datetime({ date: route.created_at }) : ''}
 								</Table.Cell>

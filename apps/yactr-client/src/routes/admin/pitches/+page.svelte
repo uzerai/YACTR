@@ -28,7 +28,6 @@
 							<Table.Head>Name</Table.Head>
 							<Table.Head>Type</Table.Head>
 							<Table.Head>Sector Id</Table.Head>
-							<Table.Head>Description</Table.Head>
 							<Table.Head>Actions</Table.Head>
 						</Table.Row>
 					</Table.Header>
@@ -39,7 +38,6 @@
 								<Table.Cell>{pitch.name}</Table.Cell>
 								<Table.Cell>{pitch.type}</Table.Cell>
 								<Table.Cell>{pitch.sector_id}</Table.Cell>
-								<Table.Cell>{pitch.description}</Table.Cell>
 								<Table.Cell class="flex gap-1">
 									<Button href={`/admin/pitches/${pitch.id}`} variant="outline">Edit</Button>
 									<form method="post" action="?/delete">

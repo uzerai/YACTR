@@ -2,13 +2,9 @@ import { createPitch, getAllSectors } from "$lib/api";
 import { fail, redirect, } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-
-
 export const load: PageServerLoad = async (event) => {
-  const { session } = await event.parent();
-  const { data: sectors } = await getAllSectors({
-    headers: { Authorization: `Bearer ${session!.access_token}` }
-  });
+  const { data: sectors } = await getAllSectors();
+
   return { sectors };
 }
 
@@ -22,13 +18,14 @@ export const actions = {
     }
 
     const { error } = await createPitch({
-      headers: { Authorization: `Bearer ${session!.access_token}` },
       body: {
         sector_id: data.get("sector_id")!.toString(),
         name: data.get("name")?.toString() ?? undefined,
         type: data.get("type")?.toString() as any,
         description: data.get("description")?.toString() ?? undefined,
-        grade: data.get("grade")?.toString() ?? undefined
+        grade: data.get("grade")?.toString() ?? undefined,
+        route_id: "",
+        pitch_order: 0
       }
     });
 
