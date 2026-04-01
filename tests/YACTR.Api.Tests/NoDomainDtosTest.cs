@@ -9,7 +9,7 @@ namespace YACTR.Api.Tests;
 /// Ensures the API layer does not expose YACTR.Domain models directly as request or response types.
 /// Endpoints must use API DTOs that map to/from domain models instead.
 /// </summary>
-public sealed class NoDomainDTOsTest
+public sealed class NoDomainDtosTest
 {
     private static readonly Assembly ApiAssembly = typeof(GetIndex).Assembly;
     private static readonly Assembly DomainAssembly = typeof(Area).Assembly;

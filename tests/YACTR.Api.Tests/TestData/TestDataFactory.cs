@@ -1,6 +1,6 @@
 using NetTopologySuite.Geometries;
 
-namespace YACTR.Api.Tests;
+namespace YACTR.Api.Tests.TestData;
 
 /// <summary>
 /// Factory for creating test data objects.

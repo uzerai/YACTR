@@ -6,7 +6,7 @@ using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Database;
 using YACTR.Infrastructure.Service;
 
-namespace YACTR.Api.Tests;
+namespace YACTR.Api.Tests.TestData;
 
 /// <summary>
 /// Seeder for the integration tests.
