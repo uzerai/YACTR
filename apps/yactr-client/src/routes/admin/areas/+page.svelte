@@ -1,20 +1,139 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table';
+	import { getCoreRowModel, type ColumnDef, type PaginationState } from '@tanstack/table-core';
+	import { createRawSnippet } from 'svelte';
+	import {
+		createSvelteTable,
+		DataTableView,
+		renderComponent,
+		renderSnippet
+	} from '$lib/components/ui/data-table';
+	import DataTableFilters from '$lib/components/ui/data-table/data-table-filters.svelte';
+	import type { ColumnFilterConfig } from '$lib/components/ui/data-table/filter-config';
+	import { useTableUrlFilters } from '$lib/hooks/use-table-url-filters.svelte.js';
 	import * as Card from '$lib/components/ui/card';
 	import type { PageProps } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Empty from '$lib/components/ui/empty';
 	import { m } from '$lib/paraglide/messages.js';
+	import AreaTableActions from './area-table-actions.svelte';
+	import type { AreaResponse } from '$lib/api';
 
 	let { data }: PageProps = $props();
+
+	const createdAtSnippet = createRawSnippet<[{ value?: string | null }]>((getValue) => {
+		const { value } = getValue();
+		return {
+			render: () => (value ? m.common_iso_datetime({ date: value }) : '')
+		};
+	});
+
+	const columns: ColumnDef<AreaResponse>[] = [
+		{
+			accessorKey: 'id',
+			header: m.admin_areas_table_id()
+		},
+		{
+			accessorKey: 'name',
+			header: m.admin_areas_table_name()
+		},
+		{
+			accessorKey: 'description',
+			header: m.admin_areas_table_description()
+		},
+		{
+			accessorKey: 'created_at',
+			header: m.admin_areas_table_created_at(),
+			cell: ({ row }) => renderSnippet(createdAtSnippet, { value: row.original.created_at })
+		},
+		{
+			accessorKey: 'updated_at',
+			header: m.admin_areas_table_updated_at(),
+			cell: ({ row }) => renderSnippet(createdAtSnippet, { value: row.original.updated_at })
+		},
+		{
+			id: 'actions',
+			header: m.admin_areas_table_actions(),
+			enableSorting: false,
+			cell: ({ row }) => renderComponent(AreaTableActions, { areaId: row.original.id })
+		}
+	];
+
+	const areaFilterConfig: ColumnFilterConfig<AreaResponse> = {
+		name: {
+			queryParam: 'name',
+			inputType: 'text',
+			placeholder: m.admin_areas_table_name()
+		},
+		country_name: {
+			queryParam: 'country_name',
+			inputType: 'text',
+			placeholder: ''
+		},
+		created_after: {
+			queryParam: 'created_after',
+			inputType: 'datetime-local',
+			label: '≥'
+		},
+		created_before: {
+			queryParam: 'created_before',
+			inputType: 'datetime-local',
+			label: '≤'
+		}
+	};
+
+	const { filterValues, setFilterValue, applyPagination } = useTableUrlFilters({
+		filterConfig: areaFilterConfig,
+		getServerFilters: () => data.filters
+	});
+
+	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+
+	const table = createSvelteTable({
+		get data() {
+			return data.areas;
+		},
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+		get rowCount() {
+			return data.pagination.total_count;
+		},
+		state: {
+			get pagination() {
+				return pagination;
+			}
+		},
+		onPaginationChange: (updater) => {
+			const nextPagination = typeof updater === 'function' ? updater(pagination) : updater;
+			pagination = nextPagination;
+			applyPagination(nextPagination);
+		},
+		manualFiltering: true,
+		manualPagination: true
+	});
+
+	$effect(() => {
+		pagination = {
+			pageIndex: Math.max(0, data.pagination.page - 1),
+			pageSize: data.pagination.page_size
+		};
+	});
+
+	const hasActiveFilters = $derived(
+		Boolean(
+			data.filters.name ||
+				data.filters.country_name ||
+				data.filters.created_before ||
+				data.filters.created_after
+		)
+	);
 </script>
 
 <div class="flex flex-col gap-6 p-4 max-w-7xl mx-auto">
 	<div class="flex items-center justify-between">
 		<h1 class="text-4xl">{m.admin_areas_title()}</h1>
 	</div>
-	
-	{#if data.areas && data.areas.length > 0}
+
+	{#if data.areas && (data.areas.length > 0 || hasActiveFilters)}
 		<Card.Root>
 			<Card.Header>
 				<Card.CardAction>
@@ -22,40 +141,24 @@
 				</Card.CardAction>
 			</Card.Header>
 			<Card.Content>
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>{m.admin_areas_table_id()}</Table.Head>
-							<Table.Head>{m.admin_areas_table_name()}</Table.Head>
-							<Table.Head>{m.admin_areas_table_description()}</Table.Head>
-							<Table.Head>{m.admin_areas_table_created_at()}</Table.Head>
-							<Table.Head>{m.admin_areas_table_updated_at()}</Table.Head>
-							<Table.Head>{m.admin_areas_table_actions()}</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each data.areas as area (area.id)}
-							<Table.Row>
-								<Table.Cell>{area.id}</Table.Cell>
-								<Table.Cell>{area.name}</Table.Cell>
-								<Table.Cell>{area.description}</Table.Cell>
-								<Table.Cell>
-									{area.created_at ? m.common_iso_datetime({ date: area.created_at }) : ''}
-								</Table.Cell>
-								<Table.Cell>
-									{area.updated_at ? m.common_iso_datetime({ date: area.updated_at }) : ''}
-								</Table.Cell>
-								<Table.Cell class="flex gap-1">
-									<Button href={`/admin/areas/${area.id}`} variant="outline">{m.admin_areas_edit()}</Button>
-									<form method="post" action="?/delete">
-										<input type="hidden" name="area_id" value={area.id} />
-										<Button type="submit" variant="destructive">{m.admin_areas_delete()}</Button>
-									</form>
-								</Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
+				<DataTableView
+					{table}
+					emptyMessage={m.admin_areas_empty_title()}
+				>
+					{#snippet toolbar()}
+						<DataTableFilters
+							{columns}
+							filterConfig={areaFilterConfig}
+							values={filterValues}
+							onValueChange={setFilterValue}
+						/>
+					{/snippet}
+					{#snippet paginationSummary()}
+						<p class="text-sm text-muted-foreground">
+							{data.pagination.page} / {data.pagination.page_count} · {data.pagination.total_count}
+						</p>
+					{/snippet}
+				</DataTableView>
 			</Card.Content>
 		</Card.Root>
 	{:else}

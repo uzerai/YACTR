@@ -1,16 +1,19 @@
 import { createPitch, getAllSectors } from "$lib/api";
-import { fail, redirect, } from "@sveltejs/kit";
+import { error, fail, redirect, } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async (event) => {
-  const { data: sectors } = await getAllSectors();
+  const { data } = await getAllSectors();
 
-  return { sectors };
+  if (data === undefined) {
+    throw error(500, { message: "Failed to fetch sectors" });
+  }
+
+  return { sectors: data.items };
 }
 
 export const actions = {
   default: async ({ locals, request }) => {
-    const session = await locals.auth();
     const data = await request.formData();
 
     if (!data.get("sector_id")) {
