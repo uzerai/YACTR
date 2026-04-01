@@ -116,7 +116,7 @@ public class SectorDataMapper : Mapper<SectorRequestData, SectorResponse, Sector
         e.ApproachPath = r.ApproachPath;
         e.PrimarySectorImageId = r.PrimarySectorImageId;
 
-        // Update the sector images collection in-place since EF is fucking stupid as fuck.
+        // Update the sector images collection in-place since EF is fucking stupid.
         if (r.SectorImages != null)
         {
             var requested = r.SectorImages.ToDictionary(x => x.ImageId, x => x.Order);

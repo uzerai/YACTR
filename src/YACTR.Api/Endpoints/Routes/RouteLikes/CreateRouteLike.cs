@@ -9,7 +9,7 @@ public class CreateRouteLike(IEntityRepository<RouteLike> routeLikeRepository, I
 {
     public override void Configure()
     {
-        Post("/{RouteId}/like");
+        Post("/{route_id}/like");
         Group<RoutesEndpointGroup>();
     }
 
