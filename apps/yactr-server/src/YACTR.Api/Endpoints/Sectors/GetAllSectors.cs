@@ -19,6 +19,11 @@ public class GetAllSectorsRequest : PaginationRequest {
     public string? AreaName { get; init; }
 
     /// <summary>
+    /// Area ID to filter by.
+    /// </summary>
+    public Guid? AreaId { get; init; }
+
+    /// <summary>
     /// Sectors created before the given instant.
     /// </summary>
     public Instant? CreatedBefore { get;init; }
@@ -44,6 +49,7 @@ public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<Se
     {
         var query = SectorRepository.AllAvailable()
             .Include(e => e.Area)
+            .Include(e => e.SectorImages)
             .AsNoTracking();
 
         query = ApplyFilters(query, req);
@@ -64,6 +70,11 @@ public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<Se
         if (req.AreaName is not null)
         {
             query = query.Where(e => EF.Functions.ILike(e.Area.Name, "%" + req.AreaName + "%"));
+        }
+        
+        if (req.AreaId is not null)
+        {
+            query = query.Where(e => e.AreaId == req.AreaId);
         }
 
         if (req.CreatedBefore is not null)

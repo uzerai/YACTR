@@ -10,7 +10,7 @@ public class DeleteRouteLike(IEntityRepository<RouteLike> routeLikeRepository, I
 {
     public override void Configure()
     {
-        Delete("/{RouteId}/like");
+        Delete("/{route_id}/like");
         Group<RoutesEndpointGroup>();
     }
 

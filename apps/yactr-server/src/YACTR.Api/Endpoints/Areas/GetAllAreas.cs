@@ -26,7 +26,12 @@ public class GetAllAreasRequest : PaginationRequest {
     /// <summary>
     /// Country name to filter by.
     /// </summary>
-    public string? CountryName { get; init;}
+    public string? CountryName { get; init; }
+
+    /// <summary>
+    /// Country ID to filter by.
+    /// </summary>
+    public int? CountryId { get; init; }
 };
 
 public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<AreaResponse>, AreaDataMapper>
@@ -73,6 +78,11 @@ public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<AreaRe
         if (req.CountryName is not null)
         {
             query = query.Where(e => e.Country.CountryName == req.CountryName);
+        }
+
+        if (req.CountryId.HasValue)
+        {
+            query = query.Where(e => e.CountryId == req.CountryId.Value);
         }
 
         return query;

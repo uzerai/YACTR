@@ -15,7 +15,7 @@ public class DeleteRouteRating(IEntityRepository<RouteRating> routeRatingReposit
 {
     public override void Configure()
     {
-        Delete("/{RouteId}/rating");
+        Delete("/{route_id}/rating");
         Group<RoutesEndpointGroup>();
     }
 

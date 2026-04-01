@@ -18,7 +18,7 @@ public class CreateOrUpdateRouteRating(IEntityRepository<RouteRating> routeRatin
 {
     public override void Configure()
     {
-        Post("/{RouteId}/rating");
+        Post("/{route_id}/rating");
         Group<RoutesEndpointGroup>();
     }
 
