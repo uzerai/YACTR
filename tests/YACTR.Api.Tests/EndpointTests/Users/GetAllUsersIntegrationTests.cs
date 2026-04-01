@@ -1,52 +1,16 @@
 using System.Net;
-using FastEndpoints;
 using FastEndpoints.Testing;
 using Shouldly;
-using YACTR.Api.Pagination;
 using YACTR.Api.Endpoints.Users;
+using YACTR.Api.Pagination;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Authorization.Permissions;
 
-namespace YACTR.Api.Tests.EndpointTests;
+namespace YACTR.Api.Tests.EndpointTests.Users;
 
 [Collection("IntegrationTests")]
-public class UserEntityEndpointsIntegrationTests(ApiTestClassFixture fixture) : TestBase<ApiTestClassFixture>
+public class GetAllUsersIntegrationTests(ApiTestClassFixture fixture) : TestBase<ApiTestClassFixture>
 {
-
-    [Theory]
-    [InlineData("user1")]
-    [InlineData("user2")]
-    [InlineData("user3")]
-    public async Task GetMe_WithValidAuthentication_ReturnsCurrentUser(string userName)
-    {
-        var expectedUser = new User()
-        {
-            Auth0UserId = $"auth0|{Guid.NewGuid()}",
-            Username = userName,
-            Email = $"{userName}@test.dev"
-        };
-
-        var client = fixture.CreateAuthenticatedClient(expectedUser);
-        // Act
-        var (res, result) = await client.GETAsync<GetCurrentUser, EmptyRequest, CurrentUserResponse>(new());
-        res.IsSuccessStatusCode.ShouldBeTrue();
-
-        result.Username.ShouldBe(expectedUser.Username);
-    }
-
-    [Fact]
-    public async Task GetMe_WithoutAuthentication_ReturnsUnauthorized()
-    {
-        // Arrange
-        using var client = fixture.CreateClient();
-
-        // Act
-        var (response, _) = await client.GETAsync<GetCurrentUser, EmptyRequest, CurrentUserResponse>(new());
-
-        // Assert
-        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
-    }
-
     [Fact]
     public async Task GetAllUsers_WithAdminPermission_ReturnsUsers()
     {

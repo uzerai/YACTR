@@ -19,7 +19,10 @@ namespace YACTR.Api.Tests;
 
 public class ApiTestClassFixture : AppFixture<Program>
 {
+    public static readonly Instant DefaultTestInstant = Instant.FromUtc(2025, 1, 1, 0, 0);
+
     public DatabaseContext DatabaseContext { get; private set; } = null!;
+    public MutableTestClock TestClock { get; private set; } = null!;
     // Note the distinction between TestDataSeeder and TestDataFactory.
     // TestDataSeeder is used to seed the database with test data, while 
     // TestDataFactory is used to create test data objects (without persisting them to the database)
@@ -33,9 +36,11 @@ public class ApiTestClassFixture : AppFixture<Program>
     protected override async ValueTask SetupAsync()
     {
         DatabaseContext = Services.GetRequiredService<DatabaseContext>();
+        TestClock = Services.GetRequiredService<MutableTestClock>();
         TestDataFactory = new TestDataFactory(NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326));
         TestDataSeeder = new IntegrationTestDataSeeder(DatabaseContext, 
             TestDataFactory,
+            TestClock,
             Services.GetRequiredService<IImageStorageService>());
 
         await DatabaseContext.Database.EnsureCreatedAsync();
@@ -80,7 +85,9 @@ public class ApiTestClassFixture : AppFixture<Program>
             options => { });
 
         services.AddRepositories();
-        services.AddSingleton<IClock>(NodaTime.SystemClock.Instance);
+        services.RemoveAll<IClock>();
+        services.AddSingleton<MutableTestClock>(_ => new MutableTestClock(DefaultTestInstant));
+        services.AddSingleton<IClock>(provider => provider.GetRequiredService<MutableTestClock>());
     }
 
     /// <summary>
@@ -116,6 +123,16 @@ public class ApiTestClassFixture : AppFixture<Program>
     public IRepository<T> GetRepository<T>() where T : class
     {
         return Services.GetRequiredService<IRepository<T>>();
+    }
+
+    public void SetTestClock(Instant instant)
+    {
+        TestClock.SetCurrentInstant(instant);
+    }
+
+    public void AdvanceTestClock(Duration duration)
+    {
+        TestClock.Advance(duration);
     }
 
     /// <summary>

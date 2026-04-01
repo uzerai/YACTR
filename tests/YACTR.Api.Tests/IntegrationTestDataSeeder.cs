@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using YACTR.Domain.Model;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Climbing;
@@ -17,8 +18,19 @@ namespace YACTR.Api.Tests;
 public class IntegrationTestDataSeeder(
     DatabaseContext context,
     TestDataFactory testDataFactory,
+    MutableTestClock testClock,
     IImageStorageService imageStorageService)
 {
+    private int _seedSequence = 0;
+
+    public sealed record SeedAreaWithSectorAndRouteOptions(
+        string NamePrefix,
+        Instant? AreaCreatedAt = null,
+        Instant? SectorCreatedAt = null,
+        Instant? FirstRouteCreatedAt = null,
+        Duration? RouteCreatedAtStep = null
+    );
+
     public async Task<User> SeedUserAsync()
     {
         User? user = await context.Users
@@ -39,28 +51,39 @@ public class IntegrationTestDataSeeder(
         return user;
     }
 
-    public async Task<(Area area, Sector sector, ICollection<Route> routes)> SeedAreaWithSectorAndRouteAsync()
+    public async Task<(Area area, Sector sector, ICollection<Route> routes)> SeedAreaWithSectorAndRouteAsync(
+        SeedAreaWithSectorAndRouteOptions? options = null)
     {
+        var sequence = ++_seedSequence;
+        options ??= new SeedAreaWithSectorAndRouteOptions($"Seed{sequence}");
+
         User user = await SeedUserAsync();
+        var routeCreatedAtStep = options.RouteCreatedAtStep ?? Duration.FromMinutes(1);
+        var defaultStart = testClock.GetCurrentInstant();
+        var areaCreatedAt = options.AreaCreatedAt ?? defaultStart;
+        var sectorCreatedAt = options.SectorCreatedAt ?? areaCreatedAt.Plus(Duration.FromMinutes(1));
+        var firstRouteCreatedAt = options.FirstRouteCreatedAt ?? sectorCreatedAt.Plus(Duration.FromMinutes(1));
 
         CountryData country = new()
         {
-            CountryName = "Test Country",
-            AdminName = "Test Admin",
-            Code = "TEST",
-            Continent = "Test Continent",
-            Region = "Test Region",
-            Subregion = "Test Subregion",
-            WorldBlock = "Test WorldBlock",
+            CountryName = $"{options.NamePrefix} Country",
+            AdminName = $"{options.NamePrefix} Admin",
+            Code = $"T{sequence:000}",
+            Continent = $"{options.NamePrefix} Continent",
+            Region = $"{options.NamePrefix} Region",
+            Subregion = $"{options.NamePrefix} Subregion",
+            WorldBlock = $"{options.NamePrefix} WorldBlock",
             Geometry = testDataFactory.NewMultiPolygon()
         };
 
         await context.AddAsync(country);
+        await context.SaveChangesAsync();
 
+        testClock.SetCurrentInstant(areaCreatedAt);
         Area area = new()
         {
-            Name = "Test Area",
-            Description = "Test area description",
+            Name = $"{options.NamePrefix} Area",
+            Description = $"{options.NamePrefix} area description",
             Location = testDataFactory.NewPoint(),
             Boundary = testDataFactory.NewMultiPolygon(),
             CountryId = country.Id,
@@ -68,11 +91,14 @@ public class IntegrationTestDataSeeder(
         };
 
         await context.AddAsync(area);
+        await context.SaveChangesAsync();
+
+        testClock.SetCurrentInstant(sectorCreatedAt);
         Image image = await CreateImageAsync();
 
         Sector sector = new()
         {
-            Name = "Test Sector",
+            Name = $"{options.NamePrefix} Sector",
             AreaId = area.Id,
             SectorArea = testDataFactory.NewPolygon(),
             EntryPoint = testDataFactory.NewPoint(),
@@ -82,19 +108,27 @@ public class IntegrationTestDataSeeder(
         };
 
         await context.AddAsync(sector);
+        await context.SaveChangesAsync();
 
-        ICollection<Route> routes = Enum.GetValues<ClimbingType>()
-            .Select(type => new Route
+        List<Route> routes = [];
+        var routeCreatedAt = firstRouteCreatedAt;
+        foreach (var type in Enum.GetValues<ClimbingType>())
+        {
+            testClock.SetCurrentInstant(routeCreatedAt);
+            var route = new Route
             {
-                Name = "Test Route",
-                Description = "Test route for ascents",
+                Name = $"{options.NamePrefix} Route {type}",
+                Description = $"{options.NamePrefix} route for ascents",
                 Type = type,
                 Grade = 500,
                 SectorId = sector.Id
-            }).ToList();
+            };
 
-        await context.AddRangeAsync(routes);
-        await context.SaveChangesAsync();
+            await context.AddAsync(route);
+            await context.SaveChangesAsync();
+            routes.Add(route);
+            routeCreatedAt = routeCreatedAt.Plus(routeCreatedAtStep);
+        }
 
         return (area, sector, routes);
     }

@@ -2,12 +2,11 @@ using System.Net;
 using FastEndpoints.Testing;
 using Shouldly;
 
-namespace YACTR.Api.Tests.EndpointTests;
+namespace YACTR.Api.Tests.EndpointTests.Root;
 
 [Collection("IntegrationTests")]
-public class RootEndpointsIntegrationTests(ApiTestClassFixture fixture) : TestBase<ApiTestClassFixture>
+public class GetIndexIntegrationTests(ApiTestClassFixture fixture) : TestBase<ApiTestClassFixture>
 {
-
     [Fact]
     public async Task Index_WithValidAuthentication_ReturnsOk()
     {
