@@ -14,6 +14,7 @@ using YACTR.Infrastructure.Database.QueryExtensions;
 using YACTR.Infrastructure.Database.Repository.ConfigurationExtension;
 using YACTR.Infrastructure.Database.Repository.Interface;
 using YACTR.Infrastructure.Service;
+using YACTR.Api.Tests.TestData;
 
 namespace YACTR.Api.Tests;
 
