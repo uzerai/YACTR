@@ -31,8 +31,10 @@ public class CreateArea : AuthenticatedEndpoint<AreaRequestData, AreaResponse, A
 
         if (nearestCountry == null)
         {
+            AddError(r => r.Location, "Provided location is too far from any country");
+            
             // The area is > 10km from any country, so we don't create it.
-            await Send.NotFoundAsync(ct);
+            await Send.ErrorsAsync(412, cancellation: ct);
             return;
         }
 
