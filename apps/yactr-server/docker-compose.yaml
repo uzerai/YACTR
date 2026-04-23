@@ -3,20 +3,28 @@ services:
     build:
       context: .
       dockerfile: container/yactr-api/Dockerfile
-      target: final
+      target: runner
     ports:
       - "8080:8080"
     profiles:
       - development-full
+    depends_on:
+      - database
+      - file-bucket
+      - dex
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - Minio__Endpoint=file-bucket:9000
       - Minio__AccessKey=yactr
-      - Minio__SecretKey=playground
-      - ConnectionStrings__DatabaseContextConnection=Host=database;Database=yactr_dev;Username=yactr;Password=yactr;Port=5432
+      - Minio__SecretKey=yactr
+      - ConnectionStrings__DatabaseContextConnection=Host=database;Database=yactr;Username=yactr;Password=yactr;Port=5432
+      - Auth0__Domain=http://dex:5556/dex
+      - Auth0__Audience=yactr-dev-client
+      - Auth0__Issuer=http://dex:5556/dex
 
   database:
     environment:
+      POSTGRES_DB: yactr
       POSTGRES_USER: yactr
       POSTGRES_PASSWORD: yactr
     ports:
@@ -47,6 +55,23 @@ services:
       - development
       - development-full
 
+  dex:
+    image: dexidp/dex:v2.43.1
+    command: ["dex", "serve", "/etc/dex/config.yaml"]
+    ports:
+      - "5556:5556"
+    volumes:
+      - ./container/dex/config.yaml:/etc/dex/config.yaml:ro
+      - dex-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5556/dex/.well-known/openid-configuration"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    profiles:
+      - development-full
+
 volumes:
   database-data:
   file-bucket-data:
+  dex-data:
