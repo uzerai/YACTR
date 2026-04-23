@@ -4,17 +4,18 @@ auth {
 
 auth:oauth2 {
   grant_type: authorization_code
-  callback_url: http://localhost:5173/api/auth/oauth2/callback/auth0
-  authorization_url: {{process.env.AUTH_AUTH0_ISSUER}}/authorize
-  access_token_url: {{process.env.AUTH_AUTH0_ISSUER}}/oauth/token
+  callback_url: http://localhost:5173/auth/callback
+  authorization_url: {{process.env.AUTH_AUTH0_ISSUER}}/auth
+  access_token_url: {{process.env.AUTH_AUTH0_ISSUER}}/token
   refresh_token_url: 
   client_id: {{process.env.AUTH_AUTH0_ID}}
   client_secret: {{process.env.AUTH_AUTH0_SECRET}}
   scope: openid profile email offline_access
   state: 
   pkce: false
-  credentials_placement: 
+  credentials_placement: body
   credentials_id: Authorization
+  token_source: access_token
   token_placement: header
   token_header_prefix: Bearer
   auto_fetch_token: true

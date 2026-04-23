@@ -60,6 +60,12 @@ builder.Services
     {
         options.Authority = builder.Configuration["Auth0:Domain"];
         options.Audience = builder.Configuration["Auth0:Audience"];
+        if (builder.Environment.IsDevelopment()
+            && options.Authority?.StartsWith("http://", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            // local Dex IDP does not use TLS
+            options.RequireHttpsMetadata = false;
+        }
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
