@@ -60,24 +60,20 @@
 
 	const areaFilterConfig: ColumnFilterConfig<AreaResponse> = {
 		name: {
-			queryParam: 'name',
-			inputType: 'text',
+			type: 'string',
+			queryParameter: 'name',
 			placeholder: m.admin_areas_table_name()
 		},
 		country_name: {
-			queryParam: 'country_name',
-			inputType: 'text',
+			type: 'string',
+			queryParameter: 'country_name',
 			placeholder: ''
 		},
-		created_after: {
-			queryParam: 'created_after',
-			inputType: 'datetime-local',
-			label: '≥'
-		},
-		created_before: {
-			queryParam: 'created_before',
-			inputType: 'datetime-local',
-			label: '≤'
+		created_at: {
+			type: 'date',
+			afterQueryParameter: 'created_after',
+			beforeQueryParameter: 'created_before',
+			label: m.admin_areas_table_created_at()
 		}
 	};
 
@@ -85,6 +81,10 @@
 		filterConfig: areaFilterConfig,
 		getServerFilters: () => data.filters
 	});
+
+	function onFilterValueChange(queryParameter: string, value: string, debounce: boolean) {
+		setFilterValue(queryParameter, value, debounce);
+	}
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 
@@ -150,7 +150,7 @@
 							{columns}
 							filterConfig={areaFilterConfig}
 							values={filterValues}
-							onValueChange={setFilterValue}
+							onValueChange={onFilterValueChange}
 						/>
 					{/snippet}
 					{#snippet paginationSummary()}

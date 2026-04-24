@@ -1,7 +1,7 @@
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
 import type { PaginationState, RowData } from "@tanstack/table-core";
-import type { ColumnFilterConfig } from "$lib/components/ui/data-table/filter-config";
+import { getFilterQueryBindings, type ColumnFilterConfig } from "$lib/components/ui/data-table/filter-config";
 import { DEFAULT_PAGE_PARAM, DEFAULT_PAGE_SIZE_PARAM } from "$lib/utils/pagination-query";
 
 type QueryFilterValues = Record<string, string | null | undefined>;
@@ -23,23 +23,26 @@ export function useTableUrlFilters<TData extends RowData>({
 	pageParam = DEFAULT_PAGE_PARAM,
 	pageSizeParam = DEFAULT_PAGE_SIZE_PARAM
 }: UseTableUrlFiltersOptions<TData>) {
-	const filterEntries = Object.entries(filterConfig).flatMap(([accessorKey, definition]) => {
-		if (!definition) return [];
-		return [{ accessorKey, queryParam: definition.queryParam }];
-	});
+	const filterEntries = getFilterQueryBindings(filterConfig);
 
 	const initialFilterValues: Record<string, string> = {};
 	const serverFilters = getServerFilters();
-	for (const { accessorKey, queryParam } of filterEntries) {
-		initialFilterValues[accessorKey] = normalizeFilterValue(serverFilters[queryParam]);
+	for (const { queryParameter } of filterEntries) {
+		initialFilterValues[queryParameter] = normalizeFilterValue(serverFilters[queryParameter]);
 	}
 
 	let filterValues = $state<Record<string, string>>(initialFilterValues);
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+	let shouldDebounce = $state(true);
 
-	function setFilterValue(accessorKey: string, value: string) {
-		if (!(accessorKey in filterValues)) return;
-		filterValues[accessorKey] = value;
+	function setFilterValue(queryParameter: string, value: string, debounce = true) {
+		if (!(queryParameter in filterValues)) return;
+		filterValues[queryParameter] = value;
+		shouldDebounce = debounce;
+	}
+
+	function clearFilterValue(queryParameter: string) {
+		setFilterValue(queryParameter, "", false);
 	}
 
 	function applyPagination(nextPagination: PaginationState) {
@@ -51,31 +54,38 @@ export function useTableUrlFilters<TData extends RowData>({
 
 	$effect(() => {
 		const nextServerFilters = getServerFilters();
-		for (const { accessorKey, queryParam } of filterEntries) {
-			filterValues[accessorKey] = normalizeFilterValue(nextServerFilters[queryParam]);
+		for (const { queryParameter } of filterEntries) {
+			filterValues[queryParameter] = normalizeFilterValue(nextServerFilters[queryParameter]);
 		}
 	});
 
 	$effect(() => {
 		const nextServerFilters = getServerFilters();
-		const hasChanged = filterEntries.some(({ accessorKey, queryParam }) => {
-			return normalizeFilterValue(filterValues[accessorKey]) !== normalizeFilterValue(nextServerFilters[queryParam]);
+		const hasChanged = filterEntries.some(({ queryParameter }) => {
+			return (
+				normalizeFilterValue(filterValues[queryParameter]) !==
+				normalizeFilterValue(nextServerFilters[queryParameter])
+			);
 		});
 
 		if (!hasChanged) return;
 		if (debounceTimer) clearTimeout(debounceTimer);
 
 		const nextUrl = new URL(page.url);
-		for (const { accessorKey, queryParam } of filterEntries) {
-			const nextValue = normalizeFilterValue(filterValues[accessorKey]);
-			if (nextValue) nextUrl.searchParams.set(queryParam, nextValue);
-			else nextUrl.searchParams.delete(queryParam);
+		for (const { queryParameter } of filterEntries) {
+			const nextValue = normalizeFilterValue(filterValues[queryParameter]);
+			if (nextValue) nextUrl.searchParams.set(queryParameter, nextValue);
+			else nextUrl.searchParams.delete(queryParameter);
 		}
 		nextUrl.searchParams.delete(pageParam);
 
-		debounceTimer = setTimeout(() => {
+		if (shouldDebounce) {
+			debounceTimer = setTimeout(() => {
+				void navigateIfChanged(nextUrl);
+			}, debounceMs);
+		} else {
 			void navigateIfChanged(nextUrl);
-		}, debounceMs);
+		}
 
 		return () => {
 			if (debounceTimer) clearTimeout(debounceTimer);
@@ -85,6 +95,7 @@ export function useTableUrlFilters<TData extends RowData>({
 	return {
 		filterValues,
 		setFilterValue,
+		clearFilterValue,
 		applyPagination
 	};
 }

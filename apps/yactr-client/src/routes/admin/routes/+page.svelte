@@ -65,47 +65,51 @@
 			cell: ({ row }) => renderComponent(RouteTableActions, { routeId: row.original.id })
 		}
 	];
+	const routeTypeOptions = [
+		{ label: 'Sport', value: 'Sport' },
+		{ label: 'Traditional', value: 'Traditional' },
+		{ label: 'Boulder', value: 'Boulder' },
+		{ label: 'Mixed', value: 'Mixed' },
+		{ label: 'Aid', value: 'Aid' }
+	];
 
 	const routeFilterConfig: ColumnFilterConfig<RouteResponse> = {
 		name: {
-			queryParam: 'name',
-			inputType: 'text',
+			type: 'string',
+			queryParameter: 'name',
 			placeholder: m.admin_routes_table_name()
 		},
 		sector_name: {
-			queryParam: 'sector_name',
-			inputType: 'text',
+			type: 'string',
+			queryParameter: 'sector_name',
 			placeholder: m.admin_routes_table_sector()
 		},
 		sector_id: {
-			queryParam: 'sector_id',
-			inputType: 'text',
+			type: 'string',
+			queryParameter: 'sector_id',
 			placeholder: m.admin_routes_table_sector()
 		},
 		area_name: {
-			queryParam: 'area_name',
-			inputType: 'text',
+			type: 'string',
+			queryParameter: 'area_name',
 			placeholder: ''
 		},
 		area_id: {
-			queryParam: 'area_id',
-			inputType: 'text',
+			type: 'string',
+			queryParameter: 'area_id',
 			placeholder: ''
 		},
 		type: {
-			queryParam: 'type',
-			inputType: 'text',
-			placeholder: ''
+			type: 'select',
+			queryParameter: 'type',
+			placeholder: m.admin_routes_form_label_type(),
+			options: routeTypeOptions
 		},
-		created_after: {
-			queryParam: 'created_after',
-			inputType: 'datetime-local',
-			label: '≥'
-		},
-		created_before: {
-			queryParam: 'created_before',
-			inputType: 'datetime-local',
-			label: '≤'
+		created_at: {
+			type: 'date',
+			afterQueryParameter: 'created_after',
+			beforeQueryParameter: 'created_before',
+			label: m.admin_routes_table_created_at()
 		}
 	};
 
@@ -113,6 +117,10 @@
 		filterConfig: routeFilterConfig,
 		getServerFilters: () => data.filters
 	});
+
+	function onFilterValueChange(queryParameter: string, value: string, debounce: boolean) {
+		setFilterValue(queryParameter, value, debounce);
+	}
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 
@@ -173,13 +181,16 @@
 				</Card.CardAction>
 			</Card.Header>
 			<Card.Content>
-				<DataTableView {table} emptyMessage={m.admin_routes_empty_title()}>
+				<DataTableView
+					{table}
+					emptyMessage={m.admin_routes_empty_title()}
+				>
 					{#snippet toolbar()}
 						<DataTableFilters
 							{columns}
 							filterConfig={routeFilterConfig}
 							values={filterValues}
-							onValueChange={setFilterValue}
+							onValueChange={onFilterValueChange}
 						/>
 					{/snippet}
 					{#snippet paginationSummary()}

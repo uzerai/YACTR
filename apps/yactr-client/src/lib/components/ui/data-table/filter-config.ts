@@ -1,23 +1,60 @@
 import type { ColumnDef, RowData } from "@tanstack/table-core";
 
-export type FilterInputType = "text" | "datetime-local";
-
 export type ColumnAccessorKey<TData extends RowData> = Extract<keyof TData, string> | (string & {});
 
-export type ColumnFilterDefinition = {
-	queryParam: string;
-	inputType: FilterInputType;
+type BaseColumnFilterDefinition = {
 	label?: string;
 	placeholder?: string;
 	className?: string;
 };
 
+export type SelectFilterOption = {
+	label: string;
+	value: string;
+};
+
+export type StringColumnFilterDefinition = BaseColumnFilterDefinition & {
+	type: "string";
+	queryParameter: string;
+};
+
+type DateFilterWithBefore = {
+	beforeQueryParameter: string;
+	afterQueryParameter?: string;
+};
+
+type DateFilterWithAfter = {
+	beforeQueryParameter?: string;
+	afterQueryParameter: string;
+};
+
+export type DateColumnFilterDefinition = BaseColumnFilterDefinition & {
+	type: "date";
+} & (DateFilterWithBefore | DateFilterWithAfter);
+
+export type SelectColumnFilterDefinition = BaseColumnFilterDefinition & {
+	type: "select";
+	queryParameter: string;
+	options: SelectFilterOption[];
+};
+
+export type ColumnFilterDefinition =
+	| StringColumnFilterDefinition
+	| DateColumnFilterDefinition
+	| SelectColumnFilterDefinition;
+
 export type ColumnFilterConfig<TData extends RowData> = Partial<
 	Record<ColumnAccessorKey<TData>, ColumnFilterDefinition>
 >;
 
-export type ResolvedColumnFilter = ColumnFilterDefinition & {
+export type ResolvedColumnFilterDefinition = ColumnFilterDefinition & {
 	accessorKey: string;
+};
+
+export type FilterQueryBinding = {
+	accessorKey: string;
+	queryParameter: string;
+	part: "value" | "before" | "after";
 };
 
 type ColumnWithAccessorKey<TData extends RowData> = ColumnDef<TData> & {
@@ -36,8 +73,8 @@ export function getColumnLabel<TData extends RowData>(column: ColumnDef<TData>):
 export function getResolvedColumnFilters<TData extends RowData>(
 	columns: ColumnDef<TData>[],
 	filterConfig: ColumnFilterConfig<TData>
-): ResolvedColumnFilter[] {
-	const resolved: ResolvedColumnFilter[] = [];
+): ResolvedColumnFilterDefinition[] {
+	const resolved: ResolvedColumnFilterDefinition[] = [];
 
 	for (const column of columns) {
 		const accessorKey = asString((column as ColumnWithAccessorKey<TData>).accessorKey);
@@ -48,8 +85,7 @@ export function getResolvedColumnFilters<TData extends RowData>(
 
 		resolved.push({
 			accessorKey,
-			queryParam: config.queryParam,
-			inputType: config.inputType,
+			...config,
 			label: config.label ?? getColumnLabel(column),
 			placeholder: config.placeholder,
 			className: config.className
@@ -59,28 +95,72 @@ export function getResolvedColumnFilters<TData extends RowData>(
 	return resolved;
 }
 
+export function getOverarchingFilterFields<TData extends RowData>(
+	columns: ColumnDef<TData>[],
+	filterConfig: ColumnFilterConfig<TData>
+): ResolvedColumnFilterDefinition[] {
+	const columnFilterKeys = new Set(
+		columns
+			.map((column) => asString((column as ColumnWithAccessorKey<TData>).accessorKey))
+			.filter(Boolean)
+	);
+	const extras: ResolvedColumnFilterDefinition[] = [];
+
+	for (const accessorKey of Object.keys(filterConfig) as ColumnAccessorKey<TData>[]) {
+		const def = filterConfig[accessorKey];
+		if (!def || columnFilterKeys.has(accessorKey)) continue;
+		extras.push({
+			accessorKey,
+			label: def.label,
+			placeholder: def.placeholder,
+			className: def.className,
+			...def
+		});
+	}
+
+	return extras;
+}
+
 /** Column-ordered filters first, then any remaining keys from `filterConfig` (insertion order). */
 export function getDataTableFilterFields<TData extends RowData>(
 	columns: ColumnDef<TData>[],
 	filterConfig: ColumnFilterConfig<TData>
-): ResolvedColumnFilter[] {
-	const fromColumns = getResolvedColumnFilters(columns, filterConfig);
-	const seen = new Set(fromColumns.map((f) => f.accessorKey));
-	const extras: ResolvedColumnFilter[] = [];
+): ResolvedColumnFilterDefinition[] {
+	return [...getResolvedColumnFilters(columns, filterConfig), ...getOverarchingFilterFields(columns, filterConfig)];
+}
 
-	for (const accessorKey of Object.keys(filterConfig) as ColumnAccessorKey<TData>[]) {
-		const def = filterConfig[accessorKey];
-		if (!def || seen.has(accessorKey)) continue;
-		seen.add(accessorKey);
-		extras.push({
+export function getFilterQueryBindings<TData extends RowData>(
+	filterConfig: ColumnFilterConfig<TData>
+): FilterQueryBinding[] {
+	const bindings: FilterQueryBinding[] = [];
+
+	for (const [accessorKey, definition] of Object.entries(filterConfig)) {
+		if (!definition) continue;
+
+		if (definition.type === "date") {
+			if (definition.beforeQueryParameter) {
+				bindings.push({
+					accessorKey,
+					queryParameter: definition.beforeQueryParameter,
+					part: "before"
+				});
+			}
+			if (definition.afterQueryParameter) {
+				bindings.push({
+					accessorKey,
+					queryParameter: definition.afterQueryParameter,
+					part: "after"
+				});
+			}
+			continue;
+		}
+
+		bindings.push({
 			accessorKey,
-			queryParam: def.queryParam,
-			inputType: def.inputType,
-			label: def.label,
-			placeholder: def.placeholder,
-			className: def.className
+			queryParameter: definition.queryParameter,
+			part: "value"
 		});
 	}
 
-	return [...fromColumns, ...extras];
+	return bindings;
 }

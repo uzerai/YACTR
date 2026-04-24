@@ -5,9 +5,14 @@ export { renderComponent, renderSnippet } from "./render-helpers.js";
 export { createSvelteTable } from "./data-table.svelte.js";
 export {
 	getDataTableFilterFields,
+	getFilterQueryBindings,
+	getOverarchingFilterFields,
 	getResolvedColumnFilters,
 	type ColumnFilterConfig,
 	type ColumnFilterDefinition,
-	type FilterInputType,
-	type ResolvedColumnFilter,
+	type DateColumnFilterDefinition,
+	type ResolvedColumnFilterDefinition,
+	type SelectColumnFilterDefinition,
+	type SelectFilterOption,
+	type StringColumnFilterDefinition
 } from "./filter-config.js";
