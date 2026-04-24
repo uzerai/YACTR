@@ -1,12 +1,163 @@
 <script lang="ts">
-	import * as Table from '$lib/components/ui/table';
+	import { getCoreRowModel, type ColumnDef, type PaginationState } from '@tanstack/table-core';
+	import { createRawSnippet } from 'svelte';
+	import {
+		createSvelteTable,
+		DataTableView,
+		renderComponent,
+		renderSnippet
+	} from '$lib/components/ui/data-table';
+	import DataTableFilters from '$lib/components/ui/data-table/data-table-filters.svelte';
+	import type { ColumnFilterConfig } from '$lib/components/ui/data-table/filter-config';
+	import { useTableUrlFilters } from '$lib/hooks/use-table-url-filters.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import type { PageProps } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import * as Empty from '$lib/components/ui/empty';
 	import { m } from '$lib/paraglide/messages.js';
+	import RouteTableActions from './route-table-actions.svelte';
+	import type { RouteResponse } from '$lib/api';
 
 	let { data }: PageProps = $props();
+
+	const createdAtSnippet = createRawSnippet<[{ value?: string | null }]>((getValue) => {
+		const { value } = getValue();
+		return {
+			render: () => (value ? m.common_iso_datetime({ date: value }) : '')
+		};
+	});
+
+	const columns: ColumnDef<RouteResponse>[] = [
+		{
+			accessorKey: 'name',
+			header: m.admin_routes_table_name()
+		},
+		{
+			accessorKey: 'sector_id',
+			header: m.admin_routes_table_sector()
+		},
+		{
+			accessorKey: 'grade',
+			header: m.admin_routes_table_grade()
+		},
+		{
+			accessorKey: 'first_ascent_climber_name',
+			header: m.admin_routes_table_first_ascent_by()
+		},
+		{
+			accessorKey: 'bolter_name',
+			header: m.admin_routes_table_bolter()
+		},
+		{
+			accessorKey: 'created_at',
+			header: m.admin_routes_table_created_at(),
+			cell: ({ row }) => renderSnippet(createdAtSnippet, { value: row.original.created_at })
+		},
+		{
+			accessorKey: 'updated_at',
+			header: m.admin_routes_table_updated_at(),
+			cell: ({ row }) => renderSnippet(createdAtSnippet, { value: row.original.updated_at })
+		},
+		{
+			id: 'actions',
+			header: m.admin_routes_table_actions(),
+			enableSorting: false,
+			cell: ({ row }) => renderComponent(RouteTableActions, { routeId: row.original.id })
+		}
+	];
+
+	const routeFilterConfig: ColumnFilterConfig<RouteResponse> = {
+		name: {
+			queryParam: 'name',
+			inputType: 'text',
+			placeholder: m.admin_routes_table_name()
+		},
+		sector_name: {
+			queryParam: 'sector_name',
+			inputType: 'text',
+			placeholder: m.admin_routes_table_sector()
+		},
+		sector_id: {
+			queryParam: 'sector_id',
+			inputType: 'text',
+			placeholder: m.admin_routes_table_sector()
+		},
+		area_name: {
+			queryParam: 'area_name',
+			inputType: 'text',
+			placeholder: ''
+		},
+		area_id: {
+			queryParam: 'area_id',
+			inputType: 'text',
+			placeholder: ''
+		},
+		type: {
+			queryParam: 'type',
+			inputType: 'text',
+			placeholder: ''
+		},
+		created_after: {
+			queryParam: 'created_after',
+			inputType: 'datetime-local',
+			label: '≥'
+		},
+		created_before: {
+			queryParam: 'created_before',
+			inputType: 'datetime-local',
+			label: '≤'
+		}
+	};
+
+	const { filterValues, setFilterValue, applyPagination } = useTableUrlFilters({
+		filterConfig: routeFilterConfig,
+		getServerFilters: () => data.filters
+	});
+
+	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+
+	const table = createSvelteTable({
+		get data() {
+			return data.routes ?? [];
+		},
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+		get rowCount() {
+			return data.pagination.total_count;
+		},
+		state: {
+			get pagination() {
+				return pagination;
+			}
+		},
+		onPaginationChange: (updater) => {
+			const nextPagination = typeof updater === 'function' ? updater(pagination) : updater;
+			pagination = nextPagination;
+			applyPagination(nextPagination);
+		},
+		manualFiltering: true,
+		manualPagination: true
+	});
+
+	$effect(() => {
+		pagination = {
+			pageIndex: Math.max(0, data.pagination.page - 1),
+			pageSize: data.pagination.page_size
+		};
+	});
+
+	const hasActiveFilters = $derived(
+		Boolean(
+			data.filters.name ||
+				data.filters.sector_name ||
+				data.filters.sector_id ||
+				data.filters.area_name ||
+				data.filters.area_id ||
+				data.filters.type ||
+				data.filters.created_before ||
+				data.filters.created_after
+		)
+	);
 </script>
 
 <div class="flex flex-col gap-6 p-4 max-w-7xl mx-auto">
@@ -14,7 +165,7 @@
 		<h1 class="text-4xl">{m.admin_routes_title()}</h1>
 	</div>
 
-	{#if data.routes && data.routes.length > 0}
+	{#if data.routes && (data.routes.length > 0 || hasActiveFilters)}
 		<Card.Root>
 			<Card.Header>
 				<Card.CardAction>
@@ -22,44 +173,21 @@
 				</Card.CardAction>
 			</Card.Header>
 			<Card.Content>
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>{m.admin_routes_table_name()}</Table.Head>
-							<Table.Head>{m.admin_routes_table_sector()}</Table.Head>
-							<Table.Head>{m.admin_routes_table_grade()}</Table.Head>
-							<Table.Head>{m.admin_routes_table_first_ascent_by()}</Table.Head>
-							<Table.Head>{m.admin_routes_table_bolter()}</Table.Head>
-							<Table.Head>{m.admin_routes_table_created_at()}</Table.Head>
-							<Table.Head>{m.admin_routes_table_updated_at()}</Table.Head>
-							<Table.Head>{m.admin_routes_table_actions()}</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each data.routes as route (route.id)}
-							<Table.Row>
-								<Table.Cell>{route.name}</Table.Cell>
-								<Table.Cell>{route.sector_id}</Table.Cell>
-								<Table.Cell>{route.grade}</Table.Cell>
-								<Table.Cell>{route.first_ascent_climber_name}</Table.Cell>
-								<Table.Cell>{route.bolter_name}</Table.Cell>
-								<Table.Cell>
-									{route.created_at ? m.common_iso_datetime({ date: route.created_at }) : ''}
-								</Table.Cell>
-								<Table.Cell>
-									{route.updated_at ? m.common_iso_datetime({ date: route.updated_at }) : ''}
-								</Table.Cell>
-								<Table.Cell class="flex gap-1">
-									<Button href={`/admin/routes/${route.id}`} variant="outline">{m.admin_routes_edit()}</Button>
-									<form method="post" action="?/delete">
-										<input type="hidden" name="route_id" value={route.id} />
-										<Button type="submit" variant="destructive">{m.admin_routes_delete()}</Button>
-									</form>
-								</Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
+				<DataTableView {table} emptyMessage={m.admin_routes_empty_title()}>
+					{#snippet toolbar()}
+						<DataTableFilters
+							{columns}
+							filterConfig={routeFilterConfig}
+							values={filterValues}
+							onValueChange={setFilterValue}
+						/>
+					{/snippet}
+					{#snippet paginationSummary()}
+						<p class="text-sm text-muted-foreground">
+							{data.pagination.page} / {data.pagination.page_count} · {data.pagination.total_count}
+						</p>
+					{/snippet}
+				</DataTableView>
 			</Card.Content>
 		</Card.Root>
 	{:else}

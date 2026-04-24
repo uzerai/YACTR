@@ -32,6 +32,8 @@ export function parsePaginationQuery(
 
 function parsePositiveNumber(value: string | null, fallback: number): number {
 	const number = Number(value);
+
 	if (!Number.isFinite(number) || number <= 0) return fallback;
+	
 	return Math.floor(number);
 }

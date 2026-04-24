@@ -25,6 +25,7 @@
 
 	const colSpan = $derived(columnCount ?? table.getVisibleLeafColumns().length);
 	const showFooter = $derived(Boolean(paginationSummary) || showPaginationControls);
+	// because page index is 0 indexed, but pagination is 1 indexed, add 1
 	const currentPage = $derived(table.getState().pagination.pageIndex + 1);
 	const totalItems = $derived(table.getRowCount());
 	const pageSize = $derived(table.getState().pagination.pageSize);
@@ -72,13 +73,9 @@
 </div>
 {#if showFooter}
 	<div class="flex items-center justify-between py-4">
-		{#if paginationSummary}
-			{@render paginationSummary()}
-		{:else}
-			<span></span>
-		{/if}
 		{#if showPaginationControls}
 			<Pagination.Root
+				class="justify-end"
 				count={totalItems}
 				perPage={pageSize}
 				page={currentPage}
