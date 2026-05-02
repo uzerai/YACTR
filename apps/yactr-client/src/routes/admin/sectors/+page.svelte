@@ -9,7 +9,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Empty from '$lib/components/ui/empty';
 	import { m } from '$lib/paraglide/messages.js';
-	import type { SectorResponse } from '$lib/api';
+	import type { GetAllSectorsResponseItem } from '$lib/api';
 	import SectorAreaLink from './sector-area-link.svelte';
 	import SectorTableActions from './sector-table-actions.svelte';
 
@@ -22,7 +22,7 @@
 		};
 	});
 
-	const columns: ColumnDef<SectorResponse>[] = [
+	const columns: ColumnDef<GetAllSectorsResponseItem>[] = [
 		{
 			accessorKey: 'id',
 			header: m.admin_sectors_table_id()

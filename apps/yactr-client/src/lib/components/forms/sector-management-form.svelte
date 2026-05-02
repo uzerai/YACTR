@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { AreaResponse } from '$lib/api';
+	import type { GetAllAreasResponseItem } from '$lib/api';
 	import { Point as PointInput, Polygon as PolygonInput, LineString as LineStringInput } from '$lib/components/geo-input';
 	import type { infer as ZodInfer } from 'zod';
 	import { untrack } from 'svelte';
@@ -17,10 +17,10 @@
 
 	let {
 		data,
-		areas = [] as AreaResponse[]
+		areas = [] as GetAllAreasResponseItem[]
 	}: {
 		data: SuperValidated<ZodInfer<typeof sectorManagementFormDto>>;
-		areas?: AreaResponse[];
+		areas?: GetAllAreasResponseItem[];
 	} = $props();
 
 	const form = superForm(untrack(() => data), {

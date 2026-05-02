@@ -66,8 +66,8 @@ export const actions = {
       item.image_id = uploadData.image_id;
     }
 
-    const primary_sector_image_id = form.data.sector_images.find(img => img.is_primary)?.image_id;
-    const sector_images = form.data.sector_images.map(img => ({
+    const primary_sector_image_id = form.data.sector_images.find((img: { is_primary?: boolean; image_id?: string }) => img.is_primary)?.image_id;
+    const sector_images = form.data.sector_images.map((img: { image_id?: string; order: number }) => ({
       image_id: img.image_id!,
       order: img.order
     }));

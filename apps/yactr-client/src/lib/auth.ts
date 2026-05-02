@@ -42,7 +42,7 @@ export const auth = betterAuth({
 });
 
 export const handle: Handle = async ({ event, resolve }) => {
-  (event.locals as any).auth = async () => {
+  event.locals.auth = async () => {
     const session = await auth.api.getSession({
       headers: event.request.headers
     });

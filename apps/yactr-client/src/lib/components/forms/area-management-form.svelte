@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Point as PointInput, MultiPolygon as MultiPolygonInput } from '$lib/components/geo-input';
-	import { z } from 'zod';
+	import type { infer as ZodInfer } from 'zod';
 	import { untrack } from 'svelte';
 	import { m } from '$lib/paraglide/messages.js';
 	import { superForm, type SuperValidated } from 'sveltekit-superforms';
-	import { zAreaRequestData } from '$lib/api/generated/zod.gen';
+	import { zUpdateAreaBody } from '$lib/api/generated/zod.gen';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -14,7 +14,7 @@
 	import { HelpCircleIcon } from '@hugeicons/core-free-icons';
 	import { SuperDebugHelper, useSuperDebugForm } from '$lib/components/forms/util/super-debug-helper';
 	
-	let { data }: { data: SuperValidated<z.infer<typeof zAreaRequestData>> } = $props();
+	let { data }: { data: SuperValidated<ZodInfer<typeof zUpdateAreaBody>> } = $props();
 
 	const form = superForm(untrack(() => data), {
 		dataType: 'json'

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { SectorResponse } from '$lib/api';
+	import type { GetAllSectorsResponseItem } from '$lib/api';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
@@ -7,7 +7,7 @@
 	import { Label } from '$lib/components/ui/label';
 
 	let {
-		sectors = [] as SectorResponse[],
+		sectors = [] as GetAllSectorsResponseItem[],
 		showSectorSelect = false,
 		initialSectorId = '',
 		initialName = '',
@@ -16,7 +16,7 @@
 		initialGrade = '',
 		includeGrade = false
 	}: {
-		sectors?: SectorResponse[];
+		sectors?: GetAllSectorsResponseItem[];
 		showSectorSelect?: boolean;
 		initialSectorId?: string;
 		initialName?: string;

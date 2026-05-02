@@ -64,10 +64,7 @@ export const actions = {
     const { error, response } = await deleteRoute({
       path: {
         route_id,
-      },
-      body: {
-        route_id,
-      },
+      }
     });
 
     if (!response.ok) {

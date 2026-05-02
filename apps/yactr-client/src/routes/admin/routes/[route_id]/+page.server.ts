@@ -1,4 +1,10 @@
-import { uploadImage, getRouteById, updateRoute, getAllSectors, type TopoLinePoint } from "$lib/api";
+import {
+  uploadImage,
+  getRouteById,
+  updateRoute,
+  getAllSectors,
+  type TopoLinePoint
+} from "$lib/api";
 import { routeManagementFormDto } from "$lib/components/forms";
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";

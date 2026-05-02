@@ -1,4 +1,10 @@
-import { zPoint, zRouteRequestData, zRouteResponse, zSectorRequestData, zSectorResponse } from "$lib/api/generated/zod.gen";
+import {
+  zCreateRouteRequest,
+  zCreateSectorRequest,
+  zGetRouteByIdResponse,
+  zGetSectorByIdResponse,
+  zPoint
+} from "$lib/api/generated/zod.gen";
 import SectorManagementForm from "./sector-management-form.svelte";
 import AreaManagementForm from "./area-management-form.svelte";
 import RouteManagementForm from "./route-management-form.svelte";
@@ -16,9 +22,10 @@ import z from "zod";
  * Only really necessary because of the way superforms handles file uploads, and wanting to avoid uploading the 
  * files to the API before validation on the client-side server.
  */
-const sectorManagementFormDto = zSectorResponse
-  .extend(zSectorRequestData.shape)
+const sectorManagementFormDto = zGetSectorByIdResponse
+  .extend(zCreateSectorRequest.shape)
   .extend({
+    id: z.string().optional(),
     created_at: z.string().optional(),
     updated_at: z.string().optional(),
     entry_point: zPoint,
@@ -33,9 +40,10 @@ const sectorManagementFormDto = zSectorResponse
     ),
 });
 
-const routeManagementFormDto = zRouteResponse
-  .extend(zRouteRequestData.shape)
+const routeManagementFormDto = zGetRouteByIdResponse
+  .extend(zCreateRouteRequest.shape)
   .extend({
+    id: z.string().optional(),
     is_multipitch: z.boolean().optional(),
     topo_image: z.instanceof(File).optional(), // file holder for route topo image
     topo_image_overlay: z.instanceof(File).optional(), // file holder for svg overlay on route topo

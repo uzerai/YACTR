@@ -16,7 +16,7 @@
 	import * as Empty from '$lib/components/ui/empty';
 	import { m } from '$lib/paraglide/messages.js';
 	import RouteTableActions from './route-table-actions.svelte';
-	import type { RouteResponse } from '$lib/api';
+	import type { GetAllRoutesResponseItem } from '$lib/api';
 
 	let { data }: PageProps = $props();
 
@@ -27,7 +27,7 @@
 		};
 	});
 
-	const columns: ColumnDef<RouteResponse>[] = [
+	const columns: ColumnDef<GetAllRoutesResponseItem>[] = [
 		{
 			accessorKey: 'name',
 			header: m.admin_routes_table_name()
@@ -73,7 +73,7 @@
 		{ label: 'Aid', value: 'Aid' }
 	];
 
-	const routeFilterConfig: ColumnFilterConfig<RouteResponse> = {
+	const routeFilterConfig: ColumnFilterConfig<GetAllRoutesResponseItem> = {
 		name: {
 			type: 'string',
 			queryParameter: 'name',

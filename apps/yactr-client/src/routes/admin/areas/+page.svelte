@@ -16,7 +16,7 @@
 	import * as Empty from '$lib/components/ui/empty';
 	import { m } from '$lib/paraglide/messages.js';
 	import AreaTableActions from './area-table-actions.svelte';
-	import type { AreaResponse } from '$lib/api';
+	import type { GetAllAreasResponseItem } from '$lib/api';
 
 	let { data }: PageProps = $props();
 
@@ -27,7 +27,7 @@
 		};
 	});
 
-	const columns: ColumnDef<AreaResponse>[] = [
+	const columns: ColumnDef<GetAllAreasResponseItem>[] = [
 		{
 			accessorKey: 'id',
 			header: m.admin_areas_table_id()
@@ -58,7 +58,7 @@
 		}
 	];
 
-	const areaFilterConfig: ColumnFilterConfig<AreaResponse> = {
+	const areaFilterConfig: ColumnFilterConfig<GetAllAreasResponseItem> = {
 		name: {
 			type: 'string',
 			queryParameter: 'name',

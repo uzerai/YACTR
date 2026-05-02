@@ -1,14 +1,15 @@
 <script lang="ts">
 	import {
 		getSectorById,
-		type SectorImageResponseData,
-		type SectorResponse
+		type GetAllSectorsResponseItem,
+		type GetSectorByIdImageResponse,
+		type GetSectorByIdResponse
 	} from '$lib/api';
 	import { ClimbingType } from '$lib/api/generated/types.gen';
 	import { m } from '$lib/paraglide/messages.js';
 	import { TopoEditor } from '$lib/components/topo-editor';
 	import { onMount, untrack } from 'svelte';
-	import { z } from 'zod';
+	import type { infer as ZodInfer } from 'zod';
 	import { superForm, type SuperValidated } from 'sveltekit-superforms';
 	import { routeManagementFormDto } from '$lib/components/forms';
 	import * as Form from '$lib/components/ui/form';
@@ -25,8 +26,8 @@
 		data,
 		sectors = []
 	}: {
-		data: SuperValidated<z.infer<typeof routeManagementFormDto>>;
-		sectors: SectorResponse[];
+		data: SuperValidated<ZodInfer<typeof routeManagementFormDto>>;
+		sectors: GetAllSectorsResponseItem[];
 	} = $props();
 
 	const form = superForm(untrack(() => data), {
@@ -40,13 +41,13 @@
 	const climbingTypes = Object.values(ClimbingType);
 	let formDisabled = $derived(!$formData.sector_id);
 
-	let selectedSector = $state<SectorResponse>();
+	let selectedSector = $state<GetSectorByIdResponse>();
 
 	let sectorImages = $derived<
-		Array<SectorImageResponseData & Partial<{ is_primary: boolean }>>
+		Array<GetSectorByIdImageResponse & Partial<{ is_primary: boolean }>>
 	>(
 		selectedSector?.sector_images
-			?.map((image: SectorImageResponseData) => ({ ...image, is_primary: image.image_id === selectedSector?.primary_sector_image_id })) ?? []
+			?.map((image: GetSectorByIdImageResponse) => ({ ...image, is_primary: image.image_id === selectedSector?.primary_sector_image_id })) ?? []
 	);
 	
 	let selectedSectorTopoImage = $derived<string | undefined>(
