@@ -16,7 +16,14 @@ public record UpdatePitchData(
     int PitchOrder
 );
 
-public record UpdatePitchRequest(Guid PitchId, UpdatePitchData Pitch);
+public class UpdatePitchRequest
+{
+    [BindFrom("pitch_id")]
+    public required Guid PitchId { get; set; }
+
+    [FromBody]
+    public required UpdatePitchData Pitch { get; set; }
+}
 
 public class UpdatePitch : AuthenticatedEndpoint<UpdatePitchRequest, EmptyResponse>
 {

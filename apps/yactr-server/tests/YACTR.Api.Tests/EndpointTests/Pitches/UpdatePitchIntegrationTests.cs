@@ -42,7 +42,11 @@ public class UpdatePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
         );
 
         // Act
-        var updateRequest = new UpdatePitchRequest(createdPitch.Id, updateRequestData);
+        var updateRequest = new UpdatePitchRequest
+        {
+            PitchId = createdPitch.Id,
+            Pitch = updateRequestData
+        };
         var (response, _) = await client.PUTAsync<UpdatePitch, UpdatePitchRequest, EmptyResponse>(updateRequest);
 
         // Assert
@@ -66,7 +70,11 @@ public class UpdatePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
         );
 
         // Act
-        var updateRequest = new UpdatePitchRequest(invalidId, updateRequestData);
+        var updateRequest = new UpdatePitchRequest
+        {
+            PitchId = invalidId,
+            Pitch = updateRequestData
+        };
         var (response, _) = await client.PUTAsync<UpdatePitch, UpdatePitchRequest, EmptyResponse>(updateRequest);
 
         // Assert

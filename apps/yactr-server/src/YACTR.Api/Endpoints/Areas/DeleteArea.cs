@@ -6,7 +6,11 @@ using YACTR.Infrastructure.Authorization.Permissions;
 
 namespace YACTR.Api.Endpoints.Areas;
 
-public record DeleteAreaRequest(Guid AreaId);
+public class DeleteAreaRequest
+{
+    [BindFrom("area_id")]
+    public required Guid AreaId { get; set; }
+}
 
 public class DeleteArea : AuthenticatedEndpoint<DeleteAreaRequest, EmptyResponse>
 {

@@ -13,7 +13,10 @@ public class DeleteSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
     {
         using var client = fixture.CreateAuthenticatedClient();
         var (_, sector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var (response, _) = await client.DELETEAsync<DeleteSector, DeleteSectorRequest, EmptyResponse>(new(sector.Id));
+        var (response, _) = await client.DELETEAsync<DeleteSector, DeleteSectorRequest, EmptyResponse>(new()
+        {
+            SectorId = sector.Id
+        });
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         var (getResponse, _) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, GetSectorByIdResponse>(new(sector.Id));
@@ -24,7 +27,10 @@ public class DeleteSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
     public async Task Delete_WithInvalidId_ReturnsNotFound()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var (response, _) = await client.DELETEAsync<DeleteSector, DeleteSectorRequest, EmptyResponse>(new(Guid.NewGuid()));
+        var (response, _) = await client.DELETEAsync<DeleteSector, DeleteSectorRequest, EmptyResponse>(new()
+        {
+            SectorId = Guid.NewGuid()
+        });
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }

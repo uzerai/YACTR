@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+using FastEndpoints;
 using Minio.Exceptions;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Infrastructure.Authorization.Permissions;
@@ -8,8 +8,8 @@ namespace YACTR.Api.Endpoints.Images;
 
 public class DeleteImageRequest
 {
-    [FromRoute]
-    public Guid ImageId { get; set; }
+    [BindFrom("image_id")]
+    public required Guid ImageId { get; set; }
 }
 
 public record DeleteImageResponse(Guid ImageId, string ImageUrl);

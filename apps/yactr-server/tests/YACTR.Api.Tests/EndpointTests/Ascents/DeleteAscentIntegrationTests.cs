@@ -29,7 +29,10 @@ public class DeleteAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act
-        var deleteRequest = new DeleteAscentRequest(createdAscent.Id);
+        var deleteRequest = new DeleteAscentRequest
+        {
+            AscentId = createdAscent.Id
+        };
         var (response, result) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, DeleteAscentResponse>(deleteRequest);
 
         // Assert
@@ -50,7 +53,10 @@ public class DeleteAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
         using var client = Fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
 
         // Act
-        var deleteRequest = new DeleteAscentRequest(Guid.NewGuid());
+        var deleteRequest = new DeleteAscentRequest
+        {
+            AscentId = Guid.NewGuid()
+        };
         var (response, _) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, DeleteAscentResponse>(deleteRequest);
 
         // Assert
@@ -79,7 +85,10 @@ public class DeleteAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act - Try to delete with a different user
-        var deleteRequest = new DeleteAscentRequest(createdAscent.Id);
+        var deleteRequest = new DeleteAscentRequest
+        {
+            AscentId = createdAscent.Id
+        };
         var (response, _) = await clientWithoutPermissions.DELETEAsync<DeleteAscent, DeleteAscentRequest, DeleteAscentResponse>(deleteRequest);
 
         // Assert
@@ -107,7 +116,10 @@ public class DeleteAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act - Try to delete without authentication (this tests the missing branch where ClaimValue returns null)
-        var deleteRequest = new DeleteAscentRequest(createdAscent.Id);
+        var deleteRequest = new DeleteAscentRequest
+        {
+            AscentId = createdAscent.Id
+        };
         var (response, _) = await Fixture.CreateClient().DELETEAsync<DeleteAscent, DeleteAscentRequest, DeleteAscentResponse>(deleteRequest);
 
         // Assert

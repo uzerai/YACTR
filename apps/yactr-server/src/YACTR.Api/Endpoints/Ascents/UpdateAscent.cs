@@ -6,11 +6,19 @@ using YACTR.Domain.Model.Achievement;
 
 namespace YACTR.Api.Endpoints.Ascents;
 
-public record UpdateAscentRequest(
-    Guid AscentId,
+public record UpdateAscentData(
     AscentType Type,
     Instant CompletedAt
 );
+
+public class UpdateAscentRequest
+{
+    [BindFrom("ascent_id")]
+    public required Guid AscentId { get; set; }
+
+    [FromBody]
+    public required UpdateAscentData Data { get; set; }
+}
 
 public class UpdateAscent : AuthenticatedEndpoint<UpdateAscentRequest, EmptyResponse>
 {
@@ -40,8 +48,8 @@ public class UpdateAscent : AuthenticatedEndpoint<UpdateAscentRequest, EmptyResp
             return;
         }
 
-        ascent.Type = req.Type;
-        ascent.CompletedAt = req.CompletedAt;
+        ascent.Type = req.Data.Type;
+        ascent.CompletedAt = req.Data.CompletedAt;
         await AscentRepository.UpdateAsync(ascent, ct);
         await Send.NoContentAsync(ct);
     }

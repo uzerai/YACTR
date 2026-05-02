@@ -6,7 +6,11 @@ using YACTR.Infrastructure.Authorization.Permissions;
 
 namespace YACTR.Api.Endpoints.Sectors;
 
-public record DeleteSectorRequest(Guid SectorId);
+public class DeleteSectorRequest
+{
+    [BindFrom("sector_id")]
+    public required Guid SectorId { get; set; }
+}
 
 public class DeleteSector : AuthenticatedEndpoint<DeleteSectorRequest, EmptyResponse>
 {

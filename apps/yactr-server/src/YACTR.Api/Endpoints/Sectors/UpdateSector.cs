@@ -27,7 +27,8 @@ public record UpdateSectorData(
 
 public class UpdateSectorRequest
 {
-    public Guid SectorId { get; set; }
+    [BindFrom("sector_id")]
+    public required Guid SectorId { get; set; }
 
     [FromBody]
     public required UpdateSectorData Data { get; set; }
