@@ -1,9 +1,7 @@
 using FastEndpoints;
-
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using NodaTime;
-
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Service;

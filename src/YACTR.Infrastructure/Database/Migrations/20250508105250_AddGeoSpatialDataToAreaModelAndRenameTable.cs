@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Microsoft.EntityFrameworkCore.Migrations;
-
 using NetTopologySuite.Geometries;
 
 namespace YACTR.Infrastructure.Database.Migrations

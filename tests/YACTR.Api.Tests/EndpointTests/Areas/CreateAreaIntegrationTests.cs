@@ -1,9 +1,6 @@
 using System.Net;
-
 using FastEndpoints.Testing;
-
 using Shouldly;
-
 using YACTR.Api.Endpoints.Areas;
 using YACTR.Domain.Model.Authentication;
 

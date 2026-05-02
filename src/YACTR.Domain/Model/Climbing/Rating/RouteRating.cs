@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-
 using YACTR.Domain.Model.Authentication;
 
 namespace YACTR.Domain.Model.Climbing.Rating;

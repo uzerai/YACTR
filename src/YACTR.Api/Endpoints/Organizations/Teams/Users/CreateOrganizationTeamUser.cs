@@ -3,7 +3,6 @@ using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Organizations;
 using YACTR.Infrastructure.Authorization.Permissions;
-
 using Void = FastEndpoints.Void;
 
 namespace YACTR.Api.Endpoints.Organizations;

@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-
 using NodaTime;
-
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model;
 using YACTR.Infrastructure.Database.QueryExtensions;

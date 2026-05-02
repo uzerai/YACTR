@@ -1,11 +1,8 @@
 using FastEndpoints;
-
 using Microsoft.EntityFrameworkCore;
-
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing.Rating;
-
 using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Routes;

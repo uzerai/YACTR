@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
 using YACTR.Domain.Model.Achievement;
 
 namespace YACTR.Infrastructure.Database.Table;

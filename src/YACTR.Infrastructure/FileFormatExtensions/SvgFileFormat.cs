@@ -1,5 +1,4 @@
 using System.Xml;
-
 using FileSignatures.Formats;
 
 namespace YACTR.Infrastructure.FileFormatExtensions;

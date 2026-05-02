@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-
 using NetTopologySuite.Geometries;
 
 namespace YACTR.Domain.Model;

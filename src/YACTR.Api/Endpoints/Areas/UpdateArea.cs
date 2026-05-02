@@ -1,7 +1,6 @@
 using FastEndpoints;
 using FluentValidation;
 using NetTopologySuite.Geometries;
-
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing;

@@ -1,7 +1,5 @@
 using System.Net;
-
 using Shouldly;
-
 using YACTR.Api.Endpoints.Images;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Authorization.Permissions;

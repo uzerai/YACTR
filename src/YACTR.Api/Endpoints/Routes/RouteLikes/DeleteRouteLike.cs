@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing.Rating;
-
 using Route = YACTR.Domain.Model.Climbing.Route;
 using Void = FastEndpoints.Void;
 

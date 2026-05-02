@@ -1,5 +1,4 @@
 using System.Net;
-
 using Shouldly;
 using YACTR.Api.Endpoints.Organizations.Teams;
 

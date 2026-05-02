@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Organizations;
 

@@ -1,7 +1,5 @@
 using NodaTime;
-
 using Shouldly;
-
 using YACTR.Api.Endpoints.Ascents;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Model.Achievement;

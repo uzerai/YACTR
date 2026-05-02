@@ -1,9 +1,6 @@
 using System.Net;
-
 using NodaTime;
-
 using Shouldly;
-
 using YACTR.Api.Endpoints.Ascents;
 using YACTR.Domain.Model.Achievement;
 

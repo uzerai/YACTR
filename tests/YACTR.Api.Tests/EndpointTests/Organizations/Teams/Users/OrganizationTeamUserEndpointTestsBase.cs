@@ -1,5 +1,4 @@
 using FastEndpoints.Testing;
-
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Organizations;

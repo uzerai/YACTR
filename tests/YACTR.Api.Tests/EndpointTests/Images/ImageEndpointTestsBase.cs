@@ -1,7 +1,5 @@
 using FastEndpoints.Testing;
-
 using Microsoft.AspNetCore.Http;
-
 using YACTR.Api.Tests.TestData;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Authorization.Permissions;

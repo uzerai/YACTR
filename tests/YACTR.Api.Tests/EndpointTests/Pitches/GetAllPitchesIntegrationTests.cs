@@ -1,9 +1,6 @@
 using System.Net;
-
 using FastEndpoints.Testing;
-
 using Shouldly;
-
 using YACTR.Api.Endpoints.Pitches;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Model.Climbing;

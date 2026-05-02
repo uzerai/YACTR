@@ -1,5 +1,4 @@
 using NodaTime;
-
 using YACTR.Domain.Model.Climbing.Rating;
 using YACTR.Domain.Model.Climbing.Topo;
 
