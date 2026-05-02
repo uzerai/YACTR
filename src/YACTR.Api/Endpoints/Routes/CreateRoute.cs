@@ -95,7 +95,9 @@ public class CreateRoute : AuthenticatedEndpoint<CreateRouteRequest, CreateRoute
 
     public override async Task HandleAsync(CreateRouteRequest req, CancellationToken ct)
     {
-        var routeType = req.Pitches.Select(x => x.Type).Aggregate(req.Type, (total, next) => total == next ? total : ClimbingType.Mixed);
+        var routeType = req.Pitches.Select(x => x.Type)
+            .Aggregate(req.Type, (total, next) => total == next ? total : ClimbingType.Mixed);
+
         var newRoute = new Route
         {
             Name = req.Name,
@@ -129,7 +131,7 @@ public class CreateRoute : AuthenticatedEndpoint<CreateRouteRequest, CreateRoute
                 PitchOrder = 0,
                 RouteId = createdRoute.Id,
                 SectorId = createdRoute.SectorId,
-            });
+            }, ct);
         }
         else
         {
@@ -143,7 +145,7 @@ public class CreateRoute : AuthenticatedEndpoint<CreateRouteRequest, CreateRoute
                 PitchOrder = pitchReq.PitchOrder,
                 RouteId = createdRoute.Id,
                 SectorId = createdRoute.SectorId
-            })));
+            }, ct)));
         }
 
         await Send.CreatedAtAsync<GetRouteById>(createdRoute.Id, await MapRouteToResponseAsync(createdRoute, ct), cancellation: ct);

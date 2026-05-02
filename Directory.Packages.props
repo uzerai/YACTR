@@ -34,7 +34,7 @@
     <!-- TODO: Need to replace this with garage -->
     <PackageVersion Include="Minio" Version="7.0.0" />
     <!-- FileSignatures, primarily for uploaded image signature detection -->
-    <PackageVersion Include="FileSignatures" Version="6.1.1" />
+    <PackageVersion Include="FileSignatures" Version="7.1.0" />
   </ItemGroup>
   
   <ItemGroup Label="Test dependencies">
