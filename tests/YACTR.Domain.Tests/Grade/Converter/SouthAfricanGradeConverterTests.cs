@@ -1,4 +1,5 @@
 using Shouldly;
+
 using YACTR.Domain.Model.Climbing.Grade.GradeConverters;
 
 namespace YACTR.Domain.Tests.Grade.Converter;
@@ -7,7 +8,7 @@ public class SouthAfricanGradeConverterTests : GradeConverterTests<SouthAfricanG
 {
     [Theory]
     [InlineData(2, "1")]
-    [InlineData(9, "2")]    
+    [InlineData(9, "2")]
     [InlineData(17, "3")]
     [InlineData(25, "4")]
     [InlineData(32, "5")]

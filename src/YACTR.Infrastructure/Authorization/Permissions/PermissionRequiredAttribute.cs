@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+
 using YACTR.Domain.Model.Authorization.Permissions;
 
 namespace YACTR.Infrastructure.Authorization.Permissions;
@@ -13,7 +14,7 @@ public abstract class PermissionRequiredAttribute(PermissionLevel permissionLeve
 {
     public readonly Permission Permission = permission;
     public readonly PermissionLevel PermissionLevel = permissionLevel;
-    
+
     public IEnumerable<IAuthorizationRequirement> GetRequirements()
     {
         yield return this;

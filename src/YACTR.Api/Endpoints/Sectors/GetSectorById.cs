@@ -1,8 +1,10 @@
 using FastEndpoints;
+
 using Microsoft.EntityFrameworkCore;
+
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Database.QueryExtensions;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Sectors;
 

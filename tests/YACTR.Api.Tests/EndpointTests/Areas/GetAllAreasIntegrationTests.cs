@@ -1,6 +1,9 @@
 using FastEndpoints.Testing;
+
 using NodaTime;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Areas;
 using YACTR.Api.Pagination;
 
@@ -15,7 +18,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
         using var client = fixture.CreateClient();
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
-        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new());
+        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new());
 
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
@@ -26,7 +29,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
     {
         using var client = fixture.CreateClient();
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
@@ -39,7 +42,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
             await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         }
 
-        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             Page = 2,
             PageSize = 2
@@ -61,7 +64,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
             await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         }
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
@@ -69,7 +72,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
         baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
         baselineResult.ShouldNotBeNull();
 
-        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             Page = 1,
             PageSize = 0
@@ -92,13 +95,13 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
             await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         }
 
-        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
         });
 
-        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             Page = 2,
             PageSize = 1
@@ -122,7 +125,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Desert-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             Name = tag
         });
@@ -141,7 +144,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (alpineArea, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Desert-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             CountryName = $"{tag} Country"
         });
@@ -158,7 +161,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (alpineArea, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Alpine-{Guid.NewGuid():N}"));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Desert-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             CountryId = alpineArea.CountryId
         });
@@ -178,7 +181,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (olderArea, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Older-{Guid.NewGuid():N}", AreaCreatedAt: early));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Newer-{Guid.NewGuid():N}", AreaCreatedAt: late));
 
-        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             CreatedBefore = Instant.FromUtc(2025, 2, 5, 0, 0)
         });
@@ -198,7 +201,7 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Older-{Guid.NewGuid():N}", AreaCreatedAt: early));
         var (newerArea, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Newer-{Guid.NewGuid():N}", AreaCreatedAt: late));
 
-        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<AreaResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
         {
             CreatedAfter = Instant.FromUtc(2025, 3, 5, 0, 0)
         });

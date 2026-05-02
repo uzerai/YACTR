@@ -1,13 +1,17 @@
 using FastEndpoints;
+
 using Microsoft.EntityFrameworkCore;
+
 using NodaTime;
+
 using YACTR.Api.Pagination;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Sectors;
 
-public class GetAllSectorsRequest : PaginationRequest {
+public class GetAllSectorsRequest : PaginationRequest
+{
     /// <summary>
     /// Contains-matched name of the area. ie: "be" will match "bearing" and "beaver wall"
     /// </summary>
@@ -26,12 +30,12 @@ public class GetAllSectorsRequest : PaginationRequest {
     /// <summary>
     /// Sectors created before the given instant.
     /// </summary>
-    public Instant? CreatedBefore { get;init; }
+    public Instant? CreatedBefore { get; init; }
 
     /// <summary>
     /// Sectors created after the given instant.
     /// </summary>
-    public Instant? CreatedAfter { get;init; }
+    public Instant? CreatedAfter { get; init; }
 }
 
 public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<SectorResponse>, SectorDataMapper>
@@ -71,7 +75,7 @@ public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<Se
         {
             query = query.Where(e => EF.Functions.ILike(e.Area.Name, "%" + req.AreaName + "%"));
         }
-        
+
         if (req.AreaId is not null)
         {
             query = query.Where(e => e.AreaId == req.AreaId);

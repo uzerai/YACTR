@@ -1,6 +1,6 @@
 using FastEndpoints;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Pitches;
 

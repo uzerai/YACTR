@@ -1,8 +1,8 @@
 using System.Net;
-using FastEndpoints.Testing;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Organizations;
-using YACTR.Domain.Model.Authentication;
 
 namespace YACTR.Api.Tests.EndpointTests.Organizations.Teams;
 

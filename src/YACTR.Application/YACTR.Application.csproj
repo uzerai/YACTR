@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ProjectName>YACTR.Application</ProjectName>
+    <RootNamespace>YACTR.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetTopologySuite" />
+    <PackageReference Include="FastEndpoints.Messaging" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../YACTR.Domain/YACTR.Domain.csproj" />
+    <ProjectReference Include="../YACTR.Infrastructure/YACTR.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

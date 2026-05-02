@@ -1,12 +1,25 @@
 using FastEndpoints;
+using NetTopologySuite.Geometries;
+using NodaTime;
+
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Areas;
 
 public record GetAreaByIdRequest(Guid AreaId);
 
-public class GetAreaById : Endpoint<GetAreaByIdRequest, AreaResponse, AreaDataMapper>
+public record GetAreaByIdResponse(
+    Guid Id,
+    string Name,
+    string? Description,
+    Point Location,
+    MultiPolygon Boundary,
+    Instant CreatedAt,
+    Instant UpdatedAt
+);
+
+public class GetAreaById : Endpoint<GetAreaByIdRequest, GetAreaByIdResponse>
 {
     public required IEntityRepository<Area> AreaRepository { get; init; }
 
@@ -26,6 +39,14 @@ public class GetAreaById : Endpoint<GetAreaByIdRequest, AreaResponse, AreaDataMa
             return;
         }
 
-        await Send.OkAsync(Map.FromEntity(area), cancellation: ct);
+        await Send.OkAsync(new GetAreaByIdResponse(
+            Id: area.Id,
+            Name: area.Name,
+            Description: area.Description,
+            Location: area.Location,
+            Boundary: area.Boundary,
+            CreatedAt: area.CreatedAt,
+            UpdatedAt: area.UpdatedAt
+        ), cancellation: ct);
     }
 }

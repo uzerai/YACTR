@@ -1,5 +1,7 @@
 using System.Net;
+
 using FastEndpoints.Testing;
+
 using Shouldly;
 
 namespace YACTR.Api.Tests.EndpointTests.Root;

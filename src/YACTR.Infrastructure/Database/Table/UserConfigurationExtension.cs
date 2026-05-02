@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Organizations;
 
@@ -27,7 +28,7 @@ public static class UserConfigurationExtension
 
         modelBuilder.Entity<User>()
             .HasIndex(e => e.Email);
-        
+
         modelBuilder.Entity<User>()
             .HasIndex(e => e.Auth0UserId);
 

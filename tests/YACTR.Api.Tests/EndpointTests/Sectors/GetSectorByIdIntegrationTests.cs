@@ -1,6 +1,9 @@
 using System.Net;
+
 using FastEndpoints.Testing;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Sectors;
 
 namespace YACTR.Api.Tests.EndpointTests.Sectors;

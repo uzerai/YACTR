@@ -1,12 +1,12 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using YACTR.Api.Pagination;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Pitches;
 
-public class GetAllPitchesRequest : PaginationRequest {}
+public class GetAllPitchesRequest : PaginationRequest { }
 
 public class GetAllPitches : Endpoint<GetAllPitchesRequest, PaginatedResponse<PitchResponse>, PitchDataMapper>
 {

@@ -1,0 +1,4 @@
+[*.cs]
+dotnet_diagnostic.IDE0005.severity = error   # remove unused usings
+dotnet_separate_import_directive_groups = false
+dotnet_sort_system_directives_first = true

@@ -1,9 +1,12 @@
 using FastEndpoints;
+
 using Microsoft.EntityFrameworkCore;
+
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Infrastructure.Authorization.Permissions;
 using YACTR.Infrastructure.Database.QueryExtensions;
-using YACTR.Infrastructure.Database.Repository.Interface;
+
 using Route = YACTR.Domain.Model.Climbing.Route;
 using Void = FastEndpoints.Void;
 

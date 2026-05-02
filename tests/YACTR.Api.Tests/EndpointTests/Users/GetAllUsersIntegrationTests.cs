@@ -1,6 +1,9 @@
 using System.Net;
+
 using FastEndpoints.Testing;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Users;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Model.Authentication;

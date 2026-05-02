@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+
 using YACTR.Domain.Model.Organizations;
 
 namespace YACTR.Infrastructure.Database.Table;

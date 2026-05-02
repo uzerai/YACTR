@@ -1,4 +1,5 @@
 using FastEndpoints;
+
 using YACTR.Domain.Model.Climbing.Rating;
 
 namespace YACTR.Api.Endpoints.Routes.RouteRatings;

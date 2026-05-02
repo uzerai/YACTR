@@ -1,6 +1,9 @@
 using System.Net;
+
 using FastEndpoints.Testing;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Areas;
 using YACTR.Domain.Model.Authentication;
 
@@ -14,14 +17,14 @@ public class CreateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
     {
         using var client = fixture.CreateAuthenticatedClient();
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"CountrySeed-{Guid.NewGuid():N}"));
-        var createRequest = new AreaRequestData(
+        var createRequest = new CreateAreaRequest(
             "Test Climbing Area",
             "A beautiful climbing area for testing",
             fixture.TestDataFactory.NewPoint(),
             fixture.TestDataFactory.NewMultiPolygon()
         );
 
-        var (response, result) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateArea, CreateAreaRequest, CreateAreaResponse>(createRequest);
 
         response.IsSuccessStatusCode.ShouldBeTrue();
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -37,8 +40,8 @@ public class CreateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
     public async Task Create_WithEmptyName_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var createRequest = new AreaRequestData("", "A description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon());
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
+        var createRequest = new CreateAreaRequest("", "A description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon());
+        var (response, _) = await client.POSTAsync<CreateArea, CreateAreaRequest, CreateAreaResponse>(createRequest);
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
@@ -46,8 +49,8 @@ public class CreateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
     public async Task Create_WithNameTooShort_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var createRequest = new AreaRequestData("A", "A description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon());
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
+        var createRequest = new CreateAreaRequest("A", "A description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon());
+        var (response, _) = await client.POSTAsync<CreateArea, CreateAreaRequest, CreateAreaResponse>(createRequest);
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
@@ -55,8 +58,8 @@ public class CreateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
     public async Task Create_WithNameTooLong_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var createRequest = new AreaRequestData(new string('x', 256), "A description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon());
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
+        var createRequest = new CreateAreaRequest(new string('x', 256), "A description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon());
+        var (response, _) = await client.POSTAsync<CreateArea, CreateAreaRequest, CreateAreaResponse>(createRequest);
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
@@ -64,8 +67,8 @@ public class CreateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
     public async Task Create_WithDescriptionTooLong_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var createRequest = new AreaRequestData("Valid Area Name", new string('x', 1001), fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon());
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
+        var createRequest = new CreateAreaRequest("Valid Area Name", new string('x', 1001), fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon());
+        var (response, _) = await client.POSTAsync<CreateArea, CreateAreaRequest, CreateAreaResponse>(createRequest);
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
@@ -73,8 +76,8 @@ public class CreateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
     public async Task Create_WithEmptyLocation_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var createRequest = new AreaRequestData("Valid Area Name", "A description", fixture.TestDataFactory.EmptyPoint(), fixture.TestDataFactory.NewMultiPolygon());
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
+        var createRequest = new CreateAreaRequest("Valid Area Name", "A description", fixture.TestDataFactory.EmptyPoint(), fixture.TestDataFactory.NewMultiPolygon());
+        var (response, _) = await client.POSTAsync<CreateArea, CreateAreaRequest, CreateAreaResponse>(createRequest);
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
@@ -82,8 +85,8 @@ public class CreateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
     public async Task Create_WithEmptyBoundary_ReturnsBadRequest()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var createRequest = new AreaRequestData("Valid Area Name", "A description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.EmptyMultiPolygon());
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
+        var createRequest = new CreateAreaRequest("Valid Area Name", "A description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.EmptyMultiPolygon());
+        var (response, _) = await client.POSTAsync<CreateArea, CreateAreaRequest, CreateAreaResponse>(createRequest);
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
@@ -99,14 +102,14 @@ public class CreateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
         };
 
         using var client = fixture.CreateAuthenticatedClient(user);
-        var createRequest = new AreaRequestData(
+        var createRequest = new CreateAreaRequest(
             "Test Climbing Area",
             "A beautiful climbing area for testing",
             fixture.TestDataFactory.NewPoint(),
             fixture.TestDataFactory.NewMultiPolygon()
         );
 
-        var (response, _) = await client.POSTAsync<CreateArea, AreaRequestData, AreaResponse>(createRequest);
+        var (response, _) = await client.POSTAsync<CreateArea, CreateAreaRequest, CreateAreaResponse>(createRequest);
         response.IsSuccessStatusCode.ShouldBeFalse();
     }
 }

@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
+
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model;
 using YACTR.Domain.Model.Achievement;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Domain.Model.Climbing.Rating;
 using YACTR.Domain.Model.Organizations;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Infrastructure.Database.Repository.ConfigurationExtension;
 

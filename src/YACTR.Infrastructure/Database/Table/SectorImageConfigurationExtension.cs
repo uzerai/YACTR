@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+
 using YACTR.Domain.Model.Climbing;
 
 namespace YACTR.Infrastructure.Database.Table;
@@ -9,7 +10,7 @@ public static class SectorImageConfigurationExtension
     {
         modelBuilder.Entity<SectorImage>()
             .ToTable("sector_images");
-        
+
         modelBuilder.Entity<SectorImage>()
             .HasKey(e => new { e.SectorId, e.ImageId });
 

@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+
 using YACTR.Domain.Model.Climbing.Rating;
 
 namespace YACTR.Infrastructure.Database.Table;

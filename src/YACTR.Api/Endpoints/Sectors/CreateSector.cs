@@ -1,8 +1,9 @@
 using NetTopologySuite.Geometries;
+
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Authorization.Permissions;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Sectors;
 
@@ -34,13 +35,13 @@ public class CreateSector : AuthenticatedEndpoint<SectorRequestData, CreatedSect
         var sector = Map.ToEntity(req);
         var createdSector = await SectorRepository.CreateAsync(sector, ct);
 
-        await Send.CreatedAtAsync<GetSectorById>(createdSector.Id, 
-            new CreatedSectorResponse(createdSector.Id, 
-                createdSector.Name, 
-                createdSector.SectorArea, 
+        await Send.CreatedAtAsync<GetSectorById>(createdSector.Id,
+            new CreatedSectorResponse(createdSector.Id,
+                createdSector.Name,
+                createdSector.SectorArea,
                 createdSector.EntryPoint,
-                createdSector.RecommendedParkingLocation, 
-                createdSector.ApproachPath, 
+                createdSector.RecommendedParkingLocation,
+                createdSector.ApproachPath,
                 createdSector.PrimarySectorImageId,
                 createdSector.SectorImages.Select(si => si.ImageId),
                 createdSector.AreaId)

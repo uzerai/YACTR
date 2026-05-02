@@ -1,9 +1,9 @@
 using System.Net;
-using FastEndpoints;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Organizations;
 using YACTR.Infrastructure.Authorization.Permissions;
-using YACTR.Infrastructure.Database.Repository.Interface;
+
 using Void = FastEndpoints.Void;
 
 namespace YACTR.Api.Endpoints.Organizations;
@@ -13,7 +13,7 @@ public record CreateOrganizationTeamUserResponse(Guid OrganizationId, Guid TeamI
 
 public class CreateOrganizationTeamUser(
     IRepository<OrganizationUser> _organizationUserRepository,
-    IRepository<OrganizationTeamUser> _organizationTeamUserRepository, 
+    IRepository<OrganizationTeamUser> _organizationTeamUserRepository,
     IEntityRepository<OrganizationTeam> _organizationTeamRepository) : AuthenticatedEndpoint<CreateOrganizationTeamUserRequest, CreateOrganizationTeamUserResponse>
 {
     public override void Configure()
@@ -47,6 +47,6 @@ public class CreateOrganizationTeamUser(
 
         var createdTeamUser = await _organizationTeamUserRepository.CreateAsync(organizationTeamUser, ct);
 
-        return await Send.OkAsync(new (organizationTeam.OrganizationId, organizationTeam.Id, createdTeamUser.UserId), cancellation: ct);
+        return await Send.OkAsync(new(organizationTeam.OrganizationId, organizationTeam.Id, createdTeamUser.UserId), cancellation: ct);
     }
 }

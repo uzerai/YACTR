@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+
 using YACTR.Domain.Model.Authentication;
 
 namespace YACTR.Domain.Model.Organizations;

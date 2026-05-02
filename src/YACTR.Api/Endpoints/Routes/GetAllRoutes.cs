@@ -1,14 +1,19 @@
 using FastEndpoints;
+
 using Microsoft.EntityFrameworkCore;
+
 using NodaTime;
+
 using YACTR.Api.Pagination;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
-using YACTR.Infrastructure.Database.Repository.Interface;
+
 using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Routes;
 
-public class GetAllRoutesRequest : PaginationRequest {
+public class GetAllRoutesRequest : PaginationRequest
+{
     public string? Name { get; init; }
     public string? SectorName { get; init; }
     public Guid? SectorId { get; init; }
@@ -63,7 +68,7 @@ public class GetAllRoutes : Endpoint<GetAllRoutesRequest, PaginatedResponse<Rout
         {
             query = query.Where(e => EF.Functions.ILike(e.Sector.Area.Name, "%" + req.AreaName + "%"));
         }
-        
+
         if (req.AreaId is not null)
         {
             query = query.Where(e => e.Sector.AreaId == req.AreaId);

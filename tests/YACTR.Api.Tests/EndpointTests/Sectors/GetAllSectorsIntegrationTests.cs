@@ -1,6 +1,9 @@
 using FastEndpoints.Testing;
+
 using NodaTime;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Sectors;
 using YACTR.Api.Pagination;
 

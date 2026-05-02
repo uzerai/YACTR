@@ -1,13 +1,18 @@
 using FastEndpoints;
+
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
+
 using NodaTime;
+
 using YACTR.Api.Pagination;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Areas;
 
-public class GetAllAreasRequest : PaginationRequest {
+public class GetAllAreasRequest : PaginationRequest
+{
     /// <summary>
     /// Contains-matched name of the area. ie: "lo" will match "london" and "london wall"
     /// </summary>
@@ -34,7 +39,17 @@ public class GetAllAreasRequest : PaginationRequest {
     public int? CountryId { get; init; }
 };
 
-public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<AreaResponse>, AreaDataMapper>
+public record GetAllAreasResponseItem(
+    Guid Id,
+    string Name,
+    string? Description,
+    Point Location,
+    MultiPolygon Boundary,
+    Instant CreatedAt,
+    Instant UpdatedAt
+);
+
+public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>
 {
     public required IEntityRepository<Area> AreaRepository { get; init; }
 
@@ -53,9 +68,22 @@ public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<AreaRe
         query = ApplyFilters(query, req);
 
         var result = await query.OrderBy(e => e.Id)
-            .ToPaginatedResponseAsync(Map.FromEntityAsync, req, ct);
-            
+            .ToPaginatedResponseAsync(MapAreaToResponseAsync, req, ct);
+
         await Send.OkAsync(result, cancellation: ct);
+    }
+
+    private static Task<GetAllAreasResponseItem> MapAreaToResponseAsync(Area area, CancellationToken ct)
+    {
+        return Task.FromResult(new GetAllAreasResponseItem(
+            Id: area.Id,
+            Name: area.Name,
+            Description: area.Description,
+            Location: area.Location,
+            Boundary: area.Boundary,
+            CreatedAt: area.CreatedAt,
+            UpdatedAt: area.UpdatedAt
+        ));
     }
 
     private static IQueryable<Area> ApplyFilters(IQueryable<Area> query, GetAllAreasRequest req)

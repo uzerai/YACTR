@@ -1,4 +1,5 @@
 using FastEndpoints;
+
 using YACTR.Domain.Model;
 using YACTR.Infrastructure.Service;
 

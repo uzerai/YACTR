@@ -1,7 +1,9 @@
 using System.Net;
-using FastEndpoints;
+
 using FastEndpoints.Testing;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Areas;
 
 namespace YACTR.Api.Tests.EndpointTests.Areas;
@@ -18,7 +20,7 @@ public class DeleteAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
         var (response, _) = await client.DELETEAsync<DeleteArea, DeleteAreaRequest, EmptyResponse>(new(area.Id));
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var (getResponse, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, AreaResponse>(new(area.Id));
+        var (getResponse, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, GetAreaByIdResponse>(new(area.Id));
         getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 

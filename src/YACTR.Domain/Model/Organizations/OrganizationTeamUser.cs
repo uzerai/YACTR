@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Authorization.Permissions;
 

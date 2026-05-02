@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+
 using YACTR.Domain.Model.Authorization.Permissions;
 
 namespace YACTR.Infrastructure.Authorization.Permissions;
@@ -12,7 +13,7 @@ public class PlatformPermissionsAuthorizationHandler(ILogger<PlatformPermissions
         logger.LogDebug("User is {UserId}", context.User.Identity?.Name);
 
         // Admin permissions are also platform permissions.
-        if (context.User.HasClaim(nameof(PermissionLevel.PlatformPermission), requirement.Permission.ToString()) 
+        if (context.User.HasClaim(nameof(PermissionLevel.PlatformPermission), requirement.Permission.ToString())
             || context.User.HasClaim(nameof(PermissionLevel.AdminPermission), requirement.Permission.ToString()))
         {
             context.Succeed(requirement);

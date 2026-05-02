@@ -1,4 +1,5 @@
 using NetTopologySuite.Geometries;
+
 using NJsonSchema;
 using NJsonSchema.Generation;
 using NJsonSchema.Generation.TypeMappers;
