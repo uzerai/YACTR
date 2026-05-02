@@ -2,6 +2,4 @@ root = true
 
 [*.cs]
 dotnet_diagnostic.IDE0005.severity = error   # remove unused usings
-dotnet_diagnostic.IDE0055.severity = warning   # ← this enforces import grouping
-dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true

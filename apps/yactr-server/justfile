@@ -4,6 +4,10 @@
 default:
   @just --list --unsorted
 
+[doc('Formats all code in the project')]
+format:
+  dotnet format style --diagnostics IDE0005
+
 [group('docker-compose')]
 [doc('Starts dev-profile docker compose & dotnet watch of server in tmux session which exits both when detached')]
 dev:
