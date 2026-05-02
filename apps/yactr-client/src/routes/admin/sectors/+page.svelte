@@ -104,7 +104,7 @@
 	});
 </script>
 
-<div class="mx-auto flex max-w-7xl flex-col gap-6 p-4">
+<div class="flex flex-col gap-6">
 	<div class="flex items-center justify-between">
 		<h1 class="text-4xl">{m.admin_sectors_title()}</h1>
 	</div>

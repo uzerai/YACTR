@@ -168,7 +168,7 @@
 	);
 </script>
 
-<div class="flex flex-col gap-6 p-4 max-w-7xl mx-auto">
+<div class="flex flex-col gap-6">
 	<div class="flex items-center justify-between">
 		<h1 class="text-4xl">{m.admin_routes_title()}</h1>
 	</div>

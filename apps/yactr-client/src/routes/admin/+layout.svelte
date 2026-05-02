@@ -74,7 +74,7 @@
 		<Sidebar.Rail>
 		</Sidebar.Rail>
   </Sidebar.Root>
-  <main class="p-4 w-full relative">
+  <main class="p-10 w-full relative">
     {@render children()}
   </main>
 </Sidebar.Provider>

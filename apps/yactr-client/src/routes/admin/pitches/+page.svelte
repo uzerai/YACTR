@@ -8,7 +8,7 @@
 	let { data }: PageProps = $props();
 </script>
 
-<div class="mx-auto flex max-w-7xl flex-col gap-6 p-4">
+<div class="flex flex-col gap-6">
 	<div class="flex items-center justify-between">
 		<h1 class="text-4xl">Pitches</h1>
 	</div>
