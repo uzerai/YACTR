@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Achievement;
+using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Ascents;
 
@@ -11,7 +12,15 @@ public record CreateAscentRequest(
     Instant CompletedAt
 );
 
-public class CreateAscent : AuthenticatedEndpoint<CreateAscentRequest, AscentResponse>
+public record CreateAscentResponse(
+  Guid Id,
+  Guid UserId,
+  AscentType Type,
+  Instant CompletedAt,
+  Route? Route
+);
+
+public class CreateAscent : AuthenticatedEndpoint<CreateAscentRequest, CreateAscentResponse>
 {
     public required IRepository<Ascent> AscentRepository { get; init; }
 
@@ -40,7 +49,7 @@ public class CreateAscent : AuthenticatedEndpoint<CreateAscentRequest, AscentRes
             .Include(a => a.Route)
             .FirstAsync(a => a.Id == createdAscent.Id, ct);
 
-        await Send.CreatedAtAsync<GetAscentById>(ascentWithRoute.Id, new AscentResponse(
+        await Send.CreatedAtAsync<GetAscentById>(ascentWithRoute.Id, new CreateAscentResponse(
             Id: ascentWithRoute.Id,
             UserId: ascentWithRoute.UserId,
             Type: ascentWithRoute.Type,

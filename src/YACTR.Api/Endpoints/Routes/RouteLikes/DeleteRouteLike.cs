@@ -8,7 +8,15 @@ using Void = FastEndpoints.Void;
 
 namespace YACTR.Api.Endpoints.Routes.RouteLikes;
 
-public class DeleteRouteLike(IEntityRepository<RouteLike> routeLikeRepository, IEntityRepository<Route> routeRepository) : AuthenticatedEndpoint<RouteLikeRequest, RouteLikeResponse, RouteLikeDataMapper>
+public record DeleteRouteLikeRequest(Guid RouteId);
+
+public record DeleteRouteLikeResponse(
+    Guid Id,
+    Guid UserId,
+    Guid RouteId
+);
+
+public class DeleteRouteLike(IEntityRepository<RouteLike> routeLikeRepository, IEntityRepository<Route> routeRepository) : AuthenticatedEndpoint<DeleteRouteLikeRequest, DeleteRouteLikeResponse>
 {
     public override void Configure()
     {
@@ -16,7 +24,7 @@ public class DeleteRouteLike(IEntityRepository<RouteLike> routeLikeRepository, I
         Group<RoutesEndpointGroup>();
     }
 
-    public override async Task<Void> HandleAsync(RouteLikeRequest req, CancellationToken ct)
+    public override async Task<Void> HandleAsync(DeleteRouteLikeRequest req, CancellationToken ct)
     {
         if (await routeRepository.BuildReadonlyQuery()
             .FirstOrDefaultAsync(e => e.Id == req.RouteId, ct) is null)
@@ -33,7 +41,7 @@ public class DeleteRouteLike(IEntityRepository<RouteLike> routeLikeRepository, I
         if (existingLike is not null)
         {
             await routeLikeRepository.DeleteAsync(existingLike, ct);
-            return await Send.OkAsync(await Map.FromEntityAsync(existingLike, ct), ct);
+            return await Send.OkAsync(new DeleteRouteLikeResponse(existingLike.Id, existingLike.UserId, existingLike.RouteId), ct);
         }
 
         return await Send.NotFoundAsync(ct);

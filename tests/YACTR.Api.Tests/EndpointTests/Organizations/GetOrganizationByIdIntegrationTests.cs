@@ -5,7 +5,6 @@ using FastEndpoints.Testing;
 using Shouldly;
 
 using YACTR.Api.Endpoints.Organizations;
-using YACTR.Domain.Model.Organizations;
 
 namespace YACTR.Api.Tests.EndpointTests.Organizations;
 
@@ -19,12 +18,12 @@ public class GetOrganizationByIdIntegrationTests(ApiTestClassFixture fixture) : 
 
         // Arrange - First create an organization
         var createRequest = new CreateOrganizationRequestData("Test Organization for Get");
-        var (createResponse, createdOrg) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createRequest);
+        var (createResponse, createdOrg) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, CreateOrganizationResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act
         var getRequest = new GetOrganizationByIdRequest(createdOrg.Id);
-        var (response, result) = await client.GETAsync<GetOrganizationById, GetOrganizationByIdRequest, Organization>(getRequest);
+        var (response, result) = await client.GETAsync<GetOrganizationById, GetOrganizationByIdRequest, GetOrganizationByIdResponse>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -41,7 +40,7 @@ public class GetOrganizationByIdIntegrationTests(ApiTestClassFixture fixture) : 
 
         // Act
         var getRequest = new GetOrganizationByIdRequest(invalidId);
-        var (response, _) = await client.GETAsync<GetOrganizationById, GetOrganizationByIdRequest, Organization>(getRequest);
+        var (response, _) = await client.GETAsync<GetOrganizationById, GetOrganizationByIdRequest, GetOrganizationByIdResponse>(getRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -53,7 +52,7 @@ public class GetOrganizationByIdIntegrationTests(ApiTestClassFixture fixture) : 
         var invalidId = Guid.NewGuid();
 
         // Act
-        var (response, _) = await fixture.CreateClient().GETAsync<GetOrganizationById, GetOrganizationByIdRequest, Organization>(new GetOrganizationByIdRequest(invalidId));
+        var (response, _) = await fixture.CreateClient().GETAsync<GetOrganizationById, GetOrganizationByIdRequest, GetOrganizationByIdResponse>(new GetOrganizationByIdRequest(invalidId));
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);

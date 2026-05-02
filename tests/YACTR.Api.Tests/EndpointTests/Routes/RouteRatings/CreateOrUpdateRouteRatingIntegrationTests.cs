@@ -17,10 +17,10 @@ public class CreateOrUpdateRouteRatingIntegrationTests(ApiTestClassFixture fixtu
         using var client = fixture.CreateClient();
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
-        var (response, _) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, RouteRatingResponse>(new()
+        var (response, _) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, CreateOrUpdateRouteRatingResponse>(new()
         {
             RouteId = routes.First().Id,
-            RatingData = new(3)
+            RatingData = new CreateOrUpdateRouteRatingData(3)
         });
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -31,10 +31,10 @@ public class CreateOrUpdateRouteRatingIntegrationTests(ApiTestClassFixture fixtu
     {
         using var client = fixture.CreateAuthenticatedClient();
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var (response, created) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, RouteRatingResponse>(new()
+        var (response, created) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, CreateOrUpdateRouteRatingResponse>(new()
         {
             RouteId = routes.First().Id,
-            RatingData = new(3)
+            RatingData = new CreateOrUpdateRouteRatingData(3)
         });
         response.IsSuccessStatusCode.ShouldBeTrue();
         created.Rating.ShouldBe(3);
@@ -44,10 +44,10 @@ public class CreateOrUpdateRouteRatingIntegrationTests(ApiTestClassFixture fixtu
     public async Task CreateRouteRating_WithMissingRoute_ReturnsNotFound()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var (response, _) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, RouteRatingResponse>(new()
+        var (response, _) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, CreateOrUpdateRouteRatingResponse>(new()
         {
             RouteId = Guid.CreateVersion7(),
-            RatingData = new(3)
+            RatingData = new CreateOrUpdateRouteRatingData(3)
         });
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -59,16 +59,16 @@ public class CreateOrUpdateRouteRatingIntegrationTests(ApiTestClassFixture fixtu
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var routeId = routes.First().Id;
 
-        var (_, firstCreated) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, RouteRatingResponse>(new()
+        var (_, firstCreated) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, CreateOrUpdateRouteRatingResponse>(new()
         {
             RouteId = routeId,
-            RatingData = new(1)
+            RatingData = new CreateOrUpdateRouteRatingData(1)
         });
 
-        var (secondResponse, secondCreated) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, RouteRatingResponse>(new()
+        var (secondResponse, secondCreated) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, CreateOrUpdateRouteRatingResponse>(new()
         {
             RouteId = routeId,
-            RatingData = new(3)
+            RatingData = new CreateOrUpdateRouteRatingData(3)
         });
 
         secondResponse.IsSuccessStatusCode.ShouldBeTrue();

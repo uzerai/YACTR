@@ -29,21 +29,21 @@ public class GetRouteRatingsForRouteIntegrationTests(ApiTestClassFixture fixture
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var routeId = routes.First().Id;
 
-        var (createOneResponse, _) = await clientOne.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, RouteRatingResponse>(new()
+        var (createOneResponse, _) = await clientOne.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, CreateOrUpdateRouteRatingResponse>(new()
         {
             RouteId = routeId,
-            RatingData = new(2)
+            RatingData = new CreateOrUpdateRouteRatingData(2)
         });
-        var (createTwoResponse, _) = await clientTwo.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, RouteRatingResponse>(new()
+        var (createTwoResponse, _) = await clientTwo.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, CreateOrUpdateRouteRatingResponse>(new()
         {
             RouteId = routeId,
-            RatingData = new(4)
+            RatingData = new CreateOrUpdateRouteRatingData(4)
         });
         createOneResponse.IsSuccessStatusCode.ShouldBeTrue();
         createTwoResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         using var anonymousClient = fixture.CreateClient();
-        var (response, result) = await anonymousClient.GETAsync<GetRouteRatingsForRoute, GetRouteRatingsForRouteRequest, PaginatedResponse<RouteRatingResponse>>(new()
+        var (response, result) = await anonymousClient.GETAsync<GetRouteRatingsForRoute, GetRouteRatingsForRouteRequest, PaginatedResponse<GetRouteRatingsForRouteResponseItem>>(new()
         {
             RouteId = routeId
         });
@@ -59,7 +59,7 @@ public class GetRouteRatingsForRouteIntegrationTests(ApiTestClassFixture fixture
     public async Task GetRouteRatingsForRoute_WithMissingRoute_ReturnsNotFound()
     {
         using var client = fixture.CreateClient();
-        var (response, _) = await client.GETAsync<GetRouteRatingsForRoute, GetRouteRatingsForRouteRequest, PaginatedResponse<RouteRatingResponse>>(new()
+        var (response, _) = await client.GETAsync<GetRouteRatingsForRoute, GetRouteRatingsForRouteRequest, PaginatedResponse<GetRouteRatingsForRouteResponseItem>>(new()
         {
             RouteId = Guid.CreateVersion7()
         });

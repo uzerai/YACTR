@@ -28,7 +28,7 @@ public class UpdateAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
             CompletedAt: completedAt
         );
 
-        var (createResponse, createdAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        var (createResponse, createdAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act - Update the ascent
@@ -47,7 +47,7 @@ public class UpdateAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
 
         // Verify the update
         var getRequest = new GetAscentByIdRequest(createdAscent.Id);
-        var (getResponse, updatedAscent) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, AscentResponse>(getRequest);
+        var (getResponse, updatedAscent) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, GetAscentByIdResponse>(getRequest);
         getResponse.IsSuccessStatusCode.ShouldBeTrue();
         updatedAscent.Type.ShouldBe(AscentType.Redpoint);
     }
@@ -88,7 +88,7 @@ public class UpdateAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
             CompletedAt: completedAt
         );
 
-        var (createResponse, createdAscent) = await clientWithPermissions.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        var (createResponse, createdAscent) = await clientWithPermissions.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act - Try to update with a different user

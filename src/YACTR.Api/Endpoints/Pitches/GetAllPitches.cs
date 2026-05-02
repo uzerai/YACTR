@@ -8,7 +8,18 @@ namespace YACTR.Api.Endpoints.Pitches;
 
 public class GetAllPitchesRequest : PaginationRequest { }
 
-public class GetAllPitches : Endpoint<GetAllPitchesRequest, PaginatedResponse<PitchResponse>, PitchDataMapper>
+public record GetAllPitchesResponseItem(
+    Guid Id,
+    Guid RouteId,
+    Guid SectorId,
+    string? Name,
+    ClimbingType Type,
+    string? Description,
+    int? Grade,
+    int? PitchOrder = null
+);
+
+public class GetAllPitches : Endpoint<GetAllPitchesRequest, PaginatedResponse<GetAllPitchesResponseItem>>
 {
     public required IEntityRepository<Pitch> PitchRepository { get; init; }
 
@@ -24,8 +35,22 @@ public class GetAllPitches : Endpoint<GetAllPitchesRequest, PaginatedResponse<Pi
         var pitches = await PitchRepository.AllAvailable()
             .AsNoTracking()
             .OrderBy(e => e.Id)
-            .ToPaginatedResponseAsync(Map.FromEntityAsync, req, ct);
+            .ToPaginatedResponseAsync(MapPitchToResponseAsync, req, ct);
 
         await Send.OkAsync(pitches, cancellation: ct);
+    }
+
+    private static Task<GetAllPitchesResponseItem> MapPitchToResponseAsync(Pitch pitch, CancellationToken ct)
+    {
+        return Task.FromResult(new GetAllPitchesResponseItem(
+            pitch.Id,
+            pitch.RouteId,
+            pitch.SectorId,
+            pitch.Name,
+            pitch.Type,
+            pitch.Description,
+            pitch.Grade,
+            pitch.PitchOrder
+        ));
     }
 }

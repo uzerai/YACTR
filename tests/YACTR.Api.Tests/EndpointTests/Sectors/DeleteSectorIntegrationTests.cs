@@ -19,7 +19,7 @@ public class DeleteSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (response, _) = await client.DELETEAsync<DeleteSector, DeleteSectorRequest, EmptyResponse>(new(sector.Id));
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var (getResponse, _) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, SectorResponse>(new(sector.Id));
+        var (getResponse, _) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, GetSectorByIdResponse>(new(sector.Id));
         getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 

@@ -21,7 +21,7 @@ public class DeletePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (area, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var route = routes.First();
 
-        var createRequest = new PitchRequestData(
+        var createRequest = new CreatePitchRequest(
             sector.Id,
             route.Id,
             "Test Pitch for Delete",
@@ -31,7 +31,7 @@ public class DeletePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
             0
         );
 
-        var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
+        var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, CreatePitchRequest, CreatePitchResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act
@@ -43,7 +43,7 @@ public class DeletePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
 
         // Verify the pitch is actually deleted
         var getRequest = new GetPitchByIdRequest(createdPitch.Id);
-        var (getResponse, _) = await client.GETAsync<GetPitchById, GetPitchByIdRequest, Pitch>(getRequest);
+        var (getResponse, _) = await client.GETAsync<GetPitchById, GetPitchByIdRequest, GetPitchByIdResponse>(getRequest);
         getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 

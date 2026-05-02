@@ -6,7 +6,6 @@ using Shouldly;
 
 using YACTR.Api.Endpoints.Organizations;
 using YACTR.Api.Pagination;
-using YACTR.Domain.Model.Organizations;
 
 namespace YACTR.Api.Tests.EndpointTests.Organizations;
 
@@ -19,7 +18,7 @@ public class GetAllOrganizationsIntegrationTests(ApiTestClassFixture fixture) : 
         using var client = fixture.CreateAuthenticatedClient();
 
         // Act
-        var (response, result) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>(new());
+        var (response, result) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<GetAllOrganizationsResponseItem>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -31,7 +30,7 @@ public class GetAllOrganizationsIntegrationTests(ApiTestClassFixture fixture) : 
     {
         using var client = fixture.CreateAuthenticatedClient();
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>(new()
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<GetAllOrganizationsResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
@@ -42,11 +41,11 @@ public class GetAllOrganizationsIntegrationTests(ApiTestClassFixture fixture) : 
         for (var i = 0; i < 3; i++)
         {
             var createRequest = new CreateOrganizationRequestData($"Pagination Test Org {Guid.NewGuid()}");
-            var (createResponse, _) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createRequest);
+            var (createResponse, _) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, CreateOrganizationResponse>(createRequest);
             createResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
         }
 
-        var (response, result) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<GetAllOrganizationsResponseItem>>(new()
         {
             Page = 2,
             PageSize = 2
@@ -65,10 +64,10 @@ public class GetAllOrganizationsIntegrationTests(ApiTestClassFixture fixture) : 
         using var client = fixture.CreateAuthenticatedClient();
 
         var createRequest = new CreateOrganizationRequestData($"Clamp Test Org {Guid.NewGuid()}");
-        var (createResponse, _) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createRequest);
+        var (createResponse, _) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, CreateOrganizationResponse>(createRequest);
         createResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>(new()
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<GetAllOrganizationsResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
@@ -76,7 +75,7 @@ public class GetAllOrganizationsIntegrationTests(ApiTestClassFixture fixture) : 
         baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
         baselineResult.ShouldNotBeNull();
 
-        var (response, result) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<GetAllOrganizationsResponseItem>>(new()
         {
             Page = 1,
             PageSize = 0
@@ -97,17 +96,17 @@ public class GetAllOrganizationsIntegrationTests(ApiTestClassFixture fixture) : 
         for (var i = 0; i < 2; i++)
         {
             var createRequest = new CreateOrganizationRequestData($"Page Diff Org {Guid.NewGuid()}");
-            var (createResponse, _) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createRequest);
+            var (createResponse, _) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, CreateOrganizationResponse>(createRequest);
             createResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
         }
 
-        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>(new()
+        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<GetAllOrganizationsResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
         });
 
-        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>(new()
+        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<GetAllOrganizationsResponseItem>>(new()
         {
             Page = 2,
             PageSize = 1
@@ -127,7 +126,7 @@ public class GetAllOrganizationsIntegrationTests(ApiTestClassFixture fixture) : 
     public async Task GetAll_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Act
-        var (response, _) = await fixture.CreateClient().GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>(new());
+        var (response, _) = await fixture.CreateClient().GETAsync<GetAllOrganizations, GetAllOrganizationsRequest, PaginatedResponse<GetAllOrganizationsResponseItem>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

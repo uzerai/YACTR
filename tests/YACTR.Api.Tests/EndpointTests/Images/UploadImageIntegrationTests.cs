@@ -16,13 +16,13 @@ public class UploadImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
     {
         // Arrange
         using var client = Fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
-        var request = new ImageUploadRequest()
+        var request = new UploadImageRequest()
         {
             Image = TestFile
         };
 
         // Act
-        var (response, result) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
+        var (response, result) = await client.POSTAsync<UploadImage, UploadImageRequest, UploadImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -37,13 +37,13 @@ public class UploadImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
     {
         // Arrange
         using var client = Fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
-        var request = new ImageUploadRequest()
+        var request = new UploadImageRequest()
         {
             Image = TestSvgFile
         };
 
         // Act
-        var (response, result) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
+        var (response, result) = await client.POSTAsync<UploadImage, UploadImageRequest, UploadImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -66,13 +66,13 @@ public class UploadImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
         };
 
         using var client = Fixture.CreateAuthenticatedClient(userWithoutPermissions);
-        var request = new ImageUploadRequest()
+        var request = new UploadImageRequest()
         {
             Image = TestFile
         };
 
         // Act
-        var (response, _) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
+        var (response, _) = await client.POSTAsync<UploadImage, UploadImageRequest, UploadImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -84,13 +84,13 @@ public class UploadImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
     {
         // Arrange
         using var client = Fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
-        var request = new ImageUploadRequest()
+        var request = new UploadImageRequest()
         {
             Image = TestFile
         };
 
         // Act
-        var (response, result) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
+        var (response, result) = await client.POSTAsync<UploadImage, UploadImageRequest, UploadImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -105,13 +105,13 @@ public class UploadImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
     public async Task UploadImage_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Arrange
-        var request = new ImageUploadRequest()
+        var request = new UploadImageRequest()
         {
             Image = TestFile
         };
 
         // Act
-        var (response, _) = await Fixture.CreateClient().POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(request, true);
+        var (response, _) = await Fixture.CreateClient().POSTAsync<UploadImage, UploadImageRequest, UploadImageResponse>(request, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

@@ -8,13 +8,15 @@ using YACTR.Infrastructure.Service;
 
 namespace YACTR.Api.Endpoints.Images;
 
-public class ImageDeleteRequest
+public class DeleteImageRequest
 {
     [FromRoute]
     public Guid ImageId { get; set; }
 }
 
-public class DeleteImage : AuthenticatedEndpoint<ImageDeleteRequest, ImageResponse, ImageDataMapper>
+public record DeleteImageResponse(Guid ImageId, string ImageUrl);
+
+public class DeleteImage : AuthenticatedEndpoint<DeleteImageRequest, DeleteImageResponse>
 {
     public required IImageStorageService ImageStorageService { get; init; }
 
@@ -25,12 +27,13 @@ public class DeleteImage : AuthenticatedEndpoint<ImageDeleteRequest, ImageRespon
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.ImagesWrite)));
     }
 
-    public override async Task HandleAsync(ImageDeleteRequest req, CancellationToken ct)
+    public override async Task HandleAsync(DeleteImageRequest req, CancellationToken ct)
     {
         try
         {
             var image = await ImageStorageService.RemoveImageAsync(req.ImageId, ct);
-            await Send.OkAsync(await Map.FromEntityAsync(image, ct), cancellation: ct);
+            var imageUrl = await ImageStorageService.GetImageUrlAsync(image.Id, ct);
+            await Send.OkAsync(new DeleteImageResponse(image.Id, imageUrl), cancellation: ct);
         }
         catch (ObjectNotFoundException)
         {

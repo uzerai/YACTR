@@ -1,8 +1,6 @@
 using System.Net;
 
 using Shouldly;
-
-using YACTR.Api.Endpoints.Organizations;
 using YACTR.Api.Endpoints.Organizations.Teams;
 
 namespace YACTR.Api.Tests.EndpointTests.Organizations.Teams;
@@ -21,7 +19,7 @@ public class CreateOrganizationTeamIntegrationTests(ApiTestClassFixture fixture)
         var createRequest = new CreateOrganizationTeamRequest(Organization.Id, "Test Team");
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeamResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, CreateOrganizationTeamResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -41,7 +39,7 @@ public class CreateOrganizationTeamIntegrationTests(ApiTestClassFixture fixture)
         var createRequest = new CreateOrganizationTeamRequest(Organization.Id, "Test Team");
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeamResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, CreateOrganizationTeamResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -57,7 +55,7 @@ public class CreateOrganizationTeamIntegrationTests(ApiTestClassFixture fixture)
         var createRequest = new CreateOrganizationTeamRequest(Organization.Id, "");
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, OrganizationTeamResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateOrganizationTeam, CreateOrganizationTeamRequest, CreateOrganizationTeamResponse>(createRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);

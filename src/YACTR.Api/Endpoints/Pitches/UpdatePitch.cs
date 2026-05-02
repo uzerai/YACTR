@@ -6,7 +6,17 @@ using YACTR.Infrastructure.Authorization.Permissions;
 
 namespace YACTR.Api.Endpoints.Pitches;
 
-public record UpdatePitchRequest(Guid PitchId, PitchRequestData Pitch);
+public record UpdatePitchData(
+    Guid SectorId,
+    Guid RouteId,
+    string? Name,
+    ClimbingType Type,
+    string? Description,
+    string? Grade,
+    int PitchOrder
+);
+
+public record UpdatePitchRequest(Guid PitchId, UpdatePitchData Pitch);
 
 public class UpdatePitch : AuthenticatedEndpoint<UpdatePitchRequest, EmptyResponse>
 {

@@ -29,13 +29,13 @@ public class GetRouteLikesForRouteIntegrationTests(ApiTestClassFixture fixture) 
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var routeId = routes.First().Id;
 
-        var (createOneResponse, _) = await clientOne.POSTAsync<CreateRouteLike, RouteLikeRequest, RouteLikeResponse>(new(routeId));
-        var (createTwoResponse, _) = await clientTwo.POSTAsync<CreateRouteLike, RouteLikeRequest, RouteLikeResponse>(new(routeId));
+        var (createOneResponse, _) = await clientOne.POSTAsync<CreateRouteLike, CreateRouteLikeRequest, CreateRouteLikeResponse>(new(routeId));
+        var (createTwoResponse, _) = await clientTwo.POSTAsync<CreateRouteLike, CreateRouteLikeRequest, CreateRouteLikeResponse>(new(routeId));
         createOneResponse.IsSuccessStatusCode.ShouldBeTrue();
         createTwoResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         using var anonymousClient = fixture.CreateClient();
-        var (response, result) = await anonymousClient.GETAsync<GetRouteLikesForRoute, GetRouteLikesForRouteRequest, PaginatedResponse<RouteLikeResponse>>(new()
+        var (response, result) = await anonymousClient.GETAsync<GetRouteLikesForRoute, GetRouteLikesForRouteRequest, PaginatedResponse<GetRouteLikesForRouteResponseItem>>(new()
         {
             RouteId = routeId
         });
@@ -51,7 +51,7 @@ public class GetRouteLikesForRouteIntegrationTests(ApiTestClassFixture fixture) 
     public async Task GetRouteLikesForRoute_WithMissingRoute_ReturnsNotFound()
     {
         using var client = fixture.CreateClient();
-        var (response, _) = await client.GETAsync<GetRouteLikesForRoute, GetRouteLikesForRouteRequest, PaginatedResponse<RouteLikeResponse>>(new()
+        var (response, _) = await client.GETAsync<GetRouteLikesForRoute, GetRouteLikesForRouteRequest, PaginatedResponse<GetRouteLikesForRouteResponseItem>>(new()
         {
             RouteId = Guid.CreateVersion7()
         });

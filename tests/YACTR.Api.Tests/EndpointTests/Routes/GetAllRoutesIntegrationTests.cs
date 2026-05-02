@@ -17,7 +17,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
     public async Task GetAll_ReturnsSuccessStatusCode()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new());
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new());
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
     }
@@ -26,12 +26,12 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
     public async Task GetAll_WithPagination_ReturnsRequestedPageAndTotalCount()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { Page = 1, PageSize = 1 });
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { Page = 1, PageSize = 1 });
         baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
         baselineResult.ShouldNotBeNull();
 
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { Page = 2, PageSize = 2 });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { Page = 2, PageSize = 2 });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.TotalCount.ShouldBe(baselineResult.TotalCount + routes.Count);
@@ -44,11 +44,11 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         using var client = fixture.CreateAuthenticatedClient();
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { Page = 1, PageSize = 1 });
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { Page = 1, PageSize = 1 });
         baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
         baselineResult.ShouldNotBeNull();
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { Page = 1, PageSize = 0 });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { Page = 1, PageSize = 0 });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.TotalCount.ShouldBe(baselineResult.TotalCount);
@@ -62,8 +62,8 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         using var client = fixture.CreateAuthenticatedClient();
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
-        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { Page = 1, PageSize = 1 });
-        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { Page = 2, PageSize = 1 });
+        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { Page = 1, PageSize = 1 });
+        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { Page = 2, PageSize = 1 });
         pageOneResponse.IsSuccessStatusCode.ShouldBeTrue();
         pageTwoResponse.IsSuccessStatusCode.ShouldBeTrue();
         pageOneResult.ShouldNotBeNull();
@@ -82,7 +82,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Limestone-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { Name = $"{tag} Route" });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { Name = $"{tag} Route" });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldNotBeEmpty();
@@ -97,7 +97,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (_, _, targetRoutes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Limestone-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { SectorName = $"{tag} Sector" });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { SectorName = $"{tag} Sector" });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == targetRoutes.First().Id);
@@ -112,7 +112,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (_, sector, targetRoutes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Other-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { SectorId = sector.Id });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { SectorId = sector.Id });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == targetRoutes.First().Id);
@@ -127,7 +127,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (_, _, targetRoutes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Other-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { AreaName = $"{tag} Area" });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { AreaName = $"{tag} Area" });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == targetRoutes.First().Id);
@@ -142,7 +142,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (targetArea, _, targetRoutes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Other-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { AreaId = targetArea.Id });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { AreaId = targetArea.Id });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == targetRoutes.First().Id);
@@ -157,7 +157,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (_, _, targetRoutes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Other-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { CountryName = $"{tag} Country" });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { CountryName = $"{tag} Country" });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == targetRoutes.First().Id);
@@ -172,7 +172,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (targetArea, _, targetRoutes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Other-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { CountryId = targetArea.CountryId });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { CountryId = targetArea.CountryId });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == targetRoutes.First().Id);
@@ -185,7 +185,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Target-{Guid.NewGuid():N}"));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Other-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { Type = ClimbingType.Sport });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { Type = ClimbingType.Sport });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldNotBeEmpty();
@@ -203,7 +203,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (_, _, olderRoutes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(olderTag, FirstRouteCreatedAt: older));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Newer-{Guid.NewGuid():N}", FirstRouteCreatedAt: newer));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { CreatedBefore = Instant.FromUtc(2025, 6, 3, 0, 0) });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { CreatedBefore = Instant.FromUtc(2025, 6, 3, 0, 0) });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == olderRoutes.First().Id);
@@ -221,7 +221,7 @@ public class GetAllRoutesIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var newerTag = $"Newer-{Guid.NewGuid():N}";
         var (_, _, newerRoutes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(newerTag, FirstRouteCreatedAt: newer));
 
-        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<RouteResponse>>(new() { CreatedAfter = Instant.FromUtc(2025, 7, 3, 0, 0) });
+        var (response, result) = await client.GETAsync<GetAllRoutes, GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>(new() { CreatedAfter = Instant.FromUtc(2025, 7, 3, 0, 0) });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == newerRoutes.First().Id);

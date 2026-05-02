@@ -6,7 +6,18 @@ namespace YACTR.Api.Endpoints.Pitches;
 
 public record GetPitchByIdRequest(Guid PitchId);
 
-public class GetPitchById : Endpoint<GetPitchByIdRequest, PitchResponse, PitchDataMapper>
+public record GetPitchByIdResponse(
+    Guid Id,
+    Guid RouteId,
+    Guid SectorId,
+    string? Name,
+    ClimbingType Type,
+    string? Description,
+    int? Grade,
+    int? PitchOrder = null
+);
+
+public class GetPitchById : Endpoint<GetPitchByIdRequest, GetPitchByIdResponse>
 {
     public required IEntityRepository<Pitch> PitchRepository { get; init; }
 
@@ -26,6 +37,15 @@ public class GetPitchById : Endpoint<GetPitchByIdRequest, PitchResponse, PitchDa
             return;
         }
 
-        await Send.OkAsync(await Map.FromEntityAsync(pitch, ct), cancellation: ct);
+        await Send.OkAsync(new GetPitchByIdResponse(
+            pitch.Id,
+            pitch.RouteId,
+            pitch.SectorId,
+            pitch.Name,
+            pitch.Type,
+            pitch.Description,
+            pitch.Grade,
+            pitch.PitchOrder
+        ), cancellation: ct);
     }
 }

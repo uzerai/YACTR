@@ -18,7 +18,7 @@ public class GetRouteByIdIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var created = routes.First();
 
-        var (response, result) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(new(created.Id));
+        var (response, result) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, GetRouteByIdResponse>(new(created.Id));
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Id.ShouldBe(created.Id);
@@ -29,7 +29,7 @@ public class GetRouteByIdIntegrationTests(ApiTestClassFixture fixture) : TestBas
     public async Task GetById_WithInvalidId_ReturnsNotFound()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var (response, _) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(new(Guid.NewGuid()));
+        var (response, _) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, GetRouteByIdResponse>(new(Guid.NewGuid()));
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }

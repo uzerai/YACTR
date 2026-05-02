@@ -29,7 +29,7 @@ public class CreateAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
         );
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -51,7 +51,7 @@ public class CreateAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
         );
 
         // Act
-        var (response, _) = await Fixture.CreateClient().POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        var (response, _) = await Fixture.CreateClient().POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

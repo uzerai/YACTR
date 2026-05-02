@@ -28,12 +28,12 @@ public class GetAscentByIdIntegrationTests(ApiTestClassFixture fixture) : Ascent
             CompletedAt: completedAt
         );
 
-        var (createResponse, createdAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        var (createResponse, createdAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act
         var getRequest = new GetAscentByIdRequest(createdAscent.Id);
-        var (response, result) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, AscentResponse>(getRequest);
+        var (response, result) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, GetAscentByIdResponse>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -50,7 +50,7 @@ public class GetAscentByIdIntegrationTests(ApiTestClassFixture fixture) : Ascent
 
         // Act
         var getRequest = new GetAscentByIdRequest(Guid.NewGuid());
-        var (response, _) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, AscentResponse>(getRequest);
+        var (response, _) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, GetAscentByIdResponse>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

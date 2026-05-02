@@ -10,14 +10,23 @@ using Void = FastEndpoints.Void;
 
 namespace YACTR.Api.Endpoints.Routes.RouteRatings;
 
+public record CreateOrUpdateRouteRatingData(int Rating);
+
 public class CreateOrUpdateRouteRatingRequest
 {
     public required Guid RouteId { get; set; }
     [FromBody]
-    public required RouteRatingRequestData RatingData { get; set; }
+    public required CreateOrUpdateRouteRatingData RatingData { get; set; }
 }
 
-public class CreateOrUpdateRouteRating(IEntityRepository<RouteRating> routeRatingRepository, IEntityRepository<Route> routeRepository) : AuthenticatedEndpoint<CreateOrUpdateRouteRatingRequest, RouteRatingResponse, RouteRatingDataMapper>
+public record CreateOrUpdateRouteRatingResponse(
+    Guid Id,
+    Guid UserId,
+    Guid RouteId,
+    int Rating
+);
+
+public class CreateOrUpdateRouteRating(IEntityRepository<RouteRating> routeRatingRepository, IEntityRepository<Route> routeRepository) : AuthenticatedEndpoint<CreateOrUpdateRouteRatingRequest, CreateOrUpdateRouteRatingResponse>
 {
     public override void Configure()
     {
@@ -41,10 +50,11 @@ public class CreateOrUpdateRouteRating(IEntityRepository<RouteRating> routeRatin
 
         if (existingRouting is not null)
         {
-            var updatedRating = await Map.UpdateEntityAsync(req.RatingData, existingRouting, ct);
+            existingRouting.Rating = req.RatingData.Rating;
+            var updatedRating = existingRouting;
             await routeRatingRepository.UpdateAsync(updatedRating, ct);
 
-            return await Send.OkAsync(await Map.FromEntityAsync(updatedRating, ct), ct);
+            return await Send.OkAsync(new CreateOrUpdateRouteRatingResponse(updatedRating.Id, updatedRating.UserId, updatedRating.RouteId, updatedRating.Rating), ct);
         }
 
         var newRating = await routeRatingRepository.CreateAsync(new()
@@ -54,6 +64,6 @@ public class CreateOrUpdateRouteRating(IEntityRepository<RouteRating> routeRatin
             Rating = req.RatingData.Rating
         }, ct);
 
-        return await Send.OkAsync(await Map.FromEntityAsync(newRating, ct), ct);
+        return await Send.OkAsync(new CreateOrUpdateRouteRatingResponse(newRating.Id, newRating.UserId, newRating.RouteId, newRating.Rating), ct);
     }
 }

@@ -7,9 +7,10 @@ using YACTR.Infrastructure.Authorization.Permissions;
 namespace YACTR.Api.Endpoints.Organizations;
 
 public record GetAllOrganizationTeamsRequest(Guid OrganizationId);
+public record GetAllOrganizationTeamsResponseItem(Guid Id, Guid OrganizationId, string Name);
 
 public class GetAllOrganizationTeams(IEntityRepository<OrganizationTeam> organizationTeamRepository)
-    : AuthenticatedEndpoint<GetAllOrganizationTeamsRequest, List<OrganizationTeamResponse>>
+    : AuthenticatedEndpoint<GetAllOrganizationTeamsRequest, List<GetAllOrganizationTeamsResponseItem>>
 {
     private readonly IEntityRepository<OrganizationTeam> _organizationTeamRepository = organizationTeamRepository;
 
@@ -26,6 +27,6 @@ public class GetAllOrganizationTeams(IEntityRepository<OrganizationTeam> organiz
             .Where(e => e.OrganizationId == req.OrganizationId)
             .ToListAsync(ct);
 
-        await Send.OkAsync(teams.Select(e => new OrganizationTeamResponse(e.Id, e.OrganizationId, e.Name)).ToList(), cancellation: ct);
+        await Send.OkAsync(teams.Select(e => new GetAllOrganizationTeamsResponseItem(e.Id, e.OrganizationId, e.Name)).ToList(), cancellation: ct);
     }
 }

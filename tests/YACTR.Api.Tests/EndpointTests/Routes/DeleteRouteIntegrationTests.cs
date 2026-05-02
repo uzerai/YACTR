@@ -21,7 +21,7 @@ public class DeleteRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (response, _) = await client.DELETEAsync<DeleteRoute, DeleteRouteRequest, EmptyResponse>(new(created.Id));
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var (getResp, _) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(new(created.Id));
+        var (getResp, _) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, GetRouteByIdResponse>(new(created.Id));
         getResp.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 

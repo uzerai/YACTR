@@ -4,7 +4,14 @@ using YACTR.Infrastructure.Service;
 
 namespace YACTR.Api.Endpoints.Images;
 
-public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, ImageResponse, ImageDataMapper>
+public class UploadImageRequest
+{
+    public required IFormFile? Image { get; init; }
+}
+
+public record UploadImageResponse(Guid ImageId, string ImageUrl);
+
+public class UploadImage : AuthenticatedEndpoint<UploadImageRequest, UploadImageResponse>
 {
     public required IImageStorageService ImageStorageService { get; init; }
     public override void Configure()
@@ -12,11 +19,11 @@ public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, ImageRespon
         Post("/");
         Group<ImagesEndpointGroup>();
         AllowFileUploads();
-        Description(b => b.Accepts<ImageUploadRequest>("multipart/form-data"));
+        Description(b => b.Accepts<UploadImageRequest>("multipart/form-data"));
         Options(b => b.WithMetadata(new PlatformPermissionRequiredAttribute(Permission.ImagesWrite)));
     }
 
-    public override async Task HandleAsync(ImageUploadRequest req, CancellationToken ct)
+    public override async Task HandleAsync(UploadImageRequest req, CancellationToken ct)
     {
         if (req.Image is null)
         {
@@ -31,7 +38,8 @@ public class UploadImage : AuthenticatedEndpoint<ImageUploadRequest, ImageRespon
                 CurrentUserId,
                 ct);
 
-            await Send.CreatedAtAsync<UploadImage>(uploadedImage.Id, await Map.FromEntityAsync(uploadedImage, ct), cancellation: ct);
+            var imageUrl = await ImageStorageService.GetImageUrlAsync(uploadedImage.Id, ct);
+            await Send.CreatedAtAsync<UploadImage>(uploadedImage.Id, new UploadImageResponse(uploadedImage.Id, imageUrl), cancellation: ct);
         }
         catch
         {
