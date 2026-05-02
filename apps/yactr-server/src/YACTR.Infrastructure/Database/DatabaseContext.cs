@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-
 using NodaTime;
-
 using YACTR.Domain.Model;
 using YACTR.Domain.Model.Achievement;
 using YACTR.Domain.Model.Authentication;
@@ -104,6 +102,14 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options, IClock c
                     case EntityState.Modified:
                         entity.UpdatedAt = clock.GetCurrentInstant();
                         break;
+                    case EntityState.Deleted:
+                        entity.UpdatedAt = clock.GetCurrentInstant();
+                        break;
+                    case EntityState.Detached:
+                    case EntityState.Unchanged:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
