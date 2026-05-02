@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+
 using YACTR.Domain.Model.Authorization.Permissions;
 
 namespace YACTR.Infrastructure.Authorization.Permissions;
@@ -10,7 +11,7 @@ public class AdminPermissionsAuthorizationHandler(ILogger<AdminPermissionsAuthor
     {
         logger.LogDebug("Handling admin permissions authorization for {Permission}", requirement.Permission);
         logger.LogDebug("User is {UserId}", context.User.Identity?.Name);
-        
+
         if (context.User.HasClaim(nameof(PermissionLevel.AdminPermission), requirement.Permission.ToString()))
         {
             context.Succeed(requirement);

@@ -1,14 +1,17 @@
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+
 using NodaTime;
+
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Authorization;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Infrastructure.Database.QueryExtensions;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Infrastructure.Authorization.Permissions;
 

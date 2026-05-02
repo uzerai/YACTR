@@ -7,14 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NetTopologySuite;
 using NodaTime;
+using YACTR.Api.Tests.TestData;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Infrastructure.Database;
 using YACTR.Infrastructure.Database.QueryExtensions;
 using YACTR.Infrastructure.Database.Repository.ConfigurationExtension;
-using YACTR.Infrastructure.Database.Repository.Interface;
 using YACTR.Infrastructure.Service;
-using YACTR.Api.Tests.TestData;
 
 namespace YACTR.Api.Tests;
 
@@ -39,7 +39,7 @@ public class ApiTestClassFixture : AppFixture<Program>
         DatabaseContext = Services.GetRequiredService<DatabaseContext>();
         TestClock = Services.GetRequiredService<MutableTestClock>();
         TestDataFactory = new TestDataFactory(NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326));
-        TestDataSeeder = new IntegrationTestDataSeeder(DatabaseContext, 
+        TestDataSeeder = new IntegrationTestDataSeeder(DatabaseContext,
             TestDataFactory,
             TestClock,
             Services.GetRequiredService<IImageStorageService>());

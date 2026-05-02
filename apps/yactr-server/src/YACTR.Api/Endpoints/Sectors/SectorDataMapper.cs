@@ -1,6 +1,9 @@
 using FastEndpoints;
+
 using NetTopologySuite.Geometries;
+
 using NodaTime;
+
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Service;
 

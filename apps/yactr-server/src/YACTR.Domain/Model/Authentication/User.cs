@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+
 using NodaTime;
+
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing.Rating;
 using YACTR.Domain.Model.Organizations;

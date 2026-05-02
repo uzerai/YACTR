@@ -1,6 +1,7 @@
 using System.Net;
-using FastEndpoints.Testing;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Organizations;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Organizations;

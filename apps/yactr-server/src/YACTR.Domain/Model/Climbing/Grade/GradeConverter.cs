@@ -1,11 +1,12 @@
 using System.Collections.Immutable;
+
 using YACTR.Domain.Model.Climbing.Grade.GradeConverters;
 
 namespace YACTR.Domain.Model.Climbing.Grade;
 
 public abstract class GradeConverter
 {
-    public GradeSystemEnum GradeSystem { get; init;}
+    public GradeSystemEnum GradeSystem { get; init; }
     protected List<(int rangeMin, int rangeMax, string stringGrade)> GradeRanges { get; init; } = [];
 
     // These are currently hard-set independent of the GradeSystem used; 
@@ -45,7 +46,7 @@ public abstract class GradeConverter
         GradeSystemEnum.Russian => new RussianGradeConverter(),
         _ => throw new NotImplementedException($"GradeConverter for '{gradeSystem}' not implemented."),
     };
-    
+
     /// <summary>
     /// Converts a single integer grade indicator to a Grade object in 
     /// the GradeSystem of the converter.
@@ -115,7 +116,7 @@ public abstract class GradeConverter
     {
         foreach (var (rangeMin, rangeMax, gradeBand) in _gradeBands)
         {
-            if ((gradeInt - rangeMin) * (rangeMax - gradeInt)>= 0)
+            if ((gradeInt - rangeMin) * (rangeMax - gradeInt) >= 0)
             {
                 return gradeBand;
             }

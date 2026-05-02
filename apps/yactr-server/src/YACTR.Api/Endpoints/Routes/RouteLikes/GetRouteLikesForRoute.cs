@@ -1,14 +1,18 @@
 using FastEndpoints;
+
 using Microsoft.EntityFrameworkCore;
+
 using YACTR.Api.Endpoints.Routes.RouteLikes;
 using YACTR.Api.Pagination;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing.Rating;
-using YACTR.Infrastructure.Database.Repository.Interface;
+
 using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Routes;
 
-public class GetRouteLikesForRouteRequest : PaginationRequest {
+public class GetRouteLikesForRouteRequest : PaginationRequest
+{
     public Guid RouteId { get; init; }
 }
 

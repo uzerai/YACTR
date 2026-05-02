@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+
 using YACTR.Domain.Model.Authentication;
 
 namespace YACTR.Domain.Model;

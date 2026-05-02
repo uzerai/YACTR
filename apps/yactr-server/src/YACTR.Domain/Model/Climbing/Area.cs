@@ -1,10 +1,11 @@
 using NetTopologySuite.Geometries;
+
 using YACTR.Domain.Model.Organizations;
 
 namespace YACTR.Domain.Model.Climbing;
 
 /// <summary>
-/// Represents a climing area from a colloquial perspective.
+/// Represents a climbing area from a colloquial perspective.
 /// 
 /// The area can be a single face of a wall, or a scattered collection of boulders/walls/routes, and
 /// therefore allows the definition of several polygonal boundaries as its boundary.
@@ -19,7 +20,7 @@ public class Area : BaseEntity
     public required MultiPolygon Boundary { get; set; }
 
     public required int CountryId { get; set; }
-    public required virtual CountryData Country { get; set; }
+    public virtual required CountryData Country { get; set; }
 
     public Guid? MaintainerOrganizationId { get; set; }
     public virtual Organization? MaintainerOrganization { get; set; }

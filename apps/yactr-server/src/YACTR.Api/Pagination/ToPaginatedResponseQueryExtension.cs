@@ -19,14 +19,15 @@ public static class ToPaginatedResponseQueryExtension
     }
 
     public static PaginatedResponse<TResponseData> ToPaginatedResponse<TPaginationRequest, TResponseData, TEntity>(
-        this IQueryable<TEntity> query, 
-        Func<TEntity, TResponseData> entityToResponseMapper, 
-        TPaginationRequest paginationRequest) 
+        this IQueryable<TEntity> query,
+        Func<TEntity, TResponseData> entityToResponseMapper,
+        TPaginationRequest paginationRequest)
             where TPaginationRequest : PaginationRequest
             where TResponseData : class
             where TEntity : class
     {
-        return new PaginatedResponse<TResponseData> {
+        return new PaginatedResponse<TResponseData>
+        {
             Items = query.Skip(GetSkip(paginationRequest))
                 .Take(GetTake(paginationRequest))
                 .Select(entityToResponseMapper)
@@ -48,7 +49,8 @@ public static class ToPaginatedResponseQueryExtension
             .Take(GetTake(paginationRequest))
             .ToListAsync(cancellationToken);
 
-        return new PaginatedResponse<TResponseData> {
+        return new PaginatedResponse<TResponseData>
+        {
             Items = (await Task.WhenAll(
                 pagedEntities.Select(entity => entityToResponseMapper(entity, cancellationToken))
             )).ToList(),

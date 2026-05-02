@@ -1,4 +1,5 @@
 using NodaTime;
+
 using YACTR.Domain.Model;
 
 namespace YACTR.Infrastructure.Database.QueryExtensions;

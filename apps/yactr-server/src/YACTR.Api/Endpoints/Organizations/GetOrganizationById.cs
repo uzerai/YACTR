@@ -1,5 +1,5 @@
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Organizations;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Organizations;
 

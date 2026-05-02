@@ -1,12 +1,11 @@
-using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using YACTR.Api.Pagination;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Organizations;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Organizations;
 
-public class GetAllOrganizationsRequest : PaginationRequest {}
+public class GetAllOrganizationsRequest : PaginationRequest { }
 
 public class GetAllOrganizations(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<GetAllOrganizationsRequest, PaginatedResponse<OrganizationResponse>>
 {

@@ -1,6 +1,9 @@
 using System.Net;
+
 using FastEndpoints.Testing;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Areas;
 
 namespace YACTR.Api.Tests.EndpointTests.Areas;
@@ -14,7 +17,7 @@ public class GetAreaByIdIntegrationTests(ApiTestClassFixture fixture) : TestBase
         using var client = fixture.CreateAuthenticatedClient();
         var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
-        var (response, result) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, AreaResponse>(new(area.Id));
+        var (response, result) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, GetAreaByIdResponse>(new(area.Id));
 
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
@@ -29,7 +32,7 @@ public class GetAreaByIdIntegrationTests(ApiTestClassFixture fixture) : TestBase
     public async Task GetById_WithInvalidId_ReturnsNotFound()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var (response, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, AreaResponse>(new(Guid.NewGuid()));
+        var (response, _) = await client.GETAsync<GetAreaById, GetAreaByIdRequest, GetAreaByIdResponse>(new(Guid.NewGuid()));
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }

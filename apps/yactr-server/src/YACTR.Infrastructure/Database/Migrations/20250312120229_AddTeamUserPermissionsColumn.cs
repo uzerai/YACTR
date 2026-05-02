@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Microsoft.EntityFrameworkCore.Migrations;
+
 using YACTR.Domain.Model.Authorization.Permissions;
 
 namespace YACTR.Infrastructure.Database.Migrations

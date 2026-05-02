@@ -1,8 +1,12 @@
 using System.Security.Claims;
+
 using FastEndpoints;
 using FastEndpoints.Security;
+
 using Microsoft.AspNetCore.Authorization;
+
 using NodaTime;
+
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Authorization;
 using YACTR.Domain.Model.Authorization.Permissions;
@@ -31,11 +35,13 @@ public partial class AuthenticatedEndpoint<TRequest, TResponse> : Endpoint<TRequ
     // Which means we can guarantee this being populated.
     protected Guid CurrentUserId => Guid.Parse(HttpContext.User.ClaimValue(ClaimTypes.Sid)!);
 
-    protected User CurrentUser() {
+    protected User CurrentUser()
+    {
         var platformIdentity = HttpContext.User.Identities
             .FirstOrDefault(i => i.AuthenticationType == nameof(YactrAuthenticationType.Platform)) ?? throw new UnauthorizedAccessException("User is not authenticated through the platform.");
-        
-        return new() {
+
+        return new()
+        {
             Auth0UserId = platformIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value!,
             Email = platformIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value!,
             Username = platformIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value!,
@@ -74,11 +80,13 @@ public class AuthenticatedEndpoint<TRequest, TResponse, TMapper> : Endpoint<TReq
     // Which means we can guarantee this being populated.
     protected Guid CurrentUserId => Guid.Parse(HttpContext.User.ClaimValue(ClaimTypes.Sid)!);
 
-    protected User CurrentUser() {
+    protected User CurrentUser()
+    {
         var platformIdentity = HttpContext.User.Identities
             .FirstOrDefault(i => i.AuthenticationType == nameof(YactrAuthenticationType.Platform)) ?? throw new UnauthorizedAccessException("User is not authenticated through the platform.");
-        
-        return new() {
+
+        return new()
+        {
             Auth0UserId = platformIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value!,
             Email = platformIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value!,
             Username = platformIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value!,

@@ -1,8 +1,8 @@
 using FastEndpoints;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Authorization.Permissions;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Pitches;
 

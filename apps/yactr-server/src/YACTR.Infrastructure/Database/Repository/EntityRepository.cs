@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+
 using NodaTime;
+
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model;
 using YACTR.Infrastructure.Database.QueryExtensions;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Infrastructure.Database.Repository;
 

@@ -1,6 +1,6 @@
 using YACTR.Domain.Model;
 
-namespace YACTR.Infrastructure.Database.Repository.Interface;
+namespace YACTR.Domain.Interface.Repository;
 
 public interface IEntityRepository<T> : IRepository<T> where T : BaseEntity
 {

@@ -1,5 +1,7 @@
 using FastEndpoints;
+
 using NodaTime;
+
 using YACTR.Domain.Model.Authorization.Permissions;
 
 namespace YACTR.Api.Endpoints.Users;

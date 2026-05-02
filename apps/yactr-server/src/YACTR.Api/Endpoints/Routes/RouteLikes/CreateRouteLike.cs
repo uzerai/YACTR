@@ -1,6 +1,8 @@
-using YACTR.Domain.Model.Climbing.Rating;
 using Microsoft.EntityFrameworkCore;
-using YACTR.Infrastructure.Database.Repository.Interface;
+
+using YACTR.Domain.Interface.Repository;
+using YACTR.Domain.Model.Climbing.Rating;
+
 using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Routes.RouteLikes;

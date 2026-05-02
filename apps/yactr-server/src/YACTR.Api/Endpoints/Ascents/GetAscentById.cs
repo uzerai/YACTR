@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Achievement;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Ascents;
 

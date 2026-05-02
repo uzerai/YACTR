@@ -1,7 +1,9 @@
 using System.Net;
-using FastEndpoints;
+
 using FastEndpoints.Testing;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Routes;
 using YACTR.Domain.Model.Climbing;
 

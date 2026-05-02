@@ -1,4 +1,5 @@
 using Shouldly;
+
 using YACTR.Domain.Model.Climbing.Grade;
 
 namespace YACTR.Domain.Tests.Grade.Converter;

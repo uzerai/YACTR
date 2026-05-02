@@ -1,7 +1,9 @@
 using System.Net;
-using FastEndpoints;
+
 using FastEndpoints.Testing;
+
 using Shouldly;
+
 using YACTR.Api.Endpoints.Areas;
 
 namespace YACTR.Api.Tests.EndpointTests.Areas;
@@ -18,7 +20,7 @@ public class UpdateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
         var updateRequest = new UpdateAreaRequest
         {
             AreaId = area.Id,
-            Data = new AreaRequestData("Test Area for Update", "Updated description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon())
+            Data = new UpdateAreaBody("Test Area for Update", "Updated description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon())
         };
 
         var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);
@@ -32,7 +34,7 @@ public class UpdateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
         var updateRequest = new UpdateAreaRequest
         {
             AreaId = Guid.NewGuid(),
-            Data = new AreaRequestData("Non-existent Area", "Doesn't matter", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon())
+            Data = new UpdateAreaBody("Non-existent Area", "Doesn't matter", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon())
         };
 
         var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);
@@ -48,7 +50,7 @@ public class UpdateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
         var updateRequest = new UpdateAreaRequest
         {
             AreaId = area.Id,
-            Data = new AreaRequestData("", "Updated description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon())
+            Data = new UpdateAreaBody("", "Updated description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.NewMultiPolygon())
         };
 
         var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);
@@ -64,7 +66,7 @@ public class UpdateAreaIntegrationTests(ApiTestClassFixture fixture) : TestBase<
         var updateRequest = new UpdateAreaRequest
         {
             AreaId = area.Id,
-            Data = new AreaRequestData("Valid Area Name", "Updated description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.EmptyMultiPolygon())
+            Data = new UpdateAreaBody("Valid Area Name", "Updated description", fixture.TestDataFactory.NewPoint(), fixture.TestDataFactory.EmptyMultiPolygon())
         };
 
         var (response, _) = await client.PUTAsync<UpdateArea, UpdateAreaRequest, EmptyResponse>(updateRequest);

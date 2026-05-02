@@ -2,12 +2,13 @@ using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using YACTR.Api.Pagination;
+using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Achievement;
-using YACTR.Infrastructure.Database.Repository.Interface;
 
 namespace YACTR.Api.Endpoints.Ascents;
 
-public class GetAllAscentsRequest : PaginationRequest {
+public class GetAllAscentsRequest : PaginationRequest
+{
     public Guid? RouteId { get; init; }
     public Guid? UserId { get; init; }
     public AscentType? Type { get; init; }
@@ -47,12 +48,12 @@ public class GetAllAscents : Endpoint<GetAllAscentsRequest, PaginatedResponse<As
         {
             query = query.Where(a => a.RouteId == req.RouteId);
         }
-        
+
         if (req.UserId is not null)
         {
             query = query.Where(a => a.UserId == req.UserId);
         }
-        
+
         if (req.Type is not null)
         {
             query = query.Where(a => a.Type == req.Type);
@@ -62,7 +63,7 @@ public class GetAllAscents : Endpoint<GetAllAscentsRequest, PaginatedResponse<As
         {
             query = query.Where(a => a.CreatedAt < req.CreatedBefore);
         }
-        
+
         if (req.CreatedAfter is not null)
         {
             query = query.Where(a => a.CreatedAt > req.CreatedAfter);
