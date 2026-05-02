@@ -1,5 +1,4 @@
 using FastEndpoints;
-
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Domain.Model.Climbing;

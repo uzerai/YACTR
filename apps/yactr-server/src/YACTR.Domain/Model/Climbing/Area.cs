@@ -1,5 +1,4 @@
 using NetTopologySuite.Geometries;
-
 using YACTR.Domain.Model.Organizations;
 
 namespace YACTR.Domain.Model.Climbing;

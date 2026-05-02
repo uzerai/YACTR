@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-
 using NodaTime;
-
 using YACTR.Domain.Model;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Climbing;

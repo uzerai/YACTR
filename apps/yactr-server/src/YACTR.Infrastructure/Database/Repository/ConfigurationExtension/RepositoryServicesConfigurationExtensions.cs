@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model;
 using YACTR.Domain.Model.Achievement;

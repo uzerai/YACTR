@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-
 using YACTR.Domain.Model.Climbing.Grade.GradeConverters;
 
 namespace YACTR.Domain.Model.Climbing.Grade;

@@ -1,9 +1,7 @@
 using FastEndpoints;
-
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authorization.Permissions;
 using YACTR.Infrastructure.Authorization.Permissions;
-
 using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Routes;

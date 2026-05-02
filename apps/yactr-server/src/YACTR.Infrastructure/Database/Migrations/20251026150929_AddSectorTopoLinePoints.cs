@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Microsoft.EntityFrameworkCore.Migrations;
-
 using YACTR.Domain.Model.Climbing.Topo;
 
 namespace YACTR.Infrastructure.Database.Migrations

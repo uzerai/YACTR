@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Microsoft.EntityFrameworkCore.Migrations;
-
 using NodaTime;
 
 namespace YACTR.Infrastructure.Database.Migrations

@@ -1,27 +1,19 @@
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
 using FastEndpoints;
 using FastEndpoints.Swagger;
-
 using FileSignatures;
 using FileSignatures.Formats;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
 using Minio;
-
 using NetTopologySuite;
 using NetTopologySuite.IO.Converters;
-
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
-
 using NSwag;
-
 using YACTR.Api.Swagger;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Authorization.Permissions;

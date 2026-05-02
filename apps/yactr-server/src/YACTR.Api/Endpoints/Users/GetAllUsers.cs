@@ -1,11 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Authentication;
 using YACTR.Infrastructure.Authorization.Permissions;
-
 using Permission = YACTR.Domain.Model.Authorization.Permissions.Permission;
 
 namespace YACTR.Api.Endpoints.Users;

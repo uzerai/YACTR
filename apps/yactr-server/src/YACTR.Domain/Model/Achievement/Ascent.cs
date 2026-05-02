@@ -1,7 +1,5 @@
 using NodaTime;
-
 using YACTR.Domain.Model.Authentication;
-
 using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Domain.Model.Achievement;

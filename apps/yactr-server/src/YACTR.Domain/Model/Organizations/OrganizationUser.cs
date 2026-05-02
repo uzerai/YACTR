@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-
 using YACTR.Domain.Model.Authentication;
 using YACTR.Domain.Model.Authorization.Permissions;
 

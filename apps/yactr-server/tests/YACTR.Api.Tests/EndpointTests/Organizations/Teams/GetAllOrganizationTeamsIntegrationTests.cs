@@ -1,7 +1,5 @@
 using System.Net;
-
 using Shouldly;
-
 using YACTR.Api.Endpoints.Organizations;
 
 namespace YACTR.Api.Tests.EndpointTests.Organizations.Teams;

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-
 using YACTR.Domain.Model.Authorization.Permissions;
 
 namespace YACTR.Infrastructure.Authorization.Permissions;
