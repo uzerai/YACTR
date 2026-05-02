@@ -18,13 +18,13 @@ public class DeleteRouteRatingIntegrationTests(ApiTestClassFixture fixture) : Te
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var routeId = routes.First().Id;
 
-        var (_, created) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, RouteRatingResponse>(new()
+        var (_, created) = await client.POSTAsync<CreateOrUpdateRouteRating, CreateOrUpdateRouteRatingRequest, CreateOrUpdateRouteRatingResponse>(new()
         {
             RouteId = routeId,
-            RatingData = new(3)
+            RatingData = new CreateOrUpdateRouteRatingData(3)
         });
 
-        var (deleteResponse, deleted) = await client.DELETEAsync<DeleteRouteRating, DeleteRouteRatingRequest, RouteRatingResponse>(new()
+        var (deleteResponse, deleted) = await client.DELETEAsync<DeleteRouteRating, DeleteRouteRatingRequest, DeleteRouteRatingResponse>(new()
         {
             RouteId = routeId
         });
@@ -38,7 +38,7 @@ public class DeleteRouteRatingIntegrationTests(ApiTestClassFixture fixture) : Te
     {
         using var client = fixture.CreateAuthenticatedClient();
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var (deleteResponse, _) = await client.DELETEAsync<DeleteRouteRating, DeleteRouteRatingRequest, RouteRatingResponse>(new()
+        var (deleteResponse, _) = await client.DELETEAsync<DeleteRouteRating, DeleteRouteRatingRequest, DeleteRouteRatingResponse>(new()
         {
             RouteId = routes.First().Id
         });

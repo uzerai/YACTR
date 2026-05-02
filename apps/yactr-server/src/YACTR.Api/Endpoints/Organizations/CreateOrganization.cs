@@ -8,11 +8,12 @@ using YACTR.Infrastructure.Authorization.Permissions;
 namespace YACTR.Api.Endpoints.Organizations;
 
 public record CreateOrganizationRequestData(string Name);
+public record CreateOrganizationResponse(Guid Id, string Name);
 
 public class CreateOrganization(
     IEntityRepository<Organization> organizationRepository,
     IRepository<OrganizationUser> organizationUserRepository)
-    : AuthenticatedEndpoint<CreateOrganizationRequestData, OrganizationResponse>
+    : AuthenticatedEndpoint<CreateOrganizationRequestData, CreateOrganizationResponse>
 {
     public override void Configure()
     {
@@ -46,6 +47,6 @@ public class CreateOrganization(
 
         await organizationUserRepository.CreateAsync(organizationUser, ct);
 
-        await Send.CreatedAtAsync<GetOrganizationById>(createdOrganization.Id, new OrganizationResponse(createdOrganization.Id, createdOrganization.Name), cancellation: ct);
+        await Send.CreatedAtAsync<GetOrganizationById>(createdOrganization.Id, new CreateOrganizationResponse(createdOrganization.Id, createdOrganization.Name), cancellation: ct);
     }
 }

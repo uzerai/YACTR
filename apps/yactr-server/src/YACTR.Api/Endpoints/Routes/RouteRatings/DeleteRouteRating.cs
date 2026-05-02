@@ -13,7 +13,14 @@ public class DeleteRouteRatingRequest
     public Guid RouteId { get; set; }
 }
 
-public class DeleteRouteRating(IEntityRepository<RouteRating> routeRatingRepository, IEntityRepository<Route> routeRepository) : AuthenticatedEndpoint<DeleteRouteRatingRequest, RouteRatingResponse, RouteRatingDataMapper>
+public record DeleteRouteRatingResponse(
+    Guid Id,
+    Guid UserId,
+    Guid RouteId,
+    int Rating
+);
+
+public class DeleteRouteRating(IEntityRepository<RouteRating> routeRatingRepository, IEntityRepository<Route> routeRepository) : AuthenticatedEndpoint<DeleteRouteRatingRequest, DeleteRouteRatingResponse>
 {
     public override void Configure()
     {
@@ -38,7 +45,7 @@ public class DeleteRouteRating(IEntityRepository<RouteRating> routeRatingReposit
         if (existingRating is not null)
         {
             await routeRatingRepository.DeleteAsync(existingRating, ct);
-            return await Send.OkAsync(await Map.FromEntityAsync(existingRating, ct), ct);
+            return await Send.OkAsync(new DeleteRouteRatingResponse(existingRating.Id, existingRating.UserId, existingRating.RouteId, existingRating.Rating), ct);
         }
 
         return await Send.NotFoundAsync(ct);

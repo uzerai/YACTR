@@ -21,7 +21,7 @@ public class UpdatePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (area, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var route = routes.First();
 
-        var createRequest = new PitchRequestData(
+        var createRequest = new CreatePitchRequest(
             sector.Id,
             route.Id,
             "Test Pitch for Update",
@@ -31,10 +31,10 @@ public class UpdatePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
             0
         );
 
-        var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
+        var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, CreatePitchRequest, CreatePitchResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
-        var updateRequestData = new PitchRequestData(
+        var updateRequestData = new UpdatePitchData(
             sector.Id,
             route.Id,
             "Updated Pitch Name",
@@ -58,7 +58,7 @@ public class UpdatePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
         using var client = fixture.CreateAuthenticatedClient();
         var invalidId = Guid.NewGuid();
 
-        var updateRequestData = new PitchRequestData(
+        var updateRequestData = new UpdatePitchData(
             Guid.NewGuid(),
             Guid.NewGuid(),
             "Updated Pitch Name",

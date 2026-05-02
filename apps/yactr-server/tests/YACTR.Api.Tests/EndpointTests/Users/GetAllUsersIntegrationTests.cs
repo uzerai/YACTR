@@ -30,7 +30,7 @@ public class GetAllUsersIntegrationTests(ApiTestClassFixture fixture) : TestBase
         using var client = fixture.CreateAuthenticatedClient(adminUser);
 
         // Act
-        var (response, result) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<UserResponse>>(new());
+        var (response, result) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -50,7 +50,7 @@ public class GetAllUsersIntegrationTests(ApiTestClassFixture fixture) : TestBase
         await fixture.GetEntityRepository<User>().CreateAsync(adminUser, TestContext.Current.CancellationToken);
         using var client = fixture.CreateAuthenticatedClient(adminUser);
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<UserResponse>>(new()
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
@@ -68,7 +68,7 @@ public class GetAllUsersIntegrationTests(ApiTestClassFixture fixture) : TestBase
             }, TestContext.Current.CancellationToken);
         }
 
-        var (response, result) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<UserResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>(new()
         {
             Page = 2,
             PageSize = 2
@@ -94,7 +94,7 @@ public class GetAllUsersIntegrationTests(ApiTestClassFixture fixture) : TestBase
         await fixture.GetEntityRepository<User>().CreateAsync(adminUser, TestContext.Current.CancellationToken);
         using var client = fixture.CreateAuthenticatedClient(adminUser);
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<UserResponse>>(new()
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
@@ -102,7 +102,7 @@ public class GetAllUsersIntegrationTests(ApiTestClassFixture fixture) : TestBase
         baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
         baselineResult.ShouldNotBeNull();
 
-        var (response, result) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<UserResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>(new()
         {
             Page = 1,
             PageSize = 0
@@ -138,13 +138,13 @@ public class GetAllUsersIntegrationTests(ApiTestClassFixture fixture) : TestBase
             }, TestContext.Current.CancellationToken);
         }
 
-        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<UserResponse>>(new()
+        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
         });
 
-        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<UserResponse>>(new()
+        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>(new()
         {
             Page = 2,
             PageSize = 1
@@ -175,7 +175,7 @@ public class GetAllUsersIntegrationTests(ApiTestClassFixture fixture) : TestBase
         using var client = fixture.CreateAuthenticatedClient(regularUser);
 
         // Act
-        var (response, _) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<UserResponse>>(new());
+        var (response, _) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -189,7 +189,7 @@ public class GetAllUsersIntegrationTests(ApiTestClassFixture fixture) : TestBase
         using var client = fixture.CreateClient();
 
         // Act
-        var (response, _) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<UserResponse>>(new());
+        var (response, _) = await client.GETAsync<GetAllUsers, GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

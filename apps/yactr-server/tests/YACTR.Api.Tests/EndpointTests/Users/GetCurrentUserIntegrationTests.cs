@@ -27,7 +27,7 @@ public class GetCurrentUserIntegrationTests(ApiTestClassFixture fixture) : TestB
 
         var client = fixture.CreateAuthenticatedClient(expectedUser);
         // Act
-        var (res, result) = await client.GETAsync<GetCurrentUser, EmptyRequest, CurrentUserResponse>(new());
+        var (res, result) = await client.GETAsync<GetCurrentUser, EmptyRequest, GetCurrentUserResponse>(new());
         res.IsSuccessStatusCode.ShouldBeTrue();
 
         result.Username.ShouldBe(expectedUser.Username);
@@ -40,7 +40,7 @@ public class GetCurrentUserIntegrationTests(ApiTestClassFixture fixture) : TestB
         using var client = fixture.CreateClient();
 
         // Act
-        var (response, _) = await client.GETAsync<GetCurrentUser, EmptyRequest, CurrentUserResponse>(new());
+        var (response, _) = await client.GETAsync<GetCurrentUser, EmptyRequest, GetCurrentUserResponse>(new());
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);

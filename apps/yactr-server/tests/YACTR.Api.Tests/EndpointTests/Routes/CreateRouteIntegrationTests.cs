@@ -21,12 +21,12 @@ public class CreateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var jpegImage = await fixture.TestDataSeeder.CreateImageAsync();
         var svgOverlayImage = await fixture.TestDataSeeder.CreateImageAsync(TestDataConstants.MINIMAL_SVG);
 
-        var routeReq = new RouteRequestData(
+        var routeReq = new CreateRouteRequest(
             SectorId: sector.Id,
             Type: ClimbingType.Sport,
             Pitches:
             [
-                new RoutePitchRequestData(
+                new CreateRoutePitchRequest(
                     Id: null,
                     Name: "Test Pitch",
                     Type: ClimbingType.Sport,
@@ -44,7 +44,7 @@ public class CreateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
             TopoImageId: jpegImage.Id,
             TopoImageOverlayId: svgOverlayImage.Id);
 
-        var (response, created) = await client.POSTAsync<CreateRoute, RouteRequestData, RouteResponse>(routeReq);
+        var (response, created) = await client.POSTAsync<CreateRoute, CreateRouteRequest, CreateRouteResponse>(routeReq);
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         created.ShouldNotBeNull();
         created.Id.ShouldNotBe(Guid.Empty);

@@ -21,7 +21,7 @@ public class GetPitchByIdIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var (area, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var route = routes.First();
 
-        var createRequest = new PitchRequestData(
+        var createRequest = new CreatePitchRequest(
             sector.Id,
             route.Id,
             "Test Pitch for GetById",
@@ -31,12 +31,12 @@ public class GetPitchByIdIntegrationTests(ApiTestClassFixture fixture) : TestBas
             0
         );
 
-        var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
+        var (createResponse, createdPitch) = await client.POSTAsync<CreatePitch, CreatePitchRequest, CreatePitchResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act
         var getRequest = new GetPitchByIdRequest(createdPitch.Id);
-        var (response, result) = await client.GETAsync<GetPitchById, GetPitchByIdRequest, Pitch>(getRequest);
+        var (response, result) = await client.GETAsync<GetPitchById, GetPitchByIdRequest, GetPitchByIdResponse>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -53,7 +53,7 @@ public class GetPitchByIdIntegrationTests(ApiTestClassFixture fixture) : TestBas
 
         // Act
         var getRequest = new GetPitchByIdRequest(invalidId);
-        var (response, _) = await client.GETAsync<GetPitchById, GetPitchByIdRequest, Pitch>(getRequest);
+        var (response, _) = await client.GETAsync<GetPitchById, GetPitchByIdRequest, GetPitchByIdResponse>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

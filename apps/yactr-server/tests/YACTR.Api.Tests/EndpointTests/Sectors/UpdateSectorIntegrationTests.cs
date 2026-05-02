@@ -20,7 +20,7 @@ public class UpdateSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var updateRequest = new UpdateSectorRequest
         {
             SectorId = sector.Id,
-            Data = new SectorRequestData(
+            Data = new UpdateSectorData(
                 "Updated Sector",
                 fixture.TestDataFactory.NewPolygon(),
                 fixture.TestDataFactory.NewPoint(),
@@ -42,7 +42,7 @@ public class UpdateSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var updateRequest = new UpdateSectorRequest
         {
             SectorId = Guid.NewGuid(),
-            Data = new SectorRequestData(
+            Data = new UpdateSectorData(
                 "",
                 fixture.TestDataFactory.NewPolygon(),
                 fixture.TestDataFactory.NewPoint(),
@@ -65,38 +65,38 @@ public class UpdateSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var image2 = await fixture.TestDataSeeder.CreateImageAsync();
         var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
-        var createRequest = new SectorRequestData(
+        var createRequest = new CreateSectorRequest(
             "Test Sector With Images For Update",
             fixture.TestDataFactory.NewPolygon(),
             fixture.TestDataFactory.NewPoint(),
             area.Id,
             fixture.TestDataFactory.NewPoint(),
             fixture.TestDataFactory.NewLineString(),
-            [new SectorImageRequestData(image1.Id, 1), new SectorImageRequestData(image2.Id, 2)],
+            [new CreateSectorImageRequest(image1.Id, 1), new CreateSectorImageRequest(image2.Id, 2)],
             image1.Id
         );
 
-        var (createResponse, createdSector) = await client.POSTAsync<CreateSector, SectorRequestData, CreatedSectorResponse>(createRequest);
+        var (createResponse, createdSector) = await client.POSTAsync<CreateSector, CreateSectorRequest, CreatedSectorResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         var updateRequest = new UpdateSectorRequest
         {
             SectorId = createdSector.Id,
-            Data = new SectorRequestData(
+            Data = new UpdateSectorData(
                 "Updated Sector With Images For Update",
                 fixture.TestDataFactory.NewPolygon(),
                 fixture.TestDataFactory.NewPoint(),
                 area.Id,
                 fixture.TestDataFactory.NewPoint(),
                 fixture.TestDataFactory.NewLineString(),
-                [new SectorImageRequestData(image1.Id, 2), new SectorImageRequestData(image2.Id, 1)],
+                [new UpdateSectorImageRequest(image1.Id, 2), new UpdateSectorImageRequest(image2.Id, 1)],
                 image2.Id)
         };
 
         var (updateResponse, _) = await client.PUTAsync<UpdateSector, UpdateSectorRequest, EmptyResponse>(updateRequest);
         updateResponse.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var (getResponse, updatedSector) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, SectorResponse>(new(createdSector.Id));
+        var (getResponse, updatedSector) = await client.GETAsync<GetSectorById, GetSectorByIdRequest, GetSectorByIdResponse>(new(createdSector.Id));
         getResponse.IsSuccessStatusCode.ShouldBeTrue();
         updatedSector.SectorImages.Count().ShouldBe(2);
         updatedSector.SectorImages.Single(si => si.ImageId == image1.Id).Order.ShouldBe(2);

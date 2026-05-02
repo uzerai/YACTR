@@ -19,7 +19,7 @@ public class GetAllAscentsIntegrationTests(ApiTestClassFixture fixture) : Ascent
         using var client = Fixture.CreateClient();
 
         // Act
-        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<AscentResponse>>(new());
+        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<GetAllAscentsResponseItem>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -45,7 +45,7 @@ public class GetAllAscentsIntegrationTests(ApiTestClassFixture fixture) : Ascent
             Type: AscentType.Redpoint,
             CompletedAt: twoDaysAgo
         );
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(ascentRequest1);
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(ascentRequest1);
 
         // Create another ascent (middle)
         var ascentRequest2 = new CreateAscentRequest(
@@ -53,7 +53,7 @@ public class GetAllAscentsIntegrationTests(ApiTestClassFixture fixture) : Ascent
             Type: AscentType.Flash,
             CompletedAt: yesterday
         );
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(ascentRequest2);
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(ascentRequest2);
 
         // Create another ascent (newest)
         var ascentRequest3 = new CreateAscentRequest(
@@ -61,10 +61,10 @@ public class GetAllAscentsIntegrationTests(ApiTestClassFixture fixture) : Ascent
             Type: AscentType.Onsight,
             CompletedAt: now
         );
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(ascentRequest3);
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(ascentRequest3);
 
         // Act
-        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<AscentResponse>>(new());
+        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<GetAllAscentsResponseItem>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -91,10 +91,10 @@ public class GetAllAscentsIntegrationTests(ApiTestClassFixture fixture) : Ascent
         var secondaryRoute = routes.Skip(1).First();
         var now = Fixture.TestClock.GetCurrentInstant();
 
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(primaryRoute.Id, AscentType.Onsight, now));
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(secondaryRoute.Id, AscentType.Redpoint, now.Minus(Duration.FromHours(1))));
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(primaryRoute.Id, AscentType.Onsight, now));
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(secondaryRoute.Id, AscentType.Redpoint, now.Minus(Duration.FromHours(1))));
 
-        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<AscentResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<GetAllAscentsResponseItem>>(new()
         {
             RouteId = primaryRoute.Id
         });
@@ -123,10 +123,10 @@ public class GetAllAscentsIntegrationTests(ApiTestClassFixture fixture) : Ascent
         var route = routes.First();
         var now = Fixture.TestClock.GetCurrentInstant();
 
-        await firstUserClient.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(route.Id, AscentType.Onsight, now));
-        await secondUserClient.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(route.Id, AscentType.Flash, now.Minus(Duration.FromHours(2))));
+        await firstUserClient.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(route.Id, AscentType.Onsight, now));
+        await secondUserClient.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(route.Id, AscentType.Flash, now.Minus(Duration.FromHours(2))));
 
-        var (response, result) = await firstUserClient.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<AscentResponse>>(new()
+        var (response, result) = await firstUserClient.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<GetAllAscentsResponseItem>>(new()
         {
             UserId = TestUserWithAscentPermissions.Id
         });
@@ -146,10 +146,10 @@ public class GetAllAscentsIntegrationTests(ApiTestClassFixture fixture) : Ascent
         var route = routes.First();
         var now = Fixture.TestClock.GetCurrentInstant();
 
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(route.Id, AscentType.Onsight, now));
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(route.Id, AscentType.Redpoint, now.Minus(Duration.FromHours(1))));
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(route.Id, AscentType.Onsight, now));
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(route.Id, AscentType.Redpoint, now.Minus(Duration.FromHours(1))));
 
-        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<AscentResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<GetAllAscentsResponseItem>>(new()
         {
             Type = AscentType.Onsight
         });
@@ -172,11 +172,11 @@ public class GetAllAscentsIntegrationTests(ApiTestClassFixture fixture) : Ascent
         var lateCreatedAt = Instant.FromUtc(2025, 2, 10, 0, 0);
 
         Fixture.SetTestClock(earlyCreatedAt);
-        var (_, olderAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(route.Id, AscentType.Onsight, completedAt));
+        var (_, olderAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(route.Id, AscentType.Onsight, completedAt));
         Fixture.SetTestClock(lateCreatedAt);
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(route.Id, AscentType.Redpoint, completedAt.Plus(Duration.FromDays(1))));
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(route.Id, AscentType.Redpoint, completedAt.Plus(Duration.FromDays(1))));
 
-        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<AscentResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<GetAllAscentsResponseItem>>(new()
         {
             CreatedBefore = Instant.FromUtc(2025, 2, 5, 0, 0)
         });
@@ -199,11 +199,11 @@ public class GetAllAscentsIntegrationTests(ApiTestClassFixture fixture) : Ascent
         var lateCreatedAt = Instant.FromUtc(2025, 3, 10, 0, 0);
 
         Fixture.SetTestClock(earlyCreatedAt);
-        await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(route.Id, AscentType.Onsight, completedAt));
+        await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(route.Id, AscentType.Onsight, completedAt));
         Fixture.SetTestClock(lateCreatedAt);
-        var (_, newerAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(new(route.Id, AscentType.Flash, completedAt.Plus(Duration.FromDays(1))));
+        var (_, newerAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(new(route.Id, AscentType.Flash, completedAt.Plus(Duration.FromDays(1))));
 
-        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<AscentResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllAscents, GetAllAscentsRequest, PaginatedResponse<GetAllAscentsResponseItem>>(new()
         {
             CreatedAfter = Instant.FromUtc(2025, 3, 5, 0, 0)
         });

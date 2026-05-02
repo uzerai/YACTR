@@ -19,7 +19,7 @@ public class UpdateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var created = routes.First();
 
-        var routeReq = new RouteRequestData(
+        var routeReq = new UpdateRouteRequestData(
             SectorId: sector.Id,
             Type: ClimbingType.Sport,
             Pitches: [],
@@ -40,7 +40,7 @@ public class UpdateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var updateReq = new UpdateRouteRequest
         {
             RouteId = Guid.NewGuid(),
-            Route = new RouteRequestData(SectorId: Guid.NewGuid(), Pitches: [], Name: "x", Type: ClimbingType.Sport)
+            Route = new UpdateRouteRequestData(SectorId: Guid.NewGuid(), Pitches: [], Name: "x", Type: ClimbingType.Sport)
         };
 
         var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(updateReq);
@@ -53,25 +53,25 @@ public class UpdateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         using var client = fixture.CreateAuthenticatedClient();
         var (_, sector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
-        var createRouteReq = new RouteRequestData(
+        var createRouteReq = new CreateRouteRequest(
             SectorId: sector.Id,
             Type: ClimbingType.Sport,
             Pitches:
             [
-                new RoutePitchRequestData("Original Pitch", ClimbingType.Sport, null, 1, "Original description", 500, 10, 1)
+                new CreateRoutePitchRequest("Original Pitch", ClimbingType.Sport, null, 1, "Original description", 500, 10, 1)
             ],
             Name: "Route With Pitches",
             Description: "A route with pitches");
 
-        var (createResponse, routeWithPitches) = await client.POSTAsync<CreateRoute, RouteRequestData, RouteResponse>(createRouteReq);
+        var (createResponse, routeWithPitches) = await client.POSTAsync<CreateRoute, CreateRouteRequest, CreateRouteResponse>(createRouteReq);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
-        var updateRouteReq = new RouteRequestData(
+        var updateRouteReq = new UpdateRouteRequestData(
             SectorId: sector.Id,
             Type: ClimbingType.Sport,
             Pitches:
             [
-                new RoutePitchRequestData("Updated Pitch", ClimbingType.Sport, routeWithPitches.Pitches?.First().Id, 2, "Updated description", 600, 15, 1)
+                new UpdateRoutePitchRequestData("Updated Pitch", ClimbingType.Sport, routeWithPitches.Pitches?.First().Id, 2, "Updated description", 600, 15, 1)
             ],
             Name: "Updated Route With Pitches",
             Description: "Updated route description");
@@ -79,7 +79,7 @@ public class UpdateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(new() { RouteId = routeWithPitches.Id, Route = updateRouteReq });
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var (getResponse, updatedRoute) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(new(routeWithPitches.Id));
+        var (getResponse, updatedRoute) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, GetRouteByIdResponse>(new(routeWithPitches.Id));
         getResponse.IsSuccessStatusCode.ShouldBeTrue();
         updatedRoute.Name.ShouldBe("Updated Route With Pitches");
         updatedRoute.Pitches.ShouldNotBeNull();
@@ -94,7 +94,7 @@ public class UpdateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var created = routes.First();
 
-        var updateRouteReq = new RouteRequestData(
+        var updateRouteReq = new UpdateRouteRequestData(
             SectorId: sector.Id,
             Type: ClimbingType.Sport,
             Pitches: [],
@@ -105,7 +105,7 @@ public class UpdateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(new() { RouteId = created.Id, Route = updateRouteReq });
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var (getResponse, updatedRoute) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(new(created.Id));
+        var (getResponse, updatedRoute) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, GetRouteByIdResponse>(new(created.Id));
         getResponse.IsSuccessStatusCode.ShouldBeTrue();
         updatedRoute.Name.ShouldBe("Updated Route Without Pitches");
     }
@@ -117,13 +117,13 @@ public class UpdateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var created = routes.First();
 
-        var updateRouteReq = new RouteRequestData(
+        var updateRouteReq = new UpdateRouteRequestData(
             SectorId: sector.Id,
             Type: ClimbingType.Sport,
             Pitches:
             [
-                new RoutePitchRequestData("Sport Pitch", ClimbingType.Sport, null, 1, "Sport pitch", 500, 10, 1),
-                new RoutePitchRequestData("Trad Pitch", ClimbingType.Traditional, null, 1, "Trad pitch", 500, 10, 2)
+                new UpdateRoutePitchRequestData("Sport Pitch", ClimbingType.Sport, null, 1, "Sport pitch", 500, 10, 1),
+                new UpdateRoutePitchRequestData("Trad Pitch", ClimbingType.Traditional, null, 1, "Trad pitch", 500, 10, 2)
             ],
             Name: "Mixed Route",
             Description: "A route with mixed pitch types");
@@ -131,7 +131,7 @@ public class UpdateRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (response, _) = await client.PUTAsync<UpdateRoute, UpdateRouteRequest, EmptyResponse>(new() { RouteId = created.Id, Route = updateRouteReq });
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var (getResponse, updatedRoute) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, RouteResponse>(new(created.Id));
+        var (getResponse, updatedRoute) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, GetRouteByIdResponse>(new(created.Id));
         getResponse.IsSuccessStatusCode.ShouldBeTrue();
         updatedRoute.Type.ShouldBe(ClimbingType.Mixed);
     }

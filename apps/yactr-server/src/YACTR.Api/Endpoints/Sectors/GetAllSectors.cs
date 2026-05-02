@@ -1,12 +1,14 @@
 using FastEndpoints;
 
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 using NodaTime;
 
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
+using YACTR.Infrastructure.Service;
 
 namespace YACTR.Api.Endpoints.Sectors;
 
@@ -38,9 +40,32 @@ public class GetAllSectorsRequest : PaginationRequest
     public Instant? CreatedAfter { get; init; }
 }
 
-public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<SectorResponse>, SectorDataMapper>
+public record GetAllSectorsImageResponse(
+    Guid ImageId,
+    int Order,
+    string? ImageUrl
+);
+
+public record GetAllSectorsResponseItem(
+    Guid Id,
+    string Name,
+    Polygon SectorArea,
+    Point? EntryPoint,
+    Point? RecommendedParkingLocation,
+    LineString? ApproachPath,
+    Guid AreaId,
+    string AreaName,
+    Guid? PrimarySectorImageId,
+    string? PrimarySectorImageUrl,
+    IEnumerable<GetAllSectorsImageResponse> SectorImages,
+    Instant CreatedAt,
+    Instant UpdatedAt
+);
+
+public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>
 {
     public required IEntityRepository<Sector> SectorRepository { get; init; }
+    public required IImageStorageService ImageStorageService { get; init; }
 
     public override void Configure()
     {
@@ -59,9 +84,28 @@ public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<Se
         query = ApplyFilters(query, req);
 
         var result = await query.OrderBy(e => e.Id)
-            .ToPaginatedResponseAsync(Map.FromEntityAsync, req, ct);
+            .ToPaginatedResponseAsync(MapSectorToResponseAsync, req, ct);
 
         await Send.OkAsync(result, cancellation: ct);
+    }
+
+    private async Task<GetAllSectorsResponseItem> MapSectorToResponseAsync(Sector sector, CancellationToken ct)
+    {
+        return new GetAllSectorsResponseItem(
+            sector.Id,
+            sector.Name,
+            sector.SectorArea,
+            sector.EntryPoint,
+            sector.RecommendedParkingLocation,
+            sector.ApproachPath,
+            sector.AreaId,
+            sector.Area.Name,
+            sector.PrimarySectorImageId,
+            sector.PrimarySectorImageId.HasValue ? await ImageStorageService.GetImageUrlAsync(sector.PrimarySectorImageId.Value, ct) : null,
+            await Task.WhenAll(sector.SectorImages.Select(async sI => new GetAllSectorsImageResponse(sI.ImageId, sI.Order, await ImageStorageService.GetImageUrlAsync(sI.ImageId, ct)))),
+            sector.CreatedAt,
+            sector.UpdatedAt
+        );
     }
 
     private static IQueryable<Sector> ApplyFilters(IQueryable<Sector> query, GetAllSectorsRequest req)

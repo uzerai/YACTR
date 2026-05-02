@@ -18,7 +18,7 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
         using var client = fixture.CreateAuthenticatedClient();
         var tag = $"GetAll-{Guid.NewGuid():N}";
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
-        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { Name = tag });
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { Name = tag });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
     }
@@ -28,7 +28,7 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
     {
         using var client = fixture.CreateAuthenticatedClient();
         var tag = $"Pagination-{Guid.NewGuid():N}";
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { Name = tag, Page = 1, PageSize = 1 });
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { Name = tag, Page = 1, PageSize = 1 });
         baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
         baselineResult.ShouldNotBeNull();
 
@@ -37,7 +37,7 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
             await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"{tag}-{i}"));
         }
 
-        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { Name = tag, Page = 2, PageSize = 2 });
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { Name = tag, Page = 2, PageSize = 2 });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.TotalCount.ShouldBe(baselineResult.TotalCount + 3);
@@ -51,11 +51,11 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
         var tag = $"Clamp-{Guid.NewGuid():N}";
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { Name = tag, Page = 1, PageSize = 1 });
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { Name = tag, Page = 1, PageSize = 1 });
         baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
         baselineResult.ShouldNotBeNull();
 
-        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { Name = tag, Page = 1, PageSize = 0 });
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { Name = tag, Page = 1, PageSize = 0 });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.TotalCount.ShouldBe(baselineResult.TotalCount);
@@ -73,8 +73,8 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
             await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"{tag}-{i}"));
         }
 
-        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { Name = tag, Page = 1, PageSize = 1 });
-        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { Name = tag, Page = 2, PageSize = 1 });
+        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { Name = tag, Page = 1, PageSize = 1 });
+        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { Name = tag, Page = 2, PageSize = 1 });
 
         pageOneResponse.IsSuccessStatusCode.ShouldBeTrue();
         pageTwoResponse.IsSuccessStatusCode.ShouldBeTrue();
@@ -94,7 +94,7 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Limestone-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { Name = tag });
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { Name = tag });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldNotBeEmpty();
@@ -109,7 +109,7 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
         var (_, graniteSector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(tag));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Limestone-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { AreaName = $"{tag} Area" });
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { AreaName = $"{tag} Area" });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == graniteSector.Id);
@@ -122,7 +122,7 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
         var (targetArea, targetSector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Target-{Guid.NewGuid():N}"));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Other-{Guid.NewGuid():N}"));
 
-        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { AreaId = targetArea.Id });
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { AreaId = targetArea.Id });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == targetSector.Id);
@@ -138,7 +138,7 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
         var (_, olderSector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Older-{Guid.NewGuid():N}", SectorCreatedAt: older));
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Newer-{Guid.NewGuid():N}", SectorCreatedAt: newer));
 
-        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { CreatedBefore = Instant.FromUtc(2025, 4, 3, 0, 0) });
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { CreatedBefore = Instant.FromUtc(2025, 4, 3, 0, 0) });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == olderSector.Id);
@@ -154,7 +154,7 @@ public class GetAllSectorsIntegrationTests(ApiTestClassFixture fixture) : TestBa
         await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Older-{Guid.NewGuid():N}", SectorCreatedAt: older));
         var (_, newerSector, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new($"Newer-{Guid.NewGuid():N}", SectorCreatedAt: newer));
 
-        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<SectorResponse>>(new() { CreatedAfter = Instant.FromUtc(2025, 5, 3, 0, 0) });
+        var (response, result) = await client.GETAsync<GetAllSectors, GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>(new() { CreatedAfter = Instant.FromUtc(2025, 5, 3, 0, 0) });
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == newerSector.Id);

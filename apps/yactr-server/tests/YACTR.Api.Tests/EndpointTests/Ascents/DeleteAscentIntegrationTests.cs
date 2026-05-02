@@ -28,12 +28,12 @@ public class DeleteAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
             CompletedAt: completedAt
         );
 
-        var (createResponse, createdAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        var (createResponse, createdAscent) = await client.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act
         var deleteRequest = new DeleteAscentRequest(createdAscent.Id);
-        var (response, result) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, AscentResponse>(deleteRequest);
+        var (response, result) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, DeleteAscentResponse>(deleteRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -43,7 +43,7 @@ public class DeleteAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
 
         // Verify the ascent is deleted
         var getRequest = new GetAscentByIdRequest(createdAscent.Id);
-        var (getResponse, _) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, AscentResponse>(getRequest);
+        var (getResponse, _) = await client.GETAsync<GetAscentById, GetAscentByIdRequest, GetAscentByIdResponse>(getRequest);
         getResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
@@ -54,7 +54,7 @@ public class DeleteAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
 
         // Act
         var deleteRequest = new DeleteAscentRequest(Guid.NewGuid());
-        var (response, _) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, AscentResponse>(deleteRequest);
+        var (response, _) = await client.DELETEAsync<DeleteAscent, DeleteAscentRequest, DeleteAscentResponse>(deleteRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -78,12 +78,12 @@ public class DeleteAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
             CompletedAt: completedAt
         );
 
-        var (createResponse, createdAscent) = await clientWithPermissions.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        var (createResponse, createdAscent) = await clientWithPermissions.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act - Try to delete with a different user
         var deleteRequest = new DeleteAscentRequest(createdAscent.Id);
-        var (response, _) = await clientWithoutPermissions.DELETEAsync<DeleteAscent, DeleteAscentRequest, AscentResponse>(deleteRequest);
+        var (response, _) = await clientWithoutPermissions.DELETEAsync<DeleteAscent, DeleteAscentRequest, DeleteAscentResponse>(deleteRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -106,12 +106,12 @@ public class DeleteAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
             CompletedAt: completedAt
         );
 
-        var (createResponse, createdAscent) = await validClient.POSTAsync<CreateAscent, CreateAscentRequest, AscentResponse>(createRequest);
+        var (createResponse, createdAscent) = await validClient.POSTAsync<CreateAscent, CreateAscentRequest, CreateAscentResponse>(createRequest);
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act - Try to delete without authentication (this tests the missing branch where ClaimValue returns null)
         var deleteRequest = new DeleteAscentRequest(createdAscent.Id);
-        var (response, _) = await Fixture.CreateClient().DELETEAsync<DeleteAscent, DeleteAscentRequest, AscentResponse>(deleteRequest);
+        var (response, _) = await Fixture.CreateClient().DELETEAsync<DeleteAscent, DeleteAscentRequest, DeleteAscentResponse>(deleteRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
@@ -10,8 +11,9 @@ using Permission = YACTR.Domain.Model.Authorization.Permissions.Permission;
 namespace YACTR.Api.Endpoints.Users;
 
 public class GetAllUsersRequest : PaginationRequest { }
+public record GetAllUsersResponseItem(Guid Id, string Username, Instant CreatedAt);
 
-public class GetAllUsers(IEntityRepository<User> userRepository) : AuthenticatedEndpoint<GetAllUsersRequest, PaginatedResponse<UserResponse>>
+public class GetAllUsers(IEntityRepository<User> userRepository) : AuthenticatedEndpoint<GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>
 {
     public override void Configure()
     {
@@ -25,7 +27,7 @@ public class GetAllUsers(IEntityRepository<User> userRepository) : Authenticated
         var allUsers = userRepository.All()
             .AsNoTracking()
             .OrderBy(e => e.Id)
-            .ToPaginatedResponse(e => new UserResponse(e.Id, e.Username, e.CreatedAt), req);
+            .ToPaginatedResponse(e => new GetAllUsersResponseItem(e.Id, e.Username, e.CreatedAt), req);
 
         await Send.OkAsync(allUsers, ct);
     }

@@ -7,7 +7,15 @@ using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Routes.RouteLikes;
 
-public class CreateRouteLike(IEntityRepository<RouteLike> routeLikeRepository, IEntityRepository<Route> routeRepository) : AuthenticatedEndpoint<RouteLikeRequest, RouteLikeResponse, RouteLikeDataMapper>
+public record CreateRouteLikeRequest(Guid RouteId);
+
+public record CreateRouteLikeResponse(
+    Guid Id,
+    Guid UserId,
+    Guid RouteId
+);
+
+public class CreateRouteLike(IEntityRepository<RouteLike> routeLikeRepository, IEntityRepository<Route> routeRepository) : AuthenticatedEndpoint<CreateRouteLikeRequest, CreateRouteLikeResponse>
 {
     public override void Configure()
     {
@@ -15,7 +23,7 @@ public class CreateRouteLike(IEntityRepository<RouteLike> routeLikeRepository, I
         Group<RoutesEndpointGroup>();
     }
 
-    public override async Task HandleAsync(RouteLikeRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CreateRouteLikeRequest req, CancellationToken ct)
     {
         if (await routeRepository.BuildReadonlyQuery()
             .FirstOrDefaultAsync(e => e.Id == req.RouteId, ct) is null)
@@ -32,7 +40,7 @@ public class CreateRouteLike(IEntityRepository<RouteLike> routeLikeRepository, I
 
         if (existingLike is not null)
         {
-            await Send.OkAsync(await Map.FromEntityAsync(existingLike, ct), ct);
+            await Send.OkAsync(new CreateRouteLikeResponse(existingLike.Id, existingLike.UserId, existingLike.RouteId), ct);
             return;
         }
 
@@ -42,6 +50,6 @@ public class CreateRouteLike(IEntityRepository<RouteLike> routeLikeRepository, I
             RouteId = req.RouteId
         });
 
-        await Send.OkAsync(await Map.FromEntityAsync(newLike, ct), ct);
+        await Send.OkAsync(new CreateRouteLikeResponse(newLike.Id, newLike.UserId, newLike.RouteId), ct);
     }
 }

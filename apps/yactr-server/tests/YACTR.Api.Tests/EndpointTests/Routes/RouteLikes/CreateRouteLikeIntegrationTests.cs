@@ -16,7 +16,7 @@ public class CreateRouteLikeIntegrationTests(ApiTestClassFixture fixture) : Test
     {
         using var client = fixture.CreateClient();
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var (response, _) = await client.POSTAsync<CreateRouteLike, RouteLikeRequest, RouteLikeResponse>(new(routes.First().Id));
+        var (response, _) = await client.POSTAsync<CreateRouteLike, CreateRouteLikeRequest, CreateRouteLikeResponse>(new(routes.First().Id));
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
@@ -25,7 +25,7 @@ public class CreateRouteLikeIntegrationTests(ApiTestClassFixture fixture) : Test
     {
         using var client = fixture.CreateAuthenticatedClient();
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var (response, created) = await client.POSTAsync<CreateRouteLike, RouteLikeRequest, RouteLikeResponse>(new(routes.First().Id));
+        var (response, created) = await client.POSTAsync<CreateRouteLike, CreateRouteLikeRequest, CreateRouteLikeResponse>(new(routes.First().Id));
         response.IsSuccessStatusCode.ShouldBeTrue();
         created.ShouldNotBeNull();
     }
@@ -34,7 +34,7 @@ public class CreateRouteLikeIntegrationTests(ApiTestClassFixture fixture) : Test
     public async Task CreateRouteLike_WithMissingRoute_ReturnsNotFound()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var (response, _) = await client.POSTAsync<CreateRouteLike, RouteLikeRequest, RouteLikeResponse>(new(Guid.CreateVersion7()));
+        var (response, _) = await client.POSTAsync<CreateRouteLike, CreateRouteLikeRequest, CreateRouteLikeResponse>(new(Guid.CreateVersion7()));
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
@@ -43,10 +43,10 @@ public class CreateRouteLikeIntegrationTests(ApiTestClassFixture fixture) : Test
     {
         using var client = fixture.CreateAuthenticatedClient();
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var request = new RouteLikeRequest(routes.First().Id);
+        var request = new CreateRouteLikeRequest(routes.First().Id);
 
-        var (_, firstCreated) = await client.POSTAsync<CreateRouteLike, RouteLikeRequest, RouteLikeResponse>(request);
-        var (secondResponse, secondCreated) = await client.POSTAsync<CreateRouteLike, RouteLikeRequest, RouteLikeResponse>(request);
+        var (_, firstCreated) = await client.POSTAsync<CreateRouteLike, CreateRouteLikeRequest, CreateRouteLikeResponse>(request);
+        var (secondResponse, secondCreated) = await client.POSTAsync<CreateRouteLike, CreateRouteLikeRequest, CreateRouteLikeResponse>(request);
 
         secondResponse.IsSuccessStatusCode.ShouldBeTrue();
         secondCreated.ShouldNotBeNull();

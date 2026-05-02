@@ -19,7 +19,7 @@ public class GetAllPitchesIntegrationTests(ApiTestClassFixture fixture) : TestBa
         using var client = fixture.CreateAuthenticatedClient();
 
         // Act
-        var (response, result) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<PitchResponse>>(new());
+        var (response, result) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<GetAllPitchesResponseItem>>(new());
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -33,7 +33,7 @@ public class GetAllPitchesIntegrationTests(ApiTestClassFixture fixture) : TestBa
         var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var route = routes.First();
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<PitchResponse>>(new()
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<GetAllPitchesResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
@@ -43,7 +43,7 @@ public class GetAllPitchesIntegrationTests(ApiTestClassFixture fixture) : TestBa
 
         for (var i = 0; i < 3; i++)
         {
-            var createRequest = new PitchRequestData(
+            var createRequest = new CreatePitchRequest(
                 sector.Id,
                 route.Id,
                 $"Pagination Pitch {i}",
@@ -52,11 +52,11 @@ public class GetAllPitchesIntegrationTests(ApiTestClassFixture fixture) : TestBa
                 "5.9",
                 i
             );
-            var (createResponse, _) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
+            var (createResponse, _) = await client.POSTAsync<CreatePitch, CreatePitchRequest, CreatePitchResponse>(createRequest);
             createResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
         }
 
-        var (response, result) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<PitchResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<GetAllPitchesResponseItem>>(new()
         {
             Page = 2,
             PageSize = 2
@@ -76,7 +76,7 @@ public class GetAllPitchesIntegrationTests(ApiTestClassFixture fixture) : TestBa
         var (_, sector, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var route = routes.First();
 
-        var createRequest = new PitchRequestData(
+        var createRequest = new CreatePitchRequest(
             sector.Id,
             route.Id,
             $"Clamp Pitch {Guid.NewGuid()}",
@@ -85,10 +85,10 @@ public class GetAllPitchesIntegrationTests(ApiTestClassFixture fixture) : TestBa
             "5.8",
             0
         );
-        var (createResponse, _) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
+        var (createResponse, _) = await client.POSTAsync<CreatePitch, CreatePitchRequest, CreatePitchResponse>(createRequest);
         createResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<PitchResponse>>(new()
+        var (baselineResponse, baselineResult) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<GetAllPitchesResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
@@ -96,7 +96,7 @@ public class GetAllPitchesIntegrationTests(ApiTestClassFixture fixture) : TestBa
         baselineResponse.IsSuccessStatusCode.ShouldBeTrue();
         baselineResult.ShouldNotBeNull();
 
-        var (response, result) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<PitchResponse>>(new()
+        var (response, result) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<GetAllPitchesResponseItem>>(new()
         {
             Page = 1,
             PageSize = 0
@@ -118,7 +118,7 @@ public class GetAllPitchesIntegrationTests(ApiTestClassFixture fixture) : TestBa
 
         for (var i = 0; i < 2; i++)
         {
-            var createRequest = new PitchRequestData(
+            var createRequest = new CreatePitchRequest(
                 sector.Id,
                 route.Id,
                 $"Page Diff Pitch {i}",
@@ -127,17 +127,17 @@ public class GetAllPitchesIntegrationTests(ApiTestClassFixture fixture) : TestBa
                 "5.8",
                 i
             );
-            var (createResponse, _) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
+            var (createResponse, _) = await client.POSTAsync<CreatePitch, CreatePitchRequest, CreatePitchResponse>(createRequest);
             createResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
         }
 
-        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<PitchResponse>>(new()
+        var (pageOneResponse, pageOneResult) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<GetAllPitchesResponseItem>>(new()
         {
             Page = 1,
             PageSize = 1
         });
 
-        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<PitchResponse>>(new()
+        var (pageTwoResponse, pageTwoResult) = await client.GETAsync<GetAllPitches, GetAllPitchesRequest, PaginatedResponse<GetAllPitchesResponseItem>>(new()
         {
             Page = 2,
             PageSize = 1

@@ -16,7 +16,7 @@ public class GetAllOrganizationTeamsIntegrationTests(ApiTestClassFixture fixture
 
         // Act
         var getRequest = new GetAllOrganizationTeamsRequest(Organization.Id);
-        var (response, result) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeamResponse>>(getRequest);
+        var (response, result) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<GetAllOrganizationTeamsResponseItem>>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -40,7 +40,7 @@ public class GetAllOrganizationTeamsIntegrationTests(ApiTestClassFixture fixture
 
         // Act
         var getRequest = new GetAllOrganizationTeamsRequest(invalidOrgId);
-        var (response, _) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<OrganizationTeamResponse>>(getRequest);
+        var (response, _) = await client.GETAsync<GetAllOrganizationTeams, GetAllOrganizationTeamsRequest, List<GetAllOrganizationTeamsResponseItem>>(getRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();

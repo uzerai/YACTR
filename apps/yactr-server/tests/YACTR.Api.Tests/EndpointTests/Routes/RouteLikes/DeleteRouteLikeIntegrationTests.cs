@@ -16,10 +16,11 @@ public class DeleteRouteLikeIntegrationTests(ApiTestClassFixture fixture) : Test
     {
         using var client = fixture.CreateAuthenticatedClient();
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var request = new RouteLikeRequest(routes.First().Id);
+        var createRequest = new CreateRouteLikeRequest(routes.First().Id);
+        var deleteRequest = new DeleteRouteLikeRequest(routes.First().Id);
 
-        var (_, created) = await client.POSTAsync<CreateRouteLike, RouteLikeRequest, RouteLikeResponse>(request);
-        var (deleteResponse, deleted) = await client.DELETEAsync<DeleteRouteLike, RouteLikeRequest, RouteLikeResponse>(request);
+        var (_, created) = await client.POSTAsync<CreateRouteLike, CreateRouteLikeRequest, CreateRouteLikeResponse>(createRequest);
+        var (deleteResponse, deleted) = await client.DELETEAsync<DeleteRouteLike, DeleteRouteLikeRequest, DeleteRouteLikeResponse>(deleteRequest);
 
         deleteResponse.IsSuccessStatusCode.ShouldBeTrue();
         deleted.ShouldNotBeNull();
@@ -31,7 +32,7 @@ public class DeleteRouteLikeIntegrationTests(ApiTestClassFixture fixture) : Test
     {
         using var client = fixture.CreateAuthenticatedClient();
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var (deleteResponse, _) = await client.DELETEAsync<DeleteRouteLike, RouteLikeRequest, RouteLikeResponse>(new(routes.First().Id));
+        var (deleteResponse, _) = await client.DELETEAsync<DeleteRouteLike, DeleteRouteLikeRequest, DeleteRouteLikeResponse>(new(routes.First().Id));
 
         deleteResponse.IsSuccessStatusCode.ShouldBeFalse();
         deleteResponse.StatusCode.ShouldBe(HttpStatusCode.NotFound);

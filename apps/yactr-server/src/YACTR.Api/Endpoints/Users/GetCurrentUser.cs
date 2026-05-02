@@ -1,8 +1,24 @@
 using FastEndpoints;
+using NodaTime;
+using YACTR.Domain.Model.Authorization.Permissions;
 
 namespace YACTR.Api.Endpoints.Users;
 
-public class GetCurrentUser : AuthenticatedEndpoint<EmptyRequest, CurrentUserResponse>
+public record GetCurrentUserUserResponse(
+    Guid Id,
+    string Username,
+    Instant CreatedAt
+);
+
+public record GetCurrentUserResponse(
+    ICollection<Permission> PlatformPermissions,
+    ICollection<Permission> AdminPermissions,
+    Guid Id,
+    string Username,
+    Instant CreatedAt
+) : GetCurrentUserUserResponse(Id, Username, CreatedAt);
+
+public class GetCurrentUser : AuthenticatedEndpoint<EmptyRequest, GetCurrentUserResponse>
 {
     public override void Configure()
     {
@@ -14,7 +30,7 @@ public class GetCurrentUser : AuthenticatedEndpoint<EmptyRequest, CurrentUserRes
     {
         var user = CurrentUser();
 
-        await Send.OkAsync(new CurrentUserResponse(
+        await Send.OkAsync(new GetCurrentUserResponse(
             PlatformPermissions: user.PlatformPermissions,
             AdminPermissions: user.AdminPermissions,
             Id: CurrentUserId,

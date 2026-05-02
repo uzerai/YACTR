@@ -18,17 +18,17 @@ public class DeleteImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
         using var client = Fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
 
         // First create an image to delete
-        var uploadRequest = new ImageUploadRequest()
+        var uploadRequest = new UploadImageRequest()
         {
             Image = TestFile
         };
-        var (uploadResponse, uploadedImage) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(uploadRequest, true);
+        var (uploadResponse, uploadedImage) = await client.POSTAsync<UploadImage, UploadImageRequest, UploadImageResponse>(uploadRequest, true);
         uploadResponse.IsSuccessStatusCode.ShouldBeTrue();
         uploadedImage.ShouldNotBeNull();
 
         // Act - Delete using route parameter
-        var (response, result) = await client.DELETEAsync<DeleteImage, ImageDeleteRequest, ImageResponse>(
-            new ImageDeleteRequest { ImageId = uploadedImage.ImageId }, true);
+        var (response, result) = await client.DELETEAsync<DeleteImage, DeleteImageRequest, DeleteImageResponse>(
+            new DeleteImageRequest { ImageId = uploadedImage.ImageId }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -52,16 +52,16 @@ public class DeleteImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
         using var clientWithoutPermissions = Fixture.CreateAuthenticatedClient(userWithoutPermissions);
 
         // First create an image with a user that has permissions
-        var uploadRequest = new ImageUploadRequest()
+        var uploadRequest = new UploadImageRequest()
         {
             Image = TestFile
         };
-        var (uploadResponse, uploadedImage) = await clientWithPermissions.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(uploadRequest, true);
+        var (uploadResponse, uploadedImage) = await clientWithPermissions.POSTAsync<UploadImage, UploadImageRequest, UploadImageResponse>(uploadRequest, true);
         uploadResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act - try to delete with user without permissions using route parameter
-        var (response, _) = await clientWithoutPermissions.DELETEAsync<DeleteImage, ImageDeleteRequest, ImageResponse>(
-            new ImageDeleteRequest { ImageId = uploadedImage.ImageId }, true);
+        var (response, _) = await clientWithoutPermissions.DELETEAsync<DeleteImage, DeleteImageRequest, DeleteImageResponse>(
+            new DeleteImageRequest { ImageId = uploadedImage.ImageId }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -72,8 +72,8 @@ public class DeleteImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
     public async Task DeleteImage_WithoutAuthentication_ReturnsUnauthorized()
     {
         // Act
-        var (response, _) = await Fixture.CreateClient().DELETEAsync<DeleteImage, ImageDeleteRequest, ImageResponse>(
-            new ImageDeleteRequest { ImageId = Guid.NewGuid() }, true);
+        var (response, _) = await Fixture.CreateClient().DELETEAsync<DeleteImage, DeleteImageRequest, DeleteImageResponse>(
+            new DeleteImageRequest { ImageId = Guid.NewGuid() }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -87,8 +87,8 @@ public class DeleteImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
         using var client = Fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
 
         // Act
-        var (response, _) = await client.DELETEAsync<DeleteImage, ImageDeleteRequest, ImageResponse>(
-            new ImageDeleteRequest { ImageId = Guid.NewGuid() }, true);
+        var (response, _) = await client.DELETEAsync<DeleteImage, DeleteImageRequest, DeleteImageResponse>(
+            new DeleteImageRequest { ImageId = Guid.NewGuid() }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeFalse();
@@ -102,17 +102,17 @@ public class DeleteImageIntegrationTests(ApiTestClassFixture fixture) : ImageEnd
         using var client = Fixture.CreateAuthenticatedClient(TestUserWithImagePermissions);
 
         // Create an image to delete
-        var uploadRequest = new ImageUploadRequest()
+        var uploadRequest = new UploadImageRequest()
         {
             Image = TestFile
         };
-        var (uploadResponse, uploadedImage) = await client.POSTAsync<UploadImage, ImageUploadRequest, ImageResponse>(uploadRequest, true);
+        var (uploadResponse, uploadedImage) = await client.POSTAsync<UploadImage, UploadImageRequest, UploadImageResponse>(uploadRequest, true);
         uploadResponse.IsSuccessStatusCode.ShouldBeTrue();
         uploadedImage.ShouldNotBeNull();
 
         // Act
-        var (response, result) = await client.DELETEAsync<DeleteImage, ImageDeleteRequest, ImageResponse>(
-            new ImageDeleteRequest { ImageId = uploadedImage.ImageId }, true);
+        var (response, result) = await client.DELETEAsync<DeleteImage, DeleteImageRequest, DeleteImageResponse>(
+            new DeleteImageRequest { ImageId = uploadedImage.ImageId }, true);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();

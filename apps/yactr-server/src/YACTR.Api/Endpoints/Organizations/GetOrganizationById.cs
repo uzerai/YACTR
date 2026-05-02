@@ -4,8 +4,9 @@ using YACTR.Domain.Model.Organizations;
 namespace YACTR.Api.Endpoints.Organizations;
 
 public record GetOrganizationByIdRequest(Guid OrganizationId);
+public record GetOrganizationByIdResponse(Guid Id, string Name);
 
-public class GetOrganizationById(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<GetOrganizationByIdRequest, OrganizationResponse>
+public class GetOrganizationById(IEntityRepository<Organization> organizationRepository) : AuthenticatedEndpoint<GetOrganizationByIdRequest, GetOrganizationByIdResponse>
 {
     public override void Configure()
     {
@@ -23,6 +24,6 @@ public class GetOrganizationById(IEntityRepository<Organization> organizationRep
             return;
         }
 
-        await Send.OkAsync(new OrganizationResponse(organization.Id, organization.Name), cancellation: ct);
+        await Send.OkAsync(new GetOrganizationByIdResponse(organization.Id, organization.Name), cancellation: ct);
     }
 }

@@ -14,7 +14,7 @@ public class CreateSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
     {
         using var client = fixture.CreateAuthenticatedClient();
         var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
-        var createRequest = new SectorRequestData(
+        var createRequest = new CreateSectorRequest(
             "Test Sector",
             fixture.TestDataFactory.NewPolygon(),
             fixture.TestDataFactory.NewPoint(),
@@ -25,7 +25,7 @@ public class CreateSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
             null
         );
 
-        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, CreatedSectorResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateSector, CreateSectorRequest, CreatedSectorResponse>(createRequest);
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
     }
@@ -38,18 +38,18 @@ public class CreateSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var image2 = await fixture.TestDataSeeder.CreateImageAsync();
         var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
-        var createRequest = new SectorRequestData(
+        var createRequest = new CreateSectorRequest(
             "Test Sector With Images",
             fixture.TestDataFactory.NewPolygon(),
             fixture.TestDataFactory.NewPoint(),
             area.Id,
             fixture.TestDataFactory.NewPoint(),
             fixture.TestDataFactory.NewLineString(),
-            [new SectorImageRequestData(image1.Id, 1), new SectorImageRequestData(image2.Id, 2)],
+            [new CreateSectorImageRequest(image1.Id, 1), new CreateSectorImageRequest(image2.Id, 2)],
             image1.Id
         );
 
-        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, CreatedSectorResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateSector, CreateSectorRequest, CreatedSectorResponse>(createRequest);
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.SectorImageIds.Count().ShouldBe(2);
@@ -66,18 +66,18 @@ public class CreateSectorIntegrationTests(ApiTestClassFixture fixture) : TestBas
         var image2 = await fixture.TestDataSeeder.CreateImageAsync();
         var (area, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
 
-        var createRequest = new SectorRequestData(
+        var createRequest = new CreateSectorRequest(
             "Test Sector With Images No Primary",
             fixture.TestDataFactory.NewPolygon(),
             fixture.TestDataFactory.NewPoint(),
             area.Id,
             fixture.TestDataFactory.NewPoint(),
             fixture.TestDataFactory.NewLineString(),
-            [new SectorImageRequestData(image1.Id, 1), new SectorImageRequestData(image2.Id, 2)],
+            [new CreateSectorImageRequest(image1.Id, 1), new CreateSectorImageRequest(image2.Id, 2)],
             null
         );
 
-        var (response, result) = await client.POSTAsync<CreateSector, SectorRequestData, CreatedSectorResponse>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateSector, CreateSectorRequest, CreatedSectorResponse>(createRequest);
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.SectorImageIds.Count().ShouldBe(2);

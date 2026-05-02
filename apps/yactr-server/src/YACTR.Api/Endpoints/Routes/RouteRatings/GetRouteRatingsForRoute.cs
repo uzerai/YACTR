@@ -2,7 +2,6 @@ using FastEndpoints;
 
 using Microsoft.EntityFrameworkCore;
 
-using YACTR.Api.Endpoints.Routes.RouteRatings;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing.Rating;
@@ -16,7 +15,14 @@ public class GetRouteRatingsForRouteRequest : PaginationRequest
     public Guid RouteId { get; init; }
 }
 
-public class GetRouteRatingsForRoute : Endpoint<GetRouteRatingsForRouteRequest, PaginatedResponse<RouteRatingResponse>, RouteRatingDataMapper>
+public record GetRouteRatingsForRouteResponseItem(
+    Guid Id,
+    Guid UserId,
+    Guid RouteId,
+    int Rating
+);
+
+public class GetRouteRatingsForRoute : Endpoint<GetRouteRatingsForRouteRequest, PaginatedResponse<GetRouteRatingsForRouteResponseItem>>
 {
     public required IEntityRepository<Route> RouteRepository { get; init; }
     public required IEntityRepository<RouteRating> RouteRatingRepository { get; init; }
@@ -40,11 +46,16 @@ public class GetRouteRatingsForRoute : Endpoint<GetRouteRatingsForRouteRequest, 
             return;
         }
 
-        var likes = await RouteRatingRepository.AllAvailable()
+        var ratings = await RouteRatingRepository.AllAvailable()
             .AsNoTracking()
             .Where(e => e.RouteId == req.RouteId)
-            .ToPaginatedResponseAsync(Map.FromEntityAsync, req, ct);
+            .ToPaginatedResponseAsync(MapRouteRatingAsync, req, ct);
 
-        await Send.OkAsync(likes, cancellation: ct);
+        await Send.OkAsync(ratings, cancellation: ct);
+    }
+
+    private static Task<GetRouteRatingsForRouteResponseItem> MapRouteRatingAsync(RouteRating routeRating, CancellationToken ct)
+    {
+        return Task.FromResult(new GetRouteRatingsForRouteResponseItem(routeRating.Id, routeRating.UserId, routeRating.RouteId, routeRating.Rating));
     }
 }

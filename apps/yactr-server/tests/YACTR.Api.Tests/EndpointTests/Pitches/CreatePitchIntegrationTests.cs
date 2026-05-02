@@ -22,7 +22,7 @@ public class CreatePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var route = routes.First();
 
         // Create pitch request
-        var createRequest = new PitchRequestData(
+        var createRequest = new CreatePitchRequest(
             sector.Id,
             route.Id,
             "Test Pitch",
@@ -33,7 +33,7 @@ public class CreatePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
         );
 
         // Act
-        var (response, result) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
+        var (response, result) = await client.POSTAsync<CreatePitch, CreatePitchRequest, CreatePitchResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -59,7 +59,7 @@ public class CreatePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
 
         foreach (var pitchType in pitchTypes)
         {
-            var createRequest = new PitchRequestData(
+            var createRequest = new CreatePitchRequest(
                 sector.Id,
                 route.Id,
                 $"Test {pitchType} Pitch",
@@ -70,7 +70,7 @@ public class CreatePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
             );
 
             // Act
-            var (response, result) = await client.POSTAsync<CreatePitch, PitchRequestData, Pitch>(createRequest);
+            var (response, result) = await client.POSTAsync<CreatePitch, CreatePitchRequest, CreatePitchResponse>(createRequest);
 
             // Assert
             response.IsSuccessStatusCode.ShouldBeTrue();

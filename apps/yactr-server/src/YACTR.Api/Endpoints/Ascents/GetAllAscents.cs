@@ -4,6 +4,7 @@ using NodaTime;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Achievement;
+using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Ascents;
 
@@ -16,7 +17,15 @@ public class GetAllAscentsRequest : PaginationRequest
     public Instant? CreatedAfter { get; init; }
 }
 
-public class GetAllAscents : Endpoint<GetAllAscentsRequest, PaginatedResponse<AscentResponse>>
+public record GetAllAscentsResponseItem(
+  Guid Id,
+  Guid UserId,
+  AscentType Type,
+  Instant CompletedAt,
+  Route? Route
+);
+
+public class GetAllAscents : Endpoint<GetAllAscentsRequest, PaginatedResponse<GetAllAscentsResponseItem>>
 {
     public required IRepository<Ascent> AscentRepository { get; init; }
 
@@ -36,7 +45,7 @@ public class GetAllAscents : Endpoint<GetAllAscentsRequest, PaginatedResponse<As
         query = ApplyFilters(query, req);
 
         var result = await query.OrderByDescending(a => a.CompletedAt)
-            .ToPaginatedResponseAsync((entity, ct) => Task.FromResult(new AscentResponse(
+            .ToPaginatedResponseAsync((entity, ct) => Task.FromResult(new GetAllAscentsResponseItem(
                 entity.Id, entity.UserId, entity.Type, entity.CompletedAt, entity.Route)), req, ct);
 
         await Send.OkAsync(result, cancellation: ct);

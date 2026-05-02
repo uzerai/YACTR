@@ -5,7 +5,6 @@ using FastEndpoints.Testing;
 using Shouldly;
 
 using YACTR.Api.Endpoints.Organizations;
-using YACTR.Domain.Model.Organizations;
 
 namespace YACTR.Api.Tests.EndpointTests.Organizations;
 
@@ -19,7 +18,7 @@ public class CreateOrganizationIntegrationTests(ApiTestClassFixture fixture) : T
         var createRequest = new CreateOrganizationRequestData("Integration Test Org");
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, CreateOrganizationResponse>(createRequest);
 
         // Assert
         response.IsSuccessStatusCode.ShouldBeTrue();
@@ -34,7 +33,7 @@ public class CreateOrganizationIntegrationTests(ApiTestClassFixture fixture) : T
         var createRequest = new CreateOrganizationRequestData("");
 
         // Act
-        var (response, result) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createRequest);
+        var (response, result) = await client.POSTAsync<CreateOrganization, CreateOrganizationRequestData, CreateOrganizationResponse>(createRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -48,7 +47,7 @@ public class CreateOrganizationIntegrationTests(ApiTestClassFixture fixture) : T
         var createRequest = new CreateOrganizationRequestData("Test Org");
 
         // Act
-        var (response, _) = await fixture.CreateClient().POSTAsync<CreateOrganization, CreateOrganizationRequestData, Organization>(createRequest);
+        var (response, _) = await fixture.CreateClient().POSTAsync<CreateOrganization, CreateOrganizationRequestData, CreateOrganizationResponse>(createRequest);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);

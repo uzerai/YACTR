@@ -1,12 +1,22 @@
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Achievement;
+using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Ascents;
 
 public record DeleteAscentRequest(Guid AscentId);
 
-public class DeleteAscent : AuthenticatedEndpoint<DeleteAscentRequest, AscentResponse>
+public record DeleteAscentResponse(
+  Guid Id,
+  Guid UserId,
+  AscentType Type,
+  Instant CompletedAt,
+  Route? Route
+);
+
+public class DeleteAscent : AuthenticatedEndpoint<DeleteAscentRequest, DeleteAscentResponse>
 {
     public required IRepository<Ascent> AscentRepository { get; init; }
 
@@ -36,7 +46,7 @@ public class DeleteAscent : AuthenticatedEndpoint<DeleteAscentRequest, AscentRes
         }
 
         await AscentRepository.DeleteAsync(ascent, ct);
-        await Send.OkAsync(new AscentResponse(
+        await Send.OkAsync(new DeleteAscentResponse(
             Id: ascent.Id,
             UserId: ascent.UserId,
             Type: ascent.Type,
