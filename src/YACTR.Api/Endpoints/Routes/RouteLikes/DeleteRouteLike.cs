@@ -1,3 +1,4 @@
+using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing.Rating;
@@ -6,7 +7,11 @@ using Void = FastEndpoints.Void;
 
 namespace YACTR.Api.Endpoints.Routes.RouteLikes;
 
-public record DeleteRouteLikeRequest(Guid RouteId);
+public class DeleteRouteLikeRequest
+{
+    [BindFrom("route_id")]
+    public required Guid RouteId { get; set; }
+}
 
 public record DeleteRouteLikeResponse(
     Guid Id,

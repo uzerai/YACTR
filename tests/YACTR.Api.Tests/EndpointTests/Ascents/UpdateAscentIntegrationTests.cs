@@ -30,11 +30,14 @@ public class UpdateAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
 
         // Act - Update the ascent
         var newCompletedAt = SystemClock.Instance.GetCurrentInstant();
-        var updateRequest = new UpdateAscentRequest(
-            AscentId: createdAscent.Id,
-            Type: AscentType.Redpoint,
-            CompletedAt: newCompletedAt
-        );
+        var updateRequest = new UpdateAscentRequest
+        {
+            AscentId = createdAscent.Id,
+            Data = new UpdateAscentData(
+                Type: AscentType.Redpoint,
+                CompletedAt: newCompletedAt
+            )
+        };
 
         var (response, _) = await client.PUTAsync<UpdateAscent, UpdateAscentRequest, EmptyResponse>(updateRequest);
 
@@ -55,11 +58,14 @@ public class UpdateAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
         using var client = Fixture.CreateAuthenticatedClient(TestUserWithAscentPermissions);
 
         // Act
-        var updateRequest = new UpdateAscentRequest(
-            AscentId: Guid.NewGuid(),
-            Type: AscentType.Tick,
-            CompletedAt: SystemClock.Instance.GetCurrentInstant()
-        );
+        var updateRequest = new UpdateAscentRequest
+        {
+            AscentId = Guid.NewGuid(),
+            Data = new UpdateAscentData(
+                Type: AscentType.Tick,
+                CompletedAt: SystemClock.Instance.GetCurrentInstant()
+            )
+        };
 
         var (response, _) = await client.PUTAsync<UpdateAscent, UpdateAscentRequest, EmptyResponse>(updateRequest);
 
@@ -89,11 +95,14 @@ public class UpdateAscentIntegrationTests(ApiTestClassFixture fixture) : AscentE
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act - Try to update with a different user
-        var updateRequest = new UpdateAscentRequest(
-            AscentId: createdAscent.Id,
-            Type: AscentType.Redpoint,
-            CompletedAt: SystemClock.Instance.GetCurrentInstant()
-        );
+        var updateRequest = new UpdateAscentRequest
+        {
+            AscentId = createdAscent.Id,
+            Data = new UpdateAscentData(
+                Type: AscentType.Redpoint,
+                CompletedAt: SystemClock.Instance.GetCurrentInstant()
+            )
+        };
 
         var (response, _) = await clientWithoutPermissions.PUTAsync<UpdateAscent, UpdateAscentRequest, EmptyResponse>(updateRequest);
 

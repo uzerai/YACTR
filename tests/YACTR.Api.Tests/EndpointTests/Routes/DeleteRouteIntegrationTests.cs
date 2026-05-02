@@ -15,7 +15,10 @@ public class DeleteRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var (_, _, routes) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync();
         var created = routes.First();
 
-        var (response, _) = await client.DELETEAsync<DeleteRoute, DeleteRouteRequest, EmptyResponse>(new(created.Id));
+        var (response, _) = await client.DELETEAsync<DeleteRoute, DeleteRouteRequest, EmptyResponse>(new()
+        {
+            RouteId = created.Id
+        });
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         var (getResp, _) = await client.GETAsync<GetRouteById, GetRouteByIdRequest, GetRouteByIdResponse>(new(created.Id));
@@ -26,7 +29,10 @@ public class DeleteRouteIntegrationTests(ApiTestClassFixture fixture) : TestBase
     public async Task Delete_WithInvalidId_ReturnsNotFound()
     {
         using var client = fixture.CreateAuthenticatedClient();
-        var (response, _) = await client.DELETEAsync<DeleteRoute, DeleteRouteRequest, EmptyResponse>(new(Guid.NewGuid()));
+        var (response, _) = await client.DELETEAsync<DeleteRoute, DeleteRouteRequest, EmptyResponse>(new()
+        {
+            RouteId = Guid.NewGuid()
+        });
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 }

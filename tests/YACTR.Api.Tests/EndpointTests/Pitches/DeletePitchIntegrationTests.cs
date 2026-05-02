@@ -32,7 +32,10 @@ public class DeletePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
         createResponse.IsSuccessStatusCode.ShouldBeTrue();
 
         // Act
-        var deleteRequest = new DeletePitchRequest(createdPitch.Id);
+        var deleteRequest = new DeletePitchRequest
+        {
+            PitchId = createdPitch.Id
+        };
         var (response, _) = await client.DELETEAsync<DeletePitch, DeletePitchRequest, EmptyResponse>(deleteRequest);
 
         // Assert
@@ -51,7 +54,10 @@ public class DeletePitchIntegrationTests(ApiTestClassFixture fixture) : TestBase
         var invalidId = Guid.NewGuid();
 
         // Act
-        var deleteRequest = new DeletePitchRequest(invalidId);
+        var deleteRequest = new DeletePitchRequest
+        {
+            PitchId = invalidId
+        };
         var (response, _) = await client.DELETEAsync<DeletePitch, DeletePitchRequest, EmptyResponse>(deleteRequest);
 
         // Assert

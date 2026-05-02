@@ -17,7 +17,8 @@ public record UpdateAreaBody(
 
 public class UpdateAreaRequest
 {
-    public Guid AreaId { get; set; }
+    [BindFrom("area_id")]
+    public required Guid AreaId { get; set; }
 
     [FromBody]
     public required UpdateAreaBody Data { get; set; }

@@ -6,7 +6,11 @@ using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Routes;
 
-public record DeleteRouteRequest(Guid RouteId);
+public class DeleteRouteRequest
+{
+    [BindFrom("route_id")]
+    public required Guid RouteId { get; set; }
+}
 
 public class DeleteRoute : AuthenticatedEndpoint<DeleteRouteRequest, EmptyResponse>
 {

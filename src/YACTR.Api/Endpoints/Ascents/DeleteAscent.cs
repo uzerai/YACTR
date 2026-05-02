@@ -1,3 +1,4 @@
+using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using YACTR.Domain.Interface.Repository;
@@ -6,7 +7,11 @@ using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Ascents;
 
-public record DeleteAscentRequest(Guid AscentId);
+public class DeleteAscentRequest
+{
+    [BindFrom("ascent_id")]
+    public required Guid AscentId { get; set; }
+}
 
 public record DeleteAscentResponse(
   Guid Id,

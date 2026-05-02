@@ -6,7 +6,11 @@ using YACTR.Infrastructure.Authorization.Permissions;
 
 namespace YACTR.Api.Endpoints.Pitches;
 
-public record DeletePitchRequest(Guid PitchId);
+public class DeletePitchRequest
+{
+    [BindFrom("pitch_id")]
+    public required Guid PitchId { get; set; }
+}
 
 public class DeletePitch : AuthenticatedEndpoint<DeletePitchRequest, EmptyResponse>
 {

@@ -1,3 +1,4 @@
+using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing.Rating;
@@ -8,7 +9,8 @@ namespace YACTR.Api.Endpoints.Routes.RouteRatings;
 
 public class DeleteRouteRatingRequest
 {
-    public Guid RouteId { get; set; }
+    [BindFrom("route_id")]
+    public required Guid RouteId { get; set; }
 }
 
 public record DeleteRouteRatingResponse(
