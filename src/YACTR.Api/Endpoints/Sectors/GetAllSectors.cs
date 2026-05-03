@@ -5,6 +5,7 @@ using NodaTime;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
+using YACTR.Infrastructure.Database.QueryExtensions;
 using YACTR.Infrastructure.Service;
 
 namespace YACTR.Api.Endpoints.Sectors;
@@ -124,12 +125,12 @@ public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<Ge
 
         if (req.CreatedBefore is not null)
         {
-            query = query.Where(e => e.CreatedAt < req.CreatedBefore);
+            query = query.WhereCreatedAtBefore(req.CreatedBefore.Value);
         }
 
         if (req.CreatedAfter is not null)
         {
-            query = query.Where(e => e.CreatedAt > req.CreatedAfter);
+            query = query.WhereCreatedAtAfter(req.CreatedAfter.Value);
         }
 
         return query;

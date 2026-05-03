@@ -5,6 +5,7 @@ using NodaTime;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
+using YACTR.Infrastructure.Database.QueryExtensions;
 
 namespace YACTR.Api.Endpoints.Areas;
 
@@ -48,7 +49,7 @@ public record GetAllAreasResponseItem(
 
 public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>
 {
-    public required IEntityRepository<Area> AreaRepository { get; init; }
+    public required IEntityRepository<Area> AreaRepository { get; init;  }
 
     public override void Configure()
     {
@@ -92,12 +93,12 @@ public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<GetAll
 
         if (req.CreatedBefore is not null)
         {
-            query = query.Where(e => e.CreatedAt < req.CreatedBefore);
+            query = query.WhereCreatedAtBefore(req.CreatedBefore.Value);
         }
 
         if (req.CreatedAfter is not null)
         {
-            query = query.Where(e => e.CreatedAt > req.CreatedAfter);
+            query = query.WhereCreatedAtAfter(req.CreatedAfter.Value);
         }
 
         if (req.CountryName is not null)
