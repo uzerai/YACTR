@@ -4,6 +4,7 @@ using NodaTime;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Achievement;
+using YACTR.Infrastructure.Database.QueryExtensions;
 using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Ascents;
@@ -70,12 +71,12 @@ public class GetAllAscents : Endpoint<GetAllAscentsRequest, PaginatedResponse<Ge
 
         if (req.CreatedBefore is not null)
         {
-            query = query.Where(a => a.CreatedAt < req.CreatedBefore);
+            query = query.WhereCreatedAtBefore(req.CreatedBefore.Value);
         }
 
         if (req.CreatedAfter is not null)
         {
-            query = query.Where(a => a.CreatedAt > req.CreatedAfter);
+            query = query.WhereCreatedAtAfter(req.CreatedAfter.Value);
         }
         return query;
     }

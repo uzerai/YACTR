@@ -5,6 +5,7 @@ using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Domain.Model.Climbing.Topo;
+using YACTR.Infrastructure.Database.QueryExtensions;
 using YACTR.Infrastructure.Service;
 using Route = YACTR.Domain.Model.Climbing.Route;
 
@@ -150,12 +151,12 @@ public class GetAllRoutes : Endpoint<GetAllRoutesRequest, PaginatedResponse<GetA
 
         if (req.CreatedBefore is not null)
         {
-            query = query.Where(e => e.CreatedAt < req.CreatedBefore);
+            query = query.WhereCreatedAtBefore(req.CreatedBefore.Value);
         }
 
         if (req.CreatedAfter is not null)
         {
-            query = query.Where(e => e.CreatedAt > req.CreatedAfter);
+            query = query.WhereCreatedAtAfter(req.CreatedAfter.Value);
         }
 
         if (req.CountryName is not null)

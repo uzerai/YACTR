@@ -14,6 +14,7 @@ using NetTopologySuite.IO.Converters;
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 using NSwag;
+using YACTR.Api.Binding;
 using YACTR.Api.Swagger;
 using YACTR.Domain.Model.Climbing;
 using YACTR.Infrastructure.Authorization.Permissions;
@@ -216,6 +217,7 @@ app.UseAuthentication()
         // Apply JsonSerializerOptions.PropertyNamingPolicy (snake_case) to query, form, route, and headers,
         // not only JSON bodies — so e.g. area_name binds to AreaName.
         fastEndpointsSettings.Binding.UsePropertyNamingPolicy = true;
+        fastEndpointsSettings.Binding.ValueParserFor<Instant>(NodaTimeInstantParser.ParseResult);
     })
     .UseSwaggerGen();
 
