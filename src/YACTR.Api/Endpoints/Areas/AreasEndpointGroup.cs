@@ -2,7 +2,7 @@ using FastEndpoints;
 
 namespace YACTR.Api.Endpoints.Areas;
 
-public class AreasEndpointGroup : Group
+public sealed class AreasEndpointGroup : Group
 {
     public AreasEndpointGroup()
     {

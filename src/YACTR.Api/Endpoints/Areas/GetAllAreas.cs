@@ -37,6 +37,12 @@ public class GetAllAreasRequest : PaginationRequest
     public int? CountryId { get; init; }
 };
 
+public record GetAllAreasCountryResponseItem(
+    int Id,
+    string Name,
+    string Code
+);
+
 public record GetAllAreasResponseItem(
     Guid Id,
     string Name,
@@ -44,7 +50,8 @@ public record GetAllAreasResponseItem(
     Point Location,
     MultiPolygon Boundary,
     Instant CreatedAt,
-    Instant UpdatedAt
+    Instant UpdatedAt,
+    GetAllAreasCountryResponseItem Country
 );
 
 public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>
@@ -65,7 +72,9 @@ public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<GetAll
 
         query = ApplyFilters(query, req);
 
-        var result = await query.OrderBy(e => e.Id)
+        var result = await query
+            .Include(x => x.Country)
+            .OrderBy(e => e.Id)
             .ToPaginatedResponseAsync(MapAreaToResponseAsync, req, ct);
 
         await Send.OkAsync(result, cancellation: ct);
@@ -80,7 +89,8 @@ public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<GetAll
             Location: area.Location,
             Boundary: area.Boundary,
             CreatedAt: area.CreatedAt,
-            UpdatedAt: area.UpdatedAt
+            UpdatedAt: area.UpdatedAt,
+            Country: new GetAllAreasCountryResponseItem(area.CountryId, area.Country.AdminName, area.Country.Code)
         ));
     }
 
