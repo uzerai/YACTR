@@ -1,44 +1,45 @@
 <script lang="ts">
-	import { Layer, Map, View, Feature, Interaction, Overlay } from 'svelte-openlayers';
-	import VectorSource from 'ol/source/Vector';
-	import * as Popover from '$lib/components/ui/popover';
-	import * as Card from '$lib/components/ui/card';
-	import { Point } from 'ol/geom';
-	import { Feature as OlFeature } from 'ol';
+	import { Layer, Map, View, Feature as MapFeature, Overlay } from 'svelte-openlayers';
+	import type { FeatureLike } from 'ol/Feature';
+	import type { Coordinate } from 'ol/coordinate';
+	import { LocalStorage } from '$lib/utils/local-storage.svelte';
 	// import { untrack } from 'svelte';
-	import { fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
-	import type { Coordinate } from 'ol/coordinate.js';
-	import type { FeatureLike } from 'ol/Feature.js';
+	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
 
 	let { data } = $props();
-	let zoom = $state(5);
+	const mapInformation = new LocalStorage('MAP_LOCATION_AND_ZOOM', {
+		zoom: 5,
+		center: [0, 0] as Coordinate
+	})
+	const areas = $derived(data.areas);
 
-  const areas = $derived(data.areas);
-  // untrack(() => {
-  //   vectorSource.addFeatures(areas.map(area => new OlFeature({
-  //     properties: {
-	// 			name: area.name
-	// 		},
-  //     geometry: new Point(fromSRID4326ToEPSG3857(area.location.coordinates!))
-  //   })))
-  // });;
+	function getFeatureProp(feature: FeatureLike, key: string) {
+		return 'get' in feature && typeof feature.get === 'function' ? feature.get(key) : undefined;
+	}
 </script>
 
+{#snippet areaHoverTooltip(feature: FeatureLike)}
+	<p class="text-sm text-center">{getFeatureProp(feature, 'name')}</p>
+	<p class="text-xs text-gray-500">{getFeatureProp(feature, 'id')}</p>
+{/snippet}
+
 <div class="h-[calc(100vh)] w-full absolute top-0 -z-10">
-	<View bind:zoom>
-		<Map class="h-full w-full">
+	<View bind:zoom={mapInformation.current.zoom} bind:center={mapInformation.current.center}>
+		<Map class="h-full w-full" controls={{ zoom: false }}>
 			<Layer.Tile source="osm" />
       <Layer.Vector>
-				{#if zoom >= 5}
+				{#if mapInformation.current.zoom >= 8}
 					{#each areas as area (area.id)}
-						<Feature.Point coordinates={fromSRID4326ToEPSG3857(area.location.coordinates!)} properties={area}>
-							<Overlay.Hover positioning="top-center" offset={[50, -10]}>
-								<p class="text-sm">{area.name}({area.id})</p>
-							</Overlay.Hover>
-						</Feature.Point>
+						<MapFeature.Point coordinates={fromSRID4326ToEPSG3857(area.location.coordinates!)} properties={area} />
 					{/each}
 				{/if}
 			</Layer.Vector>
+
+			<Overlay.TooltipManager
+				hoverSnippet={areaHoverTooltip}
+				hoverPositioning="bottom-center"
+				selectTooltip={false}
+			/>
 		</Map>
 	</View>
 </div>
