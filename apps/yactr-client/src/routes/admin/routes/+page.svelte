@@ -7,9 +7,9 @@
 		renderComponent,
 		renderSnippet
 	} from '$lib/components/ui/data-table';
-	import DataTableFilters from '$lib/components/ui/data-table/data-table-filters.svelte';
-	import type { ColumnFilterConfig } from '$lib/components/ui/data-table/filter-config';
-	import { useTableUrlFilters } from '$lib/hooks/use-table-url-filters.svelte';
+	// import DataTableFilters from '$lib/components/ui/data-table/data-table-filters.svelte';
+	// import type { ColumnFilterConfig } from '$lib/components/ui/data-table/filter-config';
+	// import { useTableUrlFilters } from '$lib/hooks/use-table-url-filters.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import type { PageProps } from './$types';
 	import { Button } from '$lib/components/ui/button';
@@ -65,62 +65,62 @@
 			cell: ({ row }) => renderComponent(RouteTableActions, { routeId: row.original.id })
 		}
 	];
-	const routeTypeOptions = [
-		{ label: 'Sport', value: 'Sport' },
-		{ label: 'Traditional', value: 'Traditional' },
-		{ label: 'Boulder', value: 'Boulder' },
-		{ label: 'Mixed', value: 'Mixed' },
-		{ label: 'Aid', value: 'Aid' }
-	];
+	// const routeTypeOptions = [
+	// 	{ label: 'Sport', value: 'Sport' },
+	// 	{ label: 'Traditional', value: 'Traditional' },
+	// 	{ label: 'Boulder', value: 'Boulder' },
+	// 	{ label: 'Mixed', value: 'Mixed' },
+	// 	{ label: 'Aid', value: 'Aid' }
+	// ];
 
-	const routeFilterConfig: ColumnFilterConfig<GetAllRoutesResponseItem> = {
-		name: {
-			type: 'string',
-			queryParameter: 'name',
-			placeholder: m.admin_routes_table_name()
-		},
-		sector_name: {
-			type: 'string',
-			queryParameter: 'sector_name',
-			placeholder: m.admin_routes_table_sector()
-		},
-		sector_id: {
-			type: 'string',
-			queryParameter: 'sector_id',
-			placeholder: m.admin_routes_table_sector()
-		},
-		area_name: {
-			type: 'string',
-			queryParameter: 'area_name',
-			placeholder: ''
-		},
-		area_id: {
-			type: 'string',
-			queryParameter: 'area_id',
-			placeholder: ''
-		},
-		type: {
-			type: 'select',
-			queryParameter: 'type',
-			placeholder: m.admin_routes_form_label_type(),
-			options: routeTypeOptions
-		},
-		created_at: {
-			type: 'date',
-			afterQueryParameter: 'created_after',
-			beforeQueryParameter: 'created_before',
-			label: m.admin_routes_table_created_at()
-		}
-	};
+	// const routeFilterConfig: ColumnFilterConfig<GetAllRoutesResponseItem> = {
+	// 	name: {
+	// 		type: 'string',
+	// 		queryParameter: 'name',
+	// 		placeholder: m.admin_routes_table_name()
+	// 	},
+	// 	sector_name: {
+	// 		type: 'string',
+	// 		queryParameter: 'sector_name',
+	// 		placeholder: m.admin_routes_table_sector()
+	// 	},
+	// 	sector_id: {
+	// 		type: 'string',
+	// 		queryParameter: 'sector_id',
+	// 		placeholder: m.admin_routes_table_sector()
+	// 	},
+	// 	area_name: {
+	// 		type: 'string',
+	// 		queryParameter: 'area_name',
+	// 		placeholder: ''
+	// 	},
+	// 	area_id: {
+	// 		type: 'string',
+	// 		queryParameter: 'area_id',
+	// 		placeholder: ''
+	// 	},
+	// 	type: {
+	// 		type: 'select',
+	// 		queryParameter: 'type',
+	// 		placeholder: m.admin_routes_form_label_type(),
+	// 		options: routeTypeOptions
+	// 	},
+	// 	created_at: {
+	// 		type: 'date',
+	// 		afterQueryParameter: 'created_after',
+	// 		beforeQueryParameter: 'created_before',
+	// 		label: m.admin_routes_table_created_at()
+	// 	}
+	// };
 
-	const { filterValues, setFilterValue, applyPagination } = useTableUrlFilters({
-		filterConfig: routeFilterConfig,
-		getServerFilters: () => data.filters
-	});
+	// const { filterValues, setFilterValue, applyPagination } = useTableUrlFilters({
+	// 	filterConfig: routeFilterConfig,
+	// 	getServerFilters: () => data.filters
+	// });
 
-	function onFilterValueChange(queryParameter: string, value: string, debounce: boolean) {
-		setFilterValue(queryParameter, value, debounce);
-	}
+	// function onFilterValueChange(queryParameter: string, value: string, debounce: boolean) {
+	// 	setFilterValue(queryParameter, value, debounce);
+	// }
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 
@@ -141,7 +141,7 @@
 		onPaginationChange: (updater) => {
 			const nextPagination = typeof updater === 'function' ? updater(pagination) : updater;
 			pagination = nextPagination;
-			applyPagination(nextPagination);
+			// applyPagination(nextPagination);
 		},
 		manualFiltering: true,
 		manualPagination: true
@@ -154,18 +154,18 @@
 		};
 	});
 
-	const hasActiveFilters = $derived(
-		Boolean(
-			data.filters.name ||
-				data.filters.sector_name ||
-				data.filters.sector_id ||
-				data.filters.area_name ||
-				data.filters.area_id ||
-				data.filters.type ||
-				data.filters.created_before ||
-				data.filters.created_after
-		)
-	);
+	// const hasActiveFilters = $derived(
+	// 	Boolean(
+	// 		data.filters.name ||
+	// 			data.filters.sector_name ||
+	// 			data.filters.sector_id ||
+	// 			data.filters.area_name ||
+	// 			data.filters.area_id ||
+	// 			data.filters.type ||
+	// 			data.filters.created_before ||
+	// 			data.filters.created_after
+	// 	)
+	// );
 </script>
 
 <div class="flex flex-col gap-6">
@@ -173,7 +173,7 @@
 		<h1 class="text-4xl">{m.admin_routes_title()}</h1>
 	</div>
 
-	{#if data.routes && (data.routes.length > 0 || hasActiveFilters)}
+	{#if data.routes && data.routes.length > 0}
 		<Card.Root>
 			<Card.Header>
 				<Card.CardAction>
@@ -185,6 +185,7 @@
 					{table}
 					emptyMessage={m.admin_routes_empty_title()}
 				>
+					<!--
 					{#snippet toolbar()}
 						<DataTableFilters
 							{columns}
@@ -193,6 +194,7 @@
 							onValueChange={onFilterValueChange}
 						/>
 					{/snippet}
+					-->
 					{#snippet paginationSummary()}
 						<p class="text-sm text-muted-foreground">
 							{data.pagination.page} / {data.pagination.page_count} · {data.pagination.total_count}

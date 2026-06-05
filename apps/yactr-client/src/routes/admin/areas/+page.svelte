@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getCoreRowModel, type ColumnDef, type PaginationState } from '@tanstack/table-core';
+	import { getCoreRowModel, type ColumnDef, type PaginationState, type Updater } from '@tanstack/table-core';
 	import { createRawSnippet } from 'svelte';
 	import {
 		createSvelteTable,
@@ -7,9 +7,6 @@
 		renderComponent,
 		renderSnippet
 	} from '$lib/components/ui/data-table';
-	import DataTableFilters from '$lib/components/ui/data-table/data-table-filters.svelte';
-	import type { ColumnFilterConfig } from '$lib/components/ui/data-table/filter-config';
-	import { useTableUrlFilters } from '$lib/hooks/use-table-url-filters.svelte.js';
 	import * as Card from '$lib/components/ui/card';
 	import type { PageProps } from './$types';
 	import { Button } from '$lib/components/ui/button';
@@ -17,6 +14,7 @@
 	import { m } from '$lib/paraglide/messages.js';
 	import AreaTableActions from './area-table-actions.svelte';
 	import type { GetAllAreasResponseItem } from '$lib/api';
+	import { useManualTableParams } from '$lib/components/ui/data-table/use-manual-table-params.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -58,35 +56,29 @@
 		}
 	];
 
-	const areaFilterConfig: ColumnFilterConfig<GetAllAreasResponseItem> = {
-		name: {
-			type: 'string',
-			queryParameter: 'name',
-			placeholder: m.admin_areas_table_name()
-		},
-		country_name: {
-			type: 'string',
-			queryParameter: 'country_name',
-			placeholder: ''
-		},
-		created_at: {
-			type: 'date',
-			afterQueryParameter: 'created_after',
-			beforeQueryParameter: 'created_before',
-			label: m.admin_areas_table_created_at()
-		}
-	};
+	// const areaFilterConfig: ColumnFilterConfig<GetAllAreasResponseItem> = {
+	// 	name: {
+	// 		type: 'string',
+	// 		queryParameter: 'name',
+	// 		placeholder: m.admin_areas_table_name()
+	// 	},
+	// 	country_name: {
+	// 		type: 'string',
+	// 		queryParameter: 'country_name',
+	// 		placeholder: ''
+	// 	},
+	// 	created_at: {
+	// 		type: 'date',
+	// 		afterQueryParameter: 'created_after',
+	// 		beforeQueryParameter: 'created_before',
+	// 		label: m.admin_areas_table_created_at()
+	// 	}
+	// };
 
-	const { filterValues, setFilterValue, applyPagination } = useTableUrlFilters({
-		filterConfig: areaFilterConfig,
-		getServerFilters: () => data.filters
+	const { pagination, onPaginationChange } = useManualTableParams<GetAllAreasResponseItem>({
+		pageIndex: data.pagination.page,
+		pageSize: data.pagination.page_size
 	});
-
-	function onFilterValueChange(queryParameter: string, value: string, debounce: boolean) {
-		setFilterValue(queryParameter, value, debounce);
-	}
-
-	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 
 	const table = createSvelteTable({
 		get data() {
@@ -99,33 +91,13 @@
 		},
 		state: {
 			get pagination() {
-				return pagination;
+				return pagination
 			}
 		},
-		onPaginationChange: (updater) => {
-			const nextPagination = typeof updater === 'function' ? updater(pagination) : updater;
-			pagination = nextPagination;
-			applyPagination(nextPagination);
-		},
+		onPaginationChange,
 		manualFiltering: true,
 		manualPagination: true
 	});
-
-	$effect(() => {
-		pagination = {
-			pageIndex: Math.max(0, data.pagination.page - 1),
-			pageSize: data.pagination.page_size
-		};
-	});
-
-	const hasActiveFilters = $derived(
-		Boolean(
-			data.filters.name ||
-				data.filters.country_name ||
-				data.filters.created_before ||
-				data.filters.created_after
-		)
-	);
 </script>
 
 <div class="flex flex-col gap-6">
@@ -133,7 +105,7 @@
 		<h1 class="text-4xl">{m.admin_areas_title()}</h1>
 	</div>
 
-	{#if data.areas && (data.areas.length > 0 || hasActiveFilters)}
+	{#if data.areas && data.areas.length > 0}
 		<Card.Root>
 			<Card.Header>
 				<Card.CardAction>
@@ -145,6 +117,7 @@
 					{table}
 					emptyMessage={m.admin_areas_empty_title()}
 				>
+					<!--
 					{#snippet toolbar()}
 						<DataTableFilters
 							{columns}
@@ -153,11 +126,7 @@
 							onValueChange={onFilterValueChange}
 						/>
 					{/snippet}
-					{#snippet paginationSummary()}
-						<p class="text-sm text-muted-foreground">
-							{data.pagination.page} / {data.pagination.page_count} · {data.pagination.total_count}
-						</p>
-					{/snippet}
+					-->
 				</DataTableView>
 			</Card.Content>
 		</Card.Root>

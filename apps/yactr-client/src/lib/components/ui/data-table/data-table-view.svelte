@@ -10,7 +10,6 @@
 		columnCount?: number;
 		emptyMessage?: string;
 		toolbar?: Snippet;
-		paginationSummary?: Snippet;
 		showPaginationControls?: boolean;
 	};
 
@@ -19,14 +18,12 @@
 		columnCount,
 		emptyMessage = '',
 		toolbar,
-		paginationSummary,
 		showPaginationControls = true
 	}: Props = $props();
 
 	const colSpan = $derived(columnCount ?? table.getVisibleLeafColumns().length);
-	const showFooter = $derived(Boolean(paginationSummary) || showPaginationControls);
 	// because page index is 0 indexed, but pagination is 1 indexed, add 1
-	const currentPage = $derived(table.getState().pagination.pageIndex + 1);
+	const currentPage = $derived(table.getState().pagination.pageIndex);
 	const totalItems = $derived(table.getRowCount());
 	const pageSize = $derived(table.getState().pagination.pageSize);
 </script>
@@ -71,15 +68,14 @@
 		</Table.Body>
 	</Table.Root>
 </div>
-{#if showFooter}
+{#if showPaginationControls}
 	<div class="flex items-center justify-between py-4">
-		{#if showPaginationControls}
 			<Pagination.Root
 				class="justify-end"
 				count={totalItems}
 				perPage={pageSize}
 				page={currentPage}
-				onPageChange={(p) => table.setPageIndex(p - 1)}
+				onPageChange={(pageNumber) => table.setPageIndex(pageNumber - 1)}
 			>
 				{#snippet children({ pages, currentPage: activePage })}
 					<Pagination.Content>
@@ -101,6 +97,5 @@
 					</Pagination.Content>
 				{/snippet}
 			</Pagination.Root>
-		{/if}
 	</div>
 {/if}

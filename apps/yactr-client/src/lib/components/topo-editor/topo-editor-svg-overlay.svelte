@@ -366,7 +366,7 @@
 		</Layer>
 
 		<Layer>
-			{#each safePoints as point, index}
+			{#each safePoints as point, index (index)}
 				{@const isFirstPoint = index === 0}
 				{@const isLastPoint = index === safePoints.length - 1}
 				{@const isConnectionPoint = !isFirstPoint && !isLastPoint}

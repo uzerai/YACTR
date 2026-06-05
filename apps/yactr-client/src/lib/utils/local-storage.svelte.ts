@@ -3,9 +3,9 @@ import { tick } from 'svelte';
 /**
  * Svelte specific implementation of a localstorage "$state like" wrapper which provides
  * bindable properties for the localstorage item provided.
- * 
+ *
  * Does require accessing the `current()` property to then be able to access the real-time value of the properties.
- * 
+ *
  * Entirely taken from https://github.com/Rich-Harris/local-storage-test
  */
 export class LocalStorage<T> {
@@ -32,12 +32,14 @@ export class LocalStorage<T> {
 		}
 	}
 
-	get current() {
+  get current() {
+    // Reference to #version to ensure getter is affected by svelte reactivity handling.
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		this.#version;
 
 		const root =
 			typeof localStorage !== 'undefined'
-				? JSON.parse(localStorage.getItem(this.#key) as any)
+				? JSON.parse(localStorage.getItem(this.#key)!)
 				: this.#value;
 
 		const proxies = new WeakMap();
@@ -51,7 +53,8 @@ export class LocalStorage<T> {
 
 			if (!p) {
 				p = new Proxy(value, {
-					get: (target, property) => {
+          get: (target, property) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
 						this.#version;
 						return proxy(Reflect.get(target, property));
 					},

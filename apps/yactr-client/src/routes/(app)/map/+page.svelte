@@ -3,14 +3,13 @@
 	import type { FeatureLike } from 'ol/Feature';
 	import type { Coordinate } from 'ol/coordinate';
 	import { LocalStorage } from '$lib/utils/local-storage.svelte';
-	// import { untrack } from 'svelte';
-	import { fromEPSG3857ToSRID4326, fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
+	import { fromSRID4326ToEPSG3857 } from '$lib/components/geo-input';
 
 	let { data } = $props();
 	const mapInformation = new LocalStorage('MAP_LOCATION_AND_ZOOM', {
 		zoom: 5,
 		center: [0, 0] as Coordinate
-	})
+	});
 	const areas = $derived(data.areas);
 
 	function getFeatureProp(feature: FeatureLike, key: string) {
