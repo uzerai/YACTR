@@ -4,40 +4,32 @@
 default:
   @just --list --unsorted
 
+[doc('Restore server dependencies')]
+restore:
+  dotnet restore YACTR.sln
+
+[doc('Run the API with hot reload')]
+watch:
+  dotnet watch --project src/YACTR.Api
+
 [doc('Formats all code in the project')]
 format:
   dotnet format style --diagnostics IDE0005
 
-[group('docker-compose')]
-[doc('Starts dev-profile docker compose & dotnet watch of server in tmux session which exits both when detached')]
-dev:
-  tmux \
-    new-session -d -s yactr-dev "trap 'docker compose --profile development down' EXIT; docker compose --profile development up" \; \
-    set-option -t yactr-dev -g mouse on \; \
-    set-option -t yactr-dev destroy-unattached on \; \
-    split-window -t yactr-dev 'dotnet watch --project src/YACTR.Api' \; \
-    attach -t yactr-dev
-
-[group('docker-compose')]
-[doc('Starts test-profile docker compose for debug with default settings')]
-test-env:
-  tmux \
-    new-session -d -s yactr-test "trap 'docker compose --profile test down' EXIT; docker compose --profile test up" \; \
-    set-option -t yactr-test -g mouse on \; \
-    set-option -t yactr-test destroy-unattached on \; \
-    attach -t yactr-test
-
 [group('test')]
 [doc('Run the test-profile docker compose and run a test suite with coverage report generation enabled')]
 coverage:
+  #!/usr/bin/env bash
+  set -uo pipefail
+  compose="{{justfile_directory()}}/docker-compose.yaml"
   rm -rf tests/YACTR.Api.Tests/TestResults tests/YACTR.Domain.Tests/TestResults tests/YACTR.Infrastructure.Tests/TestResults
-  docker compose --profile test up -d
-  -dotnet test YACTR.sln --settings ./tests.runsettings --verbosity minimal --collect:"XPlat Code Coverage"
-  docker compose --profile test down
+  docker compose -f "$compose" --profile test up -d
+  dotnet test YACTR.sln --settings ./tests.runsettings --verbosity minimal --collect:"XPlat Code Coverage" || true
+  docker compose -f "$compose" --profile test down
   reportgenerator \
     -reports:"tests/**/TestResults/**/coverage.cobertura.xml" \
     -targetdir:"coverage-report" \
-    -reporttypes:Html && \
+    -reporttypes:Html
   open coverage-report/index.html
 
 [group('database')]

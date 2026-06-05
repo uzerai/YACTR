@@ -1,0 +1,45 @@
+#!/usr/bin/env just --justfile
+
+[private]
+default:
+  @just --list --unsorted
+
+[doc('Install dependencies')]
+install:
+  bun install
+
+[doc('Run the dev server')]
+dev:
+  bun run dev
+
+[doc('Build for production')]
+build:
+  bun run build
+
+[doc('Preview the production build')]
+preview:
+  bun run preview
+
+[doc('Type-check')]
+check:
+  bun run check
+
+[doc('Lint')]
+lint:
+  bun run lint
+
+[doc('Format')]
+format:
+  bun run format
+
+[doc('Unit tests')]
+test-unit:
+  bun run test:unit
+
+[doc('E2E tests')]
+test-e2e:
+  bun run test:e2e
+
+[doc('Regenerate the typed API client from the running server swagger')]
+api-generate:
+  bun run api:generate
