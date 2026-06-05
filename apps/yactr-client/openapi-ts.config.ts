@@ -14,6 +14,10 @@ export default defineConfig({
       name: '@hey-api/typescript',
       enums: 'javascript'
     },
+    {
+      name: '@hey-api/client-fetch',
+      runtimeConfigPath: './src/lib/api/client_config.ts',
+    },
     '@hey-api/sdk',
     'zod'
   ],
