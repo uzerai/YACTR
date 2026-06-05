@@ -3,8 +3,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - src/**
-      - test/**
+      - apps/yactr-server/src/**
+      - apps/yactr-server/tests/**
+      - apps/yactr-server/YACTR.sln
+      - apps/yactr-server/Directory.Packages.props
+      - apps/yactr-server/tests.runsettings
       - .github/workflows/test-coverage.yaml
   pull_request:
     branches: [ main ]
@@ -19,6 +22,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: CI Test Coverage
+    defaults:
+      run:
+        working-directory: apps/yactr-server
     steps:
     - name: Checkout
       uses: actions/checkout@v4.2.2
@@ -58,7 +64,7 @@ jobs:
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: coverage-merged/Cobertura.xml
+        filename: apps/yactr-server/coverage-merged/Cobertura.xml
         badge: true
         fail_below_min: true
         format: markdown

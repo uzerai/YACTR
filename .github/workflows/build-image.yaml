@@ -1,10 +1,12 @@
 name: Build and Push Docker Image
 
 on:
-  workflow_run:
-    workflows: [ "Test Coverage" ]
-    types:
-      - completed
+  # Disabled — registry unavailable; re-enable when ready
+  # workflow_run:
+  #   workflows: [ "Test Coverage" ]
+  #   types:
+  #     - completed
+  workflow_dispatch:
 
 env:
   REGISTRY: ${{ secrets.PRIVATE_REGISTRY_HOST }}
@@ -48,8 +50,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .
-        file: ./container/yactr-api/Dockerfile
+        context: ./apps/yactr-server
+        file: ./apps/yactr-server/container/yactr-api/Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
