@@ -1,0 +1,12 @@
+{
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+	"workbench.editor.customLabels.patterns": {
+    "**/src/**/+page.svelte": "${dirname} - frontend",
+		"**/src/**/+page.server.ts": "${dirname} - server",
+		"**/src/**/new/+page.svelte": "${dirname(1)} - new -frontend",
+		"**/src/**/new/+page.server.ts": "${dirname(1)} - new - server",
+	},
+	"editor.acceptSuggestionOnCommitCharacter": false
+}
