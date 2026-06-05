@@ -14,7 +14,7 @@ This project includes a local [Dex](https://dexidp.io) service in `docker-compos
 - Client Secret: `yactr-dev-secret`
 - Redirect URIs:
   - `http://localhost:8080/swagger/oauth2-redirect.html`
-  - `http://localhost:5173/auth/callback`
+  - `http://localhost:5173/api/auth/oauth2/callback/auth0`
 
 ## API auth env values
 

@@ -78,10 +78,12 @@ services:
       - client-node-modules:/app/node_modules
     env_file:
       - path: ./apps/yactr-client/.env
-        required: false
+        required: true
     environment:
-      # container→container calls reach the API service directly over the compose network
+      # Docker-specific overrides (compose environment wins over env_file)
       - YACTR_BASE_API_URL=http://api:8080
+      - BETTER_AUTH_URL=http://localhost:5173
+      - AUTH_AUTH0_ISSUER=http://dex:5556/dex
     depends_on:
       - api
     profiles: [full]
