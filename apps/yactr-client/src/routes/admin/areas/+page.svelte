@@ -75,7 +75,7 @@
 	// 	}
 	// };
 
-	const { pagination, onPaginationChange } = useManualTableParams<GetAllAreasResponseItem>({
+	const { pagination, onPaginationChange } = useManualTableParams({
 		pageIndex: data.pagination.page,
 		pageSize: data.pagination.page_size
 	});

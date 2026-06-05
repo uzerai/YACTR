@@ -1,9 +1,6 @@
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
-import { getAllAreas, type GetAllAreasData, type GetAllAreasResponses, type Options } from "$lib/api";
-import type { ApiFunctionType } from "$lib/api/api-function-type";
-import type { RequestResult } from "$lib/api/generated/client";
-import type { PaginationState, RowData, Updater } from "@tanstack/table-core";
+import type { PaginationState, Updater } from "@tanstack/table-core";
 import { SvelteURL } from "svelte/reactivity";
 
 

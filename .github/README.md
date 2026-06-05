@@ -92,7 +92,7 @@ Brings up the full stack in Docker: infra, API, and client. Regenerates the type
 just up
 ```
 
-Requires `just install` first (client container reads secrets from `apps/yactr-client/.env`; compose overrides API URL and issuer for Docker networking).
+Requires `just install` first (client container reads secrets from `apps/yactr-client/.env`; compose overrides API URL and issuer for Docker networking). Browser API calls use same-origin `/api/*`; SvelteKit proxies them to `YACTR_BASE_API_URL`.
 
 Sign in with `dev@yactr.local` / `password` (see `apps/yactr-server/container/dex/README.md`).
 
