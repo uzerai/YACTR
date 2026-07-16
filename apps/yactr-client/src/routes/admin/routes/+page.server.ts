@@ -1,5 +1,6 @@
 import { deleteRoute, getAllRoutes } from "$lib/api";
 // import type { ClimbingType } from "$lib/api";
+import { zGetAllRoutesSortBy, zSortDirection } from "$lib/api/generated/zod.gen";
 import { error, fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { parsePaginationQuery } from "$lib/utils/pagination-query";
@@ -15,6 +16,12 @@ export const load: PageServerLoad = async ({ url }) => {
   // const created_after = url.searchParams.get("created_after")?.trim() || "";
   const { page, page_size } = parsePaginationQuery(url.searchParams);
 
+  // Invalid or absent sort params fall back to the server's default sort.
+  const sortByParse = zGetAllRoutesSortBy.safeParse(url.searchParams.get("sort_by"));
+  const directionParse = zSortDirection.safeParse(url.searchParams.get("direction"));
+  const sort_by = sortByParse.success ? sortByParse.data : undefined;
+  const direction = directionParse.success ? directionParse.data : undefined;
+
   const query: NonNullable<Parameters<typeof getAllRoutes>[0]>["query"] = {};
 
   // if (name) query.name = name;
@@ -27,6 +34,8 @@ export const load: PageServerLoad = async ({ url }) => {
   // if (created_after) query.created_after = created_after;
   query.page = page;
   query.page_size = page_size;
+  if (sort_by) query.sort_by = sort_by;
+  if (direction) query.direction = direction;
 
   const { data } = await getAllRoutes({
     query,
@@ -38,6 +47,10 @@ export const load: PageServerLoad = async ({ url }) => {
 
   return {
     routes: data.items,
+    sort: {
+      sort_by,
+      direction,
+    },
     pagination: {
       page,
       page_size,

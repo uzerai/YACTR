@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { getCoreRowModel, type ColumnDef, type PaginationState } from '@tanstack/table-core';
+	import { getCoreRowModel, type ColumnDef } from '@tanstack/table-core';
 	import { createRawSnippet } from 'svelte';
 	import {
 		createSvelteTable,
+		DataTableSortHeader,
 		DataTableView,
 		renderComponent,
-		renderSnippet
+		renderSnippet,
+		useManualTableParams
 	} from '$lib/components/ui/data-table';
 	// import DataTableFilters from '$lib/components/ui/data-table/data-table-filters.svelte';
 	// import type { ColumnFilterConfig } from '$lib/components/ui/data-table/filter-config';
@@ -27,35 +29,61 @@
 		};
 	});
 
+	// Sortable column ids must match the server's GetAllRoutesSortBy enum values
+	// ('name', 'grade', 'created_at', 'updated_at', 'in_sector_order') as they are
+	// passed through as the sort_by query parameter.
 	const columns: ColumnDef<GetAllRoutesResponseItem>[] = [
 		{
 			accessorKey: 'name',
-			header: m.admin_routes_table_name()
+			header: ({ column }) =>
+				renderComponent(DataTableSortHeader, {
+					label: m.admin_routes_table_name(),
+					sorted: column.getIsSorted(),
+					onsort: () => column.toggleSorting(column.getIsSorted() === 'asc')
+				})
 		},
 		{
 			accessorKey: 'sector_id',
-			header: m.admin_routes_table_sector()
+			header: m.admin_routes_table_sector(),
+			enableSorting: false
 		},
 		{
 			accessorKey: 'grade',
-			header: m.admin_routes_table_grade()
+			header: ({ column }) =>
+				renderComponent(DataTableSortHeader, {
+					label: m.admin_routes_table_grade(),
+					sorted: column.getIsSorted(),
+					onsort: () => column.toggleSorting(column.getIsSorted() === 'asc')
+				})
 		},
 		{
 			accessorKey: 'first_ascent_climber_name',
-			header: m.admin_routes_table_first_ascent_by()
+			header: m.admin_routes_table_first_ascent_by(),
+			enableSorting: false
 		},
 		{
 			accessorKey: 'bolter_name',
-			header: m.admin_routes_table_bolter()
+			header: m.admin_routes_table_bolter(),
+			enableSorting: false
 		},
 		{
 			accessorKey: 'created_at',
-			header: m.admin_routes_table_created_at(),
+			header: ({ column }) =>
+				renderComponent(DataTableSortHeader, {
+					label: m.admin_routes_table_created_at(),
+					sorted: column.getIsSorted(),
+					onsort: () => column.toggleSorting(column.getIsSorted() === 'asc')
+				}),
 			cell: ({ row }) => renderSnippet(createdAtSnippet, { value: row.original.created_at })
 		},
 		{
 			accessorKey: 'updated_at',
-			header: m.admin_routes_table_updated_at(),
+			header: ({ column }) =>
+				renderComponent(DataTableSortHeader, {
+					label: m.admin_routes_table_updated_at(),
+					sorted: column.getIsSorted(),
+					onsort: () => column.toggleSorting(column.getIsSorted() === 'asc')
+				}),
 			cell: ({ row }) => renderSnippet(createdAtSnippet, { value: row.original.updated_at })
 		},
 		{
@@ -122,7 +150,10 @@
 	// 	setFilterValue(queryParameter, value, debounce);
 	// }
 
-	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+	const tableParams = useManualTableParams({
+		getPagination: () => ({ page: data.pagination.page, pageSize: data.pagination.page_size }),
+		getSorting: () => ({ sortBy: data.sort.sort_by, direction: data.sort.direction })
+	});
 
 	const table = createSvelteTable({
 		get data() {
@@ -135,23 +166,17 @@
 		},
 		state: {
 			get pagination() {
-				return pagination;
+				return tableParams.pagination;
+			},
+			get sorting() {
+				return tableParams.sorting;
 			}
 		},
-		onPaginationChange: (updater) => {
-			const nextPagination = typeof updater === 'function' ? updater(pagination) : updater;
-			pagination = nextPagination;
-			// applyPagination(nextPagination);
-		},
+		onPaginationChange: tableParams.onPaginationChange,
+		onSortingChange: tableParams.onSortingChange,
 		manualFiltering: true,
-		manualPagination: true
-	});
-
-	$effect(() => {
-		pagination = {
-			pageIndex: Math.max(0, data.pagination.page - 1),
-			pageSize: data.pagination.page_size
-		};
+		manualPagination: true,
+		manualSorting: true
 	});
 
 	// const hasActiveFilters = $derived(

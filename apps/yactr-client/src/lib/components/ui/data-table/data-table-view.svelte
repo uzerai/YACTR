@@ -10,6 +10,7 @@
 		columnCount?: number;
 		emptyMessage?: string;
 		toolbar?: Snippet;
+		paginationSummary?: Snippet;
 		showPaginationControls?: boolean;
 	};
 
@@ -18,12 +19,13 @@
 		columnCount,
 		emptyMessage = '',
 		toolbar,
+		paginationSummary,
 		showPaginationControls = true
 	}: Props = $props();
 
 	const colSpan = $derived(columnCount ?? table.getVisibleLeafColumns().length);
 	// because page index is 0 indexed, but pagination is 1 indexed, add 1
-	const currentPage = $derived(table.getState().pagination.pageIndex);
+	const currentPage = $derived(table.getState().pagination.pageIndex + 1);
 	const totalItems = $derived(table.getRowCount());
 	const pageSize = $derived(table.getState().pagination.pageSize);
 </script>
@@ -70,6 +72,9 @@
 </div>
 {#if showPaginationControls}
 	<div class="flex items-center justify-between py-4">
+			{#if paginationSummary}
+				{@render paginationSummary()}
+			{/if}
 			<Pagination.Root
 				class="justify-end"
 				count={totalItems}

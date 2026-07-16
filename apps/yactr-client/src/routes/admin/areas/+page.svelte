@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { getCoreRowModel, type ColumnDef, type PaginationState, type Updater } from '@tanstack/table-core';
+	import { getCoreRowModel, type ColumnDef } from '@tanstack/table-core';
 	import { createRawSnippet } from 'svelte';
 	import {
 		createSvelteTable,
 		DataTableView,
 		renderComponent,
-		renderSnippet
+		renderSnippet,
+		useManualTableParams
 	} from '$lib/components/ui/data-table';
 	import * as Card from '$lib/components/ui/card';
 	import type { PageProps } from './$types';
@@ -14,7 +15,6 @@
 	import { m } from '$lib/paraglide/messages.js';
 	import AreaTableActions from './area-table-actions.svelte';
 	import type { GetAllAreasResponseItem } from '$lib/api';
-	import { useManualTableParams } from '$lib/components/ui/data-table/use-manual-table-params.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -75,9 +75,8 @@
 	// 	}
 	// };
 
-	const { pagination, onPaginationChange } = useManualTableParams({
-		pageIndex: data.pagination.page,
-		pageSize: data.pagination.page_size
+	const tableParams = useManualTableParams({
+		getPagination: () => ({ page: data.pagination.page, pageSize: data.pagination.page_size })
 	});
 
 	const table = createSvelteTable({
@@ -91,10 +90,10 @@
 		},
 		state: {
 			get pagination() {
-				return pagination
+				return tableParams.pagination;
 			}
 		},
-		onPaginationChange,
+		onPaginationChange: tableParams.onPaginationChange,
 		manualFiltering: true,
 		manualPagination: true
 	});

@@ -1,9 +1,13 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
-	import { getCoreRowModel, type ColumnDef, type PaginationState } from '@tanstack/table-core';
+	import { getCoreRowModel, type ColumnDef } from '@tanstack/table-core';
 	import { createRawSnippet } from 'svelte';
-	import { createSvelteTable, DataTableView, renderComponent, renderSnippet } from '$lib/components/ui/data-table';
+	import {
+		createSvelteTable,
+		DataTableView,
+		renderComponent,
+		renderSnippet,
+		useManualTableParams
+	} from '$lib/components/ui/data-table';
 	import * as Card from '$lib/components/ui/card';
 	import type { PageProps } from './$types';
 	import { Button } from '$lib/components/ui/button';
@@ -54,7 +58,9 @@
 		}
 	];
 
-	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+	const tableParams = useManualTableParams({
+		getPagination: () => ({ page: data.pagination.page, pageSize: data.pagination.page_size })
+	});
 
 	const table = createSvelteTable({
 		get data() {
@@ -67,40 +73,11 @@
 		},
 		state: {
 			get pagination() {
-				return pagination;
+				return tableParams.pagination;
 			}
 		},
-		onPaginationChange: (updater) => {
-			const nextPagination = typeof updater === 'function' ? updater(pagination) : updater;
-			pagination = nextPagination;
-			applyPagination(nextPagination);
-		},
+		onPaginationChange: tableParams.onPaginationChange,
 		manualPagination: true
-	});
-
-	function applyPagination(nextPagination: PaginationState) {
-		const url = new URL(page.url);
-		url.searchParams.set('page', String(nextPagination.pageIndex + 1));
-		url.searchParams.set('page_size', String(nextPagination.pageSize));
-
-		if (url.search === page.url.search) return;
-
-		const search = url.searchParams.toString();
-		const target = search ? `${url.pathname}?${search}` : url.pathname;
-
-		void goto(target, {
-			replaceState: true,
-			noScroll: true,
-			keepFocus: true,
-			invalidateAll: true
-		});
-	}
-
-	$effect(() => {
-		pagination = {
-			pageIndex: Math.max(0, data.pagination.page - 1),
-			pageSize: data.pagination.page_size
-		};
 	});
 </script>
 
