@@ -4,6 +4,7 @@
 	import FlexRender from './flex-render.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import * as Pagination from '$lib/components/ui/pagination';
+	import * as Select from '$lib/components/ui/select';
 
 	type Props = {
 		table: TanstackTable<TData>;
@@ -12,6 +13,7 @@
 		toolbar?: Snippet;
 		paginationSummary?: Snippet;
 		showPaginationControls?: boolean;
+		pageSizeOptions?: number[];
 	};
 
 	let {
@@ -20,7 +22,8 @@
 		emptyMessage = '',
 		toolbar,
 		paginationSummary,
-		showPaginationControls = true
+		showPaginationControls = true,
+		pageSizeOptions = [10, 25, 50, 100]
 	}: Props = $props();
 
 	const colSpan = $derived(columnCount ?? table.getVisibleLeafColumns().length);
@@ -28,6 +31,8 @@
 	const currentPage = $derived(table.getState().pagination.pageIndex + 1);
 	const totalItems = $derived(table.getRowCount());
 	const pageSize = $derived(table.getState().pagination.pageSize);
+	const summaryFrom = $derived(totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1);
+	const summaryTo = $derived(Math.min(currentPage * pageSize, totalItems));
 </script>
 
 {#if toolbar}
@@ -74,33 +79,51 @@
 	<div class="flex items-center justify-between py-4">
 			{#if paginationSummary}
 				{@render paginationSummary()}
+			{:else}
+				<span class="text-sm text-muted-foreground min-w-max">
+					{summaryFrom} - {summaryTo} / <strong class="font-bold">{totalItems}</strong>
+				</span>
 			{/if}
-			<Pagination.Root
-				class="justify-end"
-				count={totalItems}
-				perPage={pageSize}
-				page={currentPage}
-				onPageChange={(pageNumber) => table.setPageIndex(pageNumber - 1)}
-			>
-				{#snippet children({ pages, currentPage: activePage })}
-					<Pagination.Content>
-						<Pagination.Item>
-							<Pagination.PrevButton />
-						</Pagination.Item>
-						{#each pages as p (p.key)}
+			<div class="flex items-center gap-4">
+				<Pagination.Root
+					class="justify-end"
+					count={totalItems}
+					perPage={pageSize}
+					page={currentPage}
+					onPageChange={(pageNumber) => table.setPageIndex(pageNumber - 1)}
+				>
+					{#snippet children({ pages, currentPage: activePage })}
+						<Pagination.Content>
 							<Pagination.Item>
-								{#if p.type === 'ellipsis'}
-									<Pagination.Ellipsis />
-								{:else}
-									<Pagination.Link page={p} isActive={activePage === p.value} />
-								{/if}
+								<Pagination.PrevButton />
 							</Pagination.Item>
+							{#each pages as p (p.key)}
+								<Pagination.Item>
+									{#if p.type === 'ellipsis'}
+										<Pagination.Ellipsis />
+									{:else}
+										<Pagination.Link page={p} isActive={activePage === p.value} />
+									{/if}
+								</Pagination.Item>
+							{/each}
+							<Pagination.Item>
+								<Pagination.NextButton />
+							</Pagination.Item>
+						</Pagination.Content>
+					{/snippet}
+				</Pagination.Root>
+				<Select.Root
+					type="single"
+					value={String(pageSize)}
+					onValueChange={(value) => table.setPagination({ pageIndex: 0, pageSize: Number(value) })}
+				>
+					<Select.Trigger class="w-[80px]">{pageSize}</Select.Trigger>
+					<Select.Content>
+						{#each pageSizeOptions as option (option)}
+							<Select.Item value={String(option)} label={String(option)} />
 						{/each}
-						<Pagination.Item>
-							<Pagination.NextButton />
-						</Pagination.Item>
-					</Pagination.Content>
-				{/snippet}
-			</Pagination.Root>
+					</Select.Content>
+				</Select.Root>
+			</div>
 	</div>
 {/if}

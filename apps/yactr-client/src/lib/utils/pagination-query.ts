@@ -13,7 +13,7 @@ export type PaginationQueryResult = {
 export const DEFAULT_PAGE_PARAM = "page";
 export const DEFAULT_PAGE_SIZE_PARAM = "page_size";
 export const DEFAULT_PAGE = 1;
-export const DEFAULT_PAGE_SIZE = 10;
+export const DEFAULT_PAGE_SIZE = 25;
 
 export function parsePaginationQuery(
 	searchParams: URLSearchParams,

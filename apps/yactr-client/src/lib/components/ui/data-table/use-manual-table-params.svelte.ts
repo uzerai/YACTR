@@ -1,6 +1,16 @@
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
 import type { PaginationState, SortingState, Updater } from "@tanstack/table-core";
+import { LocalStorage } from "$lib/utils/local-storage.svelte";
+import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE_PARAM } from "$lib/utils/pagination-query";
+
+/** Page-size preference shared by all data tables. */
+const storedPageSize = new LocalStorage<number>("admin-data-table:page-size", DEFAULT_PAGE_SIZE);
+
+function getStoredPageSize(): number | undefined {
+	const value = Number(storedPageSize.current);
+	return Number.isFinite(value) && value > 0 ? Math.floor(value) : undefined;
+}
 
 type ServerPagination = {
 	/** 1-based page number, as returned by the load function. */
@@ -49,12 +59,30 @@ export function useManualTableParams({ getPagination, getSorting }: UseManualTab
 		return sortBy ? [{ id: sortBy, desc: direction === "desc" }] : [];
 	});
 
+	// When the URL doesn't specify a page size, fall back to the stored preference.
+	$effect(() => {
+		if (page.url.searchParams.has(DEFAULT_PAGE_SIZE_PARAM)) return;
+
+		const stored = getStoredPageSize();
+		if (stored === undefined || stored === getPagination().pageSize) return;
+
+		const nextUrl = new URL(page.url);
+		nextUrl.searchParams.set(DEFAULT_PAGE_SIZE_PARAM, String(stored));
+
+		void navigateIfChanged(nextUrl);
+	});
+
 	const onPaginationChange = (updater: Updater<PaginationState>) => {
 		const nextPagination = typeof updater === "function" ? updater(pagination) : updater;
 
+		// Remember explicitly selected page sizes across tables and sessions.
+		if (nextPagination.pageSize !== pagination.pageSize) {
+			storedPageSize.current = nextPagination.pageSize;
+		}
+
 		const nextUrl = new URL(page.url);
 		nextUrl.searchParams.set("page", String(nextPagination.pageIndex + 1));
-		nextUrl.searchParams.set("page_size", String(nextPagination.pageSize));
+		nextUrl.searchParams.set(DEFAULT_PAGE_SIZE_PARAM, String(nextPagination.pageSize));
 
 		void navigateIfChanged(nextUrl);
 	};

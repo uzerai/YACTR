@@ -15,7 +15,7 @@
 	bind:this={ref}
 	aria-hidden="true"
 	data-slot="pagination-ellipsis"
-	class={cn("size-8 [&_svg:not([class*='size-'])]:size-4 flex items-right justify-center", className)}
+	class={cn("size-8 [&_svg:not([class*='size-'])]:size-4 flex items-right justify-center items-center", className)}
 	{...restProps}
 >
 	<HugeiconsIcon icon={MoreHorizontalCircle01Icon} strokeWidth={2}  />

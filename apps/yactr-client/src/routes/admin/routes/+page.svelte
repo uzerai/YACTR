@@ -220,11 +220,6 @@
 						/>
 					{/snippet}
 					-->
-					{#snippet paginationSummary()}
-						<p class="text-sm text-muted-foreground">
-							{data.pagination.page} / {data.pagination.page_count} · {data.pagination.total_count}
-						</p>
-					{/snippet}
 				</DataTableView>
 			</Card.Content>
 		</Card.Root>
