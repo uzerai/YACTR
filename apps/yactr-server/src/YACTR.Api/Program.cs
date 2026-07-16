@@ -218,6 +218,9 @@ app.UseAuthentication()
         // not only JSON bodies — so e.g. area_name binds to AreaName.
         fastEndpointsSettings.Binding.UsePropertyNamingPolicy = true;
         fastEndpointsSettings.Binding.ValueParserFor<Instant>(NodaTimeInstantParser.ParseResult);
+        // Sort enums use snake_case wire values (matching the OpenAPI schema), which the default
+        // Enum.TryParse-based binding cannot handle.
+        fastEndpointsSettings.Binding.AddSortEnumValueParsers();
     })
     .UseSwaggerGen();
 

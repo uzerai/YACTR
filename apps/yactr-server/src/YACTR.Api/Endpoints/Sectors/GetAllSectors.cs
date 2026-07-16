@@ -1,3 +1,6 @@
+using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -10,7 +13,27 @@ using YACTR.Infrastructure.Service;
 
 namespace YACTR.Api.Endpoints.Sectors;
 
-public class GetAllSectorsRequest : PaginationRequest
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum GetAllSectorsSortBy
+{
+    [EnumMember(Value = "name")]
+    [JsonStringEnumMemberName("name")]
+    Name,
+
+    [EnumMember(Value = "area_name")]
+    [JsonStringEnumMemberName("area_name")]
+    AreaName,
+
+    [EnumMember(Value = "created_at")]
+    [JsonStringEnumMemberName("created_at")]
+    CreatedAt,
+
+    [EnumMember(Value = "updated_at")]
+    [JsonStringEnumMemberName("updated_at")]
+    UpdatedAt,
+}
+
+public class GetAllSectorsRequest : SortedPaginationRequest<GetAllSectorsSortBy>
 {
     /// <summary>
     /// Contains-matched name of the area. ie: "be" will match "bearing" and "beaver wall"
@@ -62,6 +85,15 @@ public record GetAllSectorsResponseItem(
 
 public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<GetAllSectorsResponseItem>>
 {
+    private static readonly IReadOnlyDictionary<GetAllSectorsSortBy, Expression<Func<Sector, object>>> SortKeySelectors =
+        new Dictionary<GetAllSectorsSortBy, Expression<Func<Sector, object>>>
+        {
+            [GetAllSectorsSortBy.Name] = e => e.Name,
+            [GetAllSectorsSortBy.AreaName] = e => e.Area.Name,
+            [GetAllSectorsSortBy.CreatedAt] = e => e.CreatedAt,
+            [GetAllSectorsSortBy.UpdatedAt] = e => e.UpdatedAt,
+        };
+
     public required IEntityRepository<Sector> SectorRepository { get; init; }
     public required IImageStorageService ImageStorageService { get; init; }
 
@@ -81,7 +113,8 @@ public class GetAllSectors : Endpoint<GetAllSectorsRequest, PaginatedResponse<Ge
 
         query = ApplyFilters(query, req);
 
-        var result = await query.OrderBy(e => e.Id)
+        var result = await query
+            .ApplySort(req, SortKeySelectors, GetAllSectorsSortBy.CreatedAt, SortDirection.Desc, e => e.Id)
             .ToPaginatedResponseAsync(MapSectorToResponseAsync, req, ct);
 
         await Send.OkAsync(result, cancellation: ct);

@@ -46,6 +46,7 @@ public class GetRouteRatingsForRoute : Endpoint<GetRouteRatingsForRouteRequest, 
         var ratings = await RouteRatingRepository.AllAvailable()
             .AsNoTracking()
             .Where(e => e.RouteId == req.RouteId)
+            .OrderBy(e => e.Id)
             .ToPaginatedResponseAsync(MapRouteRatingAsync, req, ct);
 
         await Send.OkAsync(ratings, cancellation: ct);

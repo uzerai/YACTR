@@ -1,3 +1,6 @@
+using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -9,7 +12,19 @@ using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Ascents;
 
-public class GetAllAscentsRequest : PaginationRequest
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum GetAllAscentsSortBy
+{
+    [EnumMember(Value = "completed_at")]
+    [JsonStringEnumMemberName("completed_at")]
+    CompletedAt,
+
+    [EnumMember(Value = "created_at")]
+    [JsonStringEnumMemberName("created_at")]
+    CreatedAt,
+}
+
+public class GetAllAscentsRequest : SortedPaginationRequest<GetAllAscentsSortBy>
 {
     public Guid? RouteId { get; init; }
     public Guid? UserId { get; init; }
@@ -28,6 +43,13 @@ public record GetAllAscentsResponseItem(
 
 public class GetAllAscents : Endpoint<GetAllAscentsRequest, PaginatedResponse<GetAllAscentsResponseItem>>
 {
+    private static readonly IReadOnlyDictionary<GetAllAscentsSortBy, Expression<Func<Ascent, object>>> SortKeySelectors =
+        new Dictionary<GetAllAscentsSortBy, Expression<Func<Ascent, object>>>
+        {
+            [GetAllAscentsSortBy.CompletedAt] = e => e.CompletedAt,
+            [GetAllAscentsSortBy.CreatedAt] = e => e.CreatedAt,
+        };
+
     public required IRepository<Ascent> AscentRepository { get; init; }
 
     public override void Configure()
@@ -45,7 +67,8 @@ public class GetAllAscents : Endpoint<GetAllAscentsRequest, PaginatedResponse<Ge
 
         query = ApplyFilters(query, req);
 
-        var result = await query.OrderByDescending(a => a.CompletedAt)
+        var result = await query
+            .ApplySort(req, SortKeySelectors, GetAllAscentsSortBy.CompletedAt, SortDirection.Desc, e => e.Id)
             .ToPaginatedResponseAsync((entity, ct) => Task.FromResult(new GetAllAscentsResponseItem(
                 entity.Id, entity.UserId, entity.Type, entity.CompletedAt, entity.Route)), req, ct);
 

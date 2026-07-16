@@ -1,3 +1,6 @@
+using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using YACTR.Api.Pagination;
@@ -6,7 +9,27 @@ using YACTR.Domain.Model.Climbing;
 
 namespace YACTR.Api.Endpoints.Pitches;
 
-public class GetAllPitchesRequest : PaginationRequest { }
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum GetAllPitchesSortBy
+{
+    [EnumMember(Value = "name")]
+    [JsonStringEnumMemberName("name")]
+    Name,
+
+    [EnumMember(Value = "grade")]
+    [JsonStringEnumMemberName("grade")]
+    Grade,
+
+    [EnumMember(Value = "pitch_order")]
+    [JsonStringEnumMemberName("pitch_order")]
+    PitchOrder,
+
+    [EnumMember(Value = "created_at")]
+    [JsonStringEnumMemberName("created_at")]
+    CreatedAt,
+}
+
+public class GetAllPitchesRequest : SortedPaginationRequest<GetAllPitchesSortBy> { }
 
 public record GetAllPitchesResponseItem(
     Guid Id,
@@ -21,6 +44,15 @@ public record GetAllPitchesResponseItem(
 
 public class GetAllPitches : Endpoint<GetAllPitchesRequest, PaginatedResponse<GetAllPitchesResponseItem>>
 {
+    private static readonly IReadOnlyDictionary<GetAllPitchesSortBy, Expression<Func<Pitch, object>>> SortKeySelectors =
+        new Dictionary<GetAllPitchesSortBy, Expression<Func<Pitch, object>>>
+        {
+            [GetAllPitchesSortBy.Name] = e => e.Name!,
+            [GetAllPitchesSortBy.Grade] = e => e.Grade,
+            [GetAllPitchesSortBy.PitchOrder] = e => e.PitchOrder,
+            [GetAllPitchesSortBy.CreatedAt] = e => e.CreatedAt,
+        };
+
     public required IEntityRepository<Pitch> PitchRepository { get; init; }
 
     public override void Configure()
@@ -34,7 +66,7 @@ public class GetAllPitches : Endpoint<GetAllPitchesRequest, PaginatedResponse<Ge
     {
         var pitches = await PitchRepository.AllAvailable()
             .AsNoTracking()
-            .OrderBy(e => e.Id)
+            .ApplySort(req, SortKeySelectors, GetAllPitchesSortBy.CreatedAt, SortDirection.Desc, e => e.Id)
             .ToPaginatedResponseAsync(MapPitchToResponseAsync, req, ct);
 
         await Send.OkAsync(pitches, cancellation: ct);

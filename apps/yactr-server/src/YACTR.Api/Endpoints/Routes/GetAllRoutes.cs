@@ -1,3 +1,6 @@
+using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -11,7 +14,31 @@ using Route = YACTR.Domain.Model.Climbing.Route;
 
 namespace YACTR.Api.Endpoints.Routes;
 
-public class GetAllRoutesRequest : PaginationRequest
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum GetAllRoutesSortBy
+{
+    [EnumMember(Value = "name")]
+    [JsonStringEnumMemberName("name")]
+    Name,
+
+    [EnumMember(Value = "grade")]
+    [JsonStringEnumMemberName("grade")]
+    Grade,
+
+    [EnumMember(Value = "created_at")]
+    [JsonStringEnumMemberName("created_at")]
+    CreatedAt,
+
+    [EnumMember(Value = "updated_at")]
+    [JsonStringEnumMemberName("updated_at")]
+    UpdatedAt,
+
+    [EnumMember(Value = "in_sector_order")]
+    [JsonStringEnumMemberName("in_sector_order")]
+    InSectorOrder,
+}
+
+public class GetAllRoutesRequest : SortedPaginationRequest<GetAllRoutesSortBy>
 {
     public string? Name { get; init; }
     public string? SectorName { get; init; }
@@ -66,6 +93,16 @@ public record GetAllRoutesResponseItem(
 
 public class GetAllRoutes : Endpoint<GetAllRoutesRequest, PaginatedResponse<GetAllRoutesResponseItem>>
 {
+    private static readonly IReadOnlyDictionary<GetAllRoutesSortBy, Expression<Func<Route, object>>> SortKeySelectors =
+        new Dictionary<GetAllRoutesSortBy, Expression<Func<Route, object>>>
+        {
+            [GetAllRoutesSortBy.Name] = e => e.Name,
+            [GetAllRoutesSortBy.Grade] = e => e.Grade!,
+            [GetAllRoutesSortBy.CreatedAt] = e => e.CreatedAt,
+            [GetAllRoutesSortBy.UpdatedAt] = e => e.UpdatedAt,
+            [GetAllRoutesSortBy.InSectorOrder] = e => e.InSectorOrder,
+        };
+
     public required IEntityRepository<Route> RouteRepository { get; init; }
     public required IImageStorageService ImageStorageService { get; init; }
 
@@ -81,7 +118,8 @@ public class GetAllRoutes : Endpoint<GetAllRoutesRequest, PaginatedResponse<GetA
         var query = RouteRepository.AllAvailable()
             .AsNoTracking();
 
-        var result = ApplyFilters(query, req);
+        var result = ApplyFilters(query, req)
+            .ApplySort(req, SortKeySelectors, GetAllRoutesSortBy.CreatedAt, SortDirection.Desc, e => e.Id);
 
         await Send.OkAsync(await result.ToPaginatedResponseAsync(MapRouteToResponseAsync, req, ct), cancellation: ct);
     }

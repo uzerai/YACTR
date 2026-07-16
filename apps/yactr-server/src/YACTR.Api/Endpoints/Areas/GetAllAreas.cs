@@ -1,3 +1,6 @@
+using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -9,7 +12,27 @@ using YACTR.Infrastructure.Database.QueryExtensions;
 
 namespace YACTR.Api.Endpoints.Areas;
 
-public class GetAllAreasRequest : PaginationRequest
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum GetAllAreasSortBy
+{
+    [EnumMember(Value = "name")]
+    [JsonStringEnumMemberName("name")]
+    Name,
+
+    [EnumMember(Value = "country_name")]
+    [JsonStringEnumMemberName("country_name")]
+    CountryName,
+
+    [EnumMember(Value = "created_at")]
+    [JsonStringEnumMemberName("created_at")]
+    CreatedAt,
+
+    [EnumMember(Value = "updated_at")]
+    [JsonStringEnumMemberName("updated_at")]
+    UpdatedAt,
+}
+
+public class GetAllAreasRequest : SortedPaginationRequest<GetAllAreasSortBy>
 {
     /// <summary>
     /// Contains-matched name of the area. ie: "lo" will match "london" and "london wall"
@@ -56,6 +79,15 @@ public record GetAllAreasResponseItem(
 
 public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>
 {
+    private static readonly IReadOnlyDictionary<GetAllAreasSortBy, Expression<Func<Area, object>>> SortKeySelectors =
+        new Dictionary<GetAllAreasSortBy, Expression<Func<Area, object>>>
+        {
+            [GetAllAreasSortBy.Name] = e => e.Name,
+            [GetAllAreasSortBy.CountryName] = e => e.Country.AdminName,
+            [GetAllAreasSortBy.CreatedAt] = e => e.CreatedAt,
+            [GetAllAreasSortBy.UpdatedAt] = e => e.UpdatedAt,
+        };
+
     public required IEntityRepository<Area> AreaRepository { get; init;  }
 
     public override void Configure()
@@ -74,7 +106,7 @@ public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<GetAll
 
         var result = await query
             .Include(x => x.Country)
-            .OrderBy(e => e.Id)
+            .ApplySort(req, SortKeySelectors, GetAllAreasSortBy.CreatedAt, SortDirection.Desc, e => e.Id)
             .ToPaginatedResponseAsync(MapAreaToResponseAsync, req, ct);
 
         await Send.OkAsync(result, cancellation: ct);

@@ -45,6 +45,7 @@ public class GetRouteLikesForRoute : Endpoint<GetRouteLikesForRouteRequest, Pagi
         var likes = await RouteLikeRepository.AllAvailable()
             .AsNoTracking()
             .Where(e => e.RouteId == req.RouteId)
+            .OrderBy(e => e.Id)
             .ToPaginatedResponseAsync(MapRouteLikeAsync, req, ct);
 
         await Send.OkAsync(likes, cancellation: ct);

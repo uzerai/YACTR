@@ -18,8 +18,10 @@ public static class ToPaginatedResponseQueryExtension
         return Math.Clamp((paginationRequest.Page ?? 1) - 1, 0, int.MaxValue) * GetTake(paginationRequest);
     }
 
+    // Both overloads require an IOrderedQueryable: Skip/Take without a deterministic ordering
+    // makes page contents nondeterministic in EF Core, so ordering is enforced at compile time.
     public static PaginatedResponse<TResponseData> ToPaginatedResponse<TPaginationRequest, TResponseData, TEntity>(
-        this IQueryable<TEntity> query,
+        this IOrderedQueryable<TEntity> query,
         Func<TEntity, TResponseData> entityToResponseMapper,
         TPaginationRequest paginationRequest)
             where TPaginationRequest : PaginationRequest
@@ -37,7 +39,7 @@ public static class ToPaginatedResponseQueryExtension
     }
 
     public static async Task<PaginatedResponse<TResponseData>> ToPaginatedResponseAsync<TPaginationRequest, TResponseData, TEntity>(
-        this IQueryable<TEntity> query,
+        this IOrderedQueryable<TEntity> query,
         Func<TEntity, CancellationToken, Task<TResponseData>> entityToResponseMapper,
         TPaginationRequest paginationRequest,
         CancellationToken cancellationToken = default)

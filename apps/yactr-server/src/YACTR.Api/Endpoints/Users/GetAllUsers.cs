@@ -1,3 +1,6 @@
+using System.Linq.Expressions;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using YACTR.Api.Pagination;
@@ -8,11 +11,30 @@ using Permission = YACTR.Domain.Model.Authorization.Permissions.Permission;
 
 namespace YACTR.Api.Endpoints.Users;
 
-public class GetAllUsersRequest : PaginationRequest { }
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum GetAllUsersSortBy
+{
+    [EnumMember(Value = "username")]
+    [JsonStringEnumMemberName("username")]
+    Username,
+
+    [EnumMember(Value = "created_at")]
+    [JsonStringEnumMemberName("created_at")]
+    CreatedAt,
+}
+
+public class GetAllUsersRequest : SortedPaginationRequest<GetAllUsersSortBy> { }
 public record GetAllUsersResponseItem(Guid Id, string Username, Instant CreatedAt);
 
 public class GetAllUsers(IEntityRepository<User> userRepository) : AuthenticatedEndpoint<GetAllUsersRequest, PaginatedResponse<GetAllUsersResponseItem>>
 {
+    private static readonly IReadOnlyDictionary<GetAllUsersSortBy, Expression<Func<User, object>>> SortKeySelectors =
+        new Dictionary<GetAllUsersSortBy, Expression<Func<User, object>>>
+        {
+            [GetAllUsersSortBy.Username] = e => e.Username,
+            [GetAllUsersSortBy.CreatedAt] = e => e.CreatedAt,
+        };
+
     public override void Configure()
     {
         Get("/");
@@ -24,7 +46,7 @@ public class GetAllUsers(IEntityRepository<User> userRepository) : Authenticated
     {
         var allUsers = userRepository.All()
             .AsNoTracking()
-            .OrderBy(e => e.Id)
+            .ApplySort(req, SortKeySelectors, GetAllUsersSortBy.CreatedAt, SortDirection.Desc, e => e.Id)
             .ToPaginatedResponse(e => new GetAllUsersResponseItem(e.Id, e.Username, e.CreatedAt), req);
 
         await Send.OkAsync(allUsers, ct);
