@@ -100,6 +100,19 @@
 		$formData.topo_image = file;
 	};
 
+	// For single-pitch routes the main form fields are the only editable ones,
+	// so mirror them onto the first pitch to avoid saving stale pitch values.
+	$effect(() => {
+		if ($formData.is_multipitch) return;
+		const firstPitch = $formData.pitches[0];
+		if (!firstPitch) return;
+
+		if (firstPitch.height !== $formData.height) $formData.pitches[0]!.height = $formData.height;
+		if (firstPitch.gear_count !== $formData.gear_count) $formData.pitches[0]!.gear_count = $formData.gear_count;
+		if (firstPitch.grade !== $formData.grade) $formData.pitches[0]!.grade = $formData.grade;
+		if ($formData.type && firstPitch.type !== $formData.type) $formData.pitches[0]!.type = $formData.type;
+	});
+
 	const addPitch = () => {
 		$formData.pitches = $formData.pitches.concat({ 
 			name: '', 
