@@ -12,19 +12,27 @@ public class TestDataFactory(GeometryFactory geometryFactory)
 {
     public Point NewPoint()
     {
-        return geometryFactory.CreatePoint(
-            new Coordinate(-122.4194, 37.7749)
-        );
+        return NewPoint(-122.4194, 37.7749);
+    }
+
+    public Point NewPoint(double longitude, double latitude)
+    {
+        return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
     }
 
     public Polygon NewPolygon()
     {
+        return NewPolygon(-122.42, 37.77, -122.41, 37.78);
+    }
+
+    public Polygon NewPolygon(double minLon, double minLat, double maxLon, double maxLat)
+    {
         return geometryFactory.CreatePolygon([
-            new Coordinate(-122.42, 37.77),
-            new Coordinate(-122.42, 37.78),
-            new Coordinate(-122.41, 37.78),
-            new Coordinate(-122.41, 37.77),
-            new Coordinate(-122.42, 37.77)
+            new Coordinate(minLon, minLat),
+            new Coordinate(minLon, maxLat),
+            new Coordinate(maxLon, maxLat),
+            new Coordinate(maxLon, minLat),
+            new Coordinate(minLon, minLat)
         ]);
     }
 
@@ -32,6 +40,13 @@ public class TestDataFactory(GeometryFactory geometryFactory)
     {
         return geometryFactory.CreateMultiPolygon([
             NewPolygon()
+        ]);
+    }
+
+    public MultiPolygon NewMultiPolygon(double minLon, double minLat, double maxLon, double maxLat)
+    {
+        return geometryFactory.CreateMultiPolygon([
+            NewPolygon(minLon, minLat, maxLon, maxLat)
         ]);
     }
 

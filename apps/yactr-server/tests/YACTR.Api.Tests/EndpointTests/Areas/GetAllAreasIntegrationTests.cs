@@ -1,6 +1,8 @@
+using System.Net;
 using FastEndpoints.Testing;
 using NodaTime;
 using Shouldly;
+using YACTR.Api.Binding;
 using YACTR.Api.Endpoints.Areas;
 using YACTR.Api.Pagination;
 
@@ -206,5 +208,43 @@ public class GetAllAreasIntegrationTests(ApiTestClassFixture fixture) : TestBase
         response.IsSuccessStatusCode.ShouldBeTrue();
         result.ShouldNotBeNull();
         result.Items.ShouldContain(e => e.Id == newerArea.Id);
+    }
+
+    [Fact]
+    public async Task GetAll_WithBboxFilter_ReturnsAreasIntersectingBoundingBox()
+    {
+        using var client = fixture.CreateClient();
+        var factory = fixture.TestDataFactory;
+
+        var (osloArea, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(
+            $"Oslo-{Guid.NewGuid():N}",
+            Location: factory.NewPoint(10.75, 59.91),
+            Boundary: factory.NewMultiPolygon(10.70, 59.88, 10.80, 59.94)
+        ));
+        var (sfArea, _, _) = await fixture.TestDataSeeder.SeedAreaWithSectorAndRouteAsync(new(
+            $"SF-{Guid.NewGuid():N}",
+            Location: factory.NewPoint(-122.4194, 37.7749),
+            Boundary: factory.NewMultiPolygon(-122.42, 37.77, -122.41, 37.78)
+        ));
+
+        var (response, result) = await client.GETAsync<GetAllAreas, GetAllAreasRequest, PaginatedResponse<GetAllAreasResponseItem>>(new()
+        {
+            Bbox = new BoundingBox(10.668708, 59.346513, 10.844098, 59.950000)
+        });
+
+        response.IsSuccessStatusCode.ShouldBeTrue();
+        result.ShouldNotBeNull();
+        result.Items.ShouldContain(e => e.Id == osloArea.Id);
+        result.Items.ShouldNotContain(e => e.Id == sfArea.Id);
+    }
+
+    [Fact]
+    public async Task GetAll_WithMalformedBbox_ReturnsBadRequest()
+    {
+        using var client = fixture.CreateClient();
+
+        var response = await client.GetAsync("/areas?bbox=not-a-bbox", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 }

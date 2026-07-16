@@ -5,6 +5,7 @@ using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using NodaTime;
+using YACTR.Api.Binding;
 using YACTR.Api.Pagination;
 using YACTR.Domain.Interface.Repository;
 using YACTR.Domain.Model.Climbing;
@@ -58,6 +59,12 @@ public class GetAllAreasRequest : SortedPaginationRequest<GetAllAreasSortBy>
     /// Country ID to filter by.
     /// </summary>
     public int? CountryId { get; init; }
+
+    /// <summary>
+    /// Bounding box filter in OGC API Features format: <c>minLon,minLat,maxLon,maxLat</c> (WGS 84).
+    /// Returns areas whose boundary intersects the box.
+    /// </summary>
+    public BoundingBox? Bbox { get; init; }
 };
 
 public record GetAllAreasCountryResponseItem(
@@ -151,6 +158,12 @@ public class GetAllAreas : Endpoint<GetAllAreasRequest, PaginatedResponse<GetAll
         if (req.CountryId.HasValue)
         {
             query = query.Where(e => e.CountryId == req.CountryId.Value);
+        }
+
+        if (req.Bbox is not null)
+        {
+            var boundingBox = req.Bbox.ToPolygon();
+            query = query.Where(e => e.Boundary.Intersects(boundingBox));
         }
 
         return query;

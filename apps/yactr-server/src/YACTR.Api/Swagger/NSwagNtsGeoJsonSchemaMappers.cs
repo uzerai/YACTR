@@ -2,6 +2,7 @@ using NetTopologySuite.Geometries;
 using NJsonSchema;
 using NJsonSchema.Generation;
 using NJsonSchema.Generation.TypeMappers;
+using YACTR.Api.Binding;
 
 namespace YACTR.Api.Swagger;
 
@@ -31,6 +32,14 @@ public static class NSwagNtsGeoJsonSchemaMappers
     /// <param name="schemaGeneratorSettings"></param>
     public static void AddNtsGeoJsonSchemas(this JsonSchemaGeneratorSettings schemaGeneratorSettings)
     {
+        schemaGeneratorSettings.TypeMappers.Add(
+            new PrimitiveTypeMapper(typeof(BoundingBox), schema =>
+            {
+                schema.Type = JsonObjectType.String;
+                schema.Description = "Bounding box: minLon,minLat,maxLon,maxLat (WGS 84, OGC API bbox format)";
+            })
+        );
+
         schemaGeneratorSettings.TypeMappers.Add(
             new ObjectTypeMapper(typeof(Point), new JsonSchema()
             {

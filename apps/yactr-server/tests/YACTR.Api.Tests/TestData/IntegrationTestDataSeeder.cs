@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using NodaTime;
 using YACTR.Domain.Model;
 using YACTR.Domain.Model.Authentication;
@@ -28,7 +29,9 @@ public class IntegrationTestDataSeeder(
         Instant? AreaCreatedAt = null,
         Instant? SectorCreatedAt = null,
         Instant? FirstRouteCreatedAt = null,
-        Duration? RouteCreatedAtStep = null
+        Duration? RouteCreatedAtStep = null,
+        Point? Location = null,
+        MultiPolygon? Boundary = null
     );
 
     public async Task<User> SeedUserAsync()
@@ -84,8 +87,8 @@ public class IntegrationTestDataSeeder(
         {
             Name = $"{options.NamePrefix} Area",
             Description = $"{options.NamePrefix} area description",
-            Location = testDataFactory.NewPoint(),
-            Boundary = testDataFactory.NewMultiPolygon(),
+            Location = options.Location ?? testDataFactory.NewPoint(),
+            Boundary = options.Boundary ?? testDataFactory.NewMultiPolygon(),
             CountryId = country.Id,
             Country = country
         };
