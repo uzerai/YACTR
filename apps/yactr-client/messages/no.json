@@ -124,6 +124,8 @@
 	"admin_layout_group_administration": "Administrasjon",
 	"topo_editor_svg_overlay_image_alt": "Rute-tegning SVG-overlegg",
 	"topo_editor_svg_overlay_clear_topo": "Tøm topo",
+	"topo_editor_svg_overlay_undo": "Angre",
+	"topo_editor_svg_overlay_redo": "Gjør om",
 	"sign_in_title": "Tilgang kreves",
 	"sign_in_description": "Logg inn på kontoen din for å fortsette",
 	"sign_in_button": "Logg inn"

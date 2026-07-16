@@ -124,6 +124,8 @@
 	"admin_layout_group_administration": "Administration",
 	"topo_editor_svg_overlay_image_alt": "Route drawing SVG overlay",
 	"topo_editor_svg_overlay_clear_topo": "Clear topo",
+	"topo_editor_svg_overlay_undo": "Undo",
+	"topo_editor_svg_overlay_redo": "Redo",
 	"sign_in_title": "Permission required",
 	"sign_in_description": "Sign in to your account to continue",
 	"sign_in_button": "Sign in"
