@@ -15,11 +15,14 @@ services:
     profiles: [dev, full, test, server]
 
   file-bucket:
-    image: quay.io/minio/minio:latest
-    command: server /data --console-address ":9001"
+    image: rustfs/rustfs:latest
     environment:
-      MINIO_ROOT_USER: yactr
-      MINIO_ROOT_PASSWORD: playground
+      RUSTFS_ADDRESS: "0.0.0.0:9000"
+      RUSTFS_CONSOLE_ADDRESS: "0.0.0.0:9001"
+      RUSTFS_CONSOLE_ENABLED: true
+      RUSTFS_CONSOLE_CORS_ALLOWS_ORIGINS: "*"
+      RUSTFS_ACCESS_KEY: yactr
+      RUSTFS_SECRET_KEY: yactr
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -28,18 +31,18 @@ services:
     profiles: [dev, full, test, server]
 
   dex:
-    image: dexidp/dex:v2.43.1
+    image: dexidp/dex:v2.46.1
     command: ["dex", "serve", "/etc/dex/config.yaml"]
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:5556/dex/healthz"]
+      interval: 3s
+      timeout: 10s
+      retries: 3
     ports:
       - "5556:5556"
     volumes:
       - ./apps/yactr-server/container/dex/config.yaml:/etc/dex/config.yaml:ro
-      - dex-data:/data
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5556/dex/.well-known/openid-configuration"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
+      - dex-data:/var/dex
     profiles: [dev, full, server]
 
   api:
