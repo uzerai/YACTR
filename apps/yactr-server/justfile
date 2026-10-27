@@ -27,7 +27,7 @@ coverage:
   docker compose -f "$compose" --profile test up -d
   dotnet test YACTR.sln --settings ./tests.runsettings --verbosity minimal --collect:"XPlat Code Coverage" || true
   docker compose -f "$compose" --profile test down
-  reportgenerator \
+  dotnet tool run reportgenerator \
     -reports:"tests/**/TestResults/**/coverage.cobertura.xml" \
     -targetdir:"coverage-report" \
     -reporttypes:Html

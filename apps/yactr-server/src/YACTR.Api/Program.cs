@@ -28,21 +28,21 @@ using YACTR.Infrastructure.Service;
 // ############################################################
 //
 // This is where the NuGet packages are configured and non-internal services are registered.
-// If you are adding a new NuGet package, please add it to this section, and register all other 
+// If you are adding a new NuGet package, please add it to this section, and register all other
 // injected services that are internally developed as part of the API in the section below this one.
 var builder = WebApplication.CreateBuilder(args);
 
 // ############################################################
 // ##########  CUSTOM SERVICES SETUP  #########################
 // ############################################################
-// 
+//
 // Repository setup and registration done here;
-// 
+//
 // If you are adding a new repository:
 // Please add it to the extension method in
-//     YACTR.DI.Repository.ConfigurationExtension.RepositoryServiceConfigurationExtensions
+//     YACTR.Infrastructure.Database.ConfigurationExtension.RepositoryServiceConfigurationExtensions
 // instead of adding them here.
-// 
+//
 builder.Services.AddRepositories();
 // TODO: Move to using an interface for caching which _doesn't_ specify in-memory or distributed -- leave it as config at some later stage
 builder.Services.AddMemoryCache();
@@ -53,7 +53,7 @@ builder.Services.AddPermissionsAuthorizationHandling();
 builder.Services.AddApplicationServices();
 
 // Authentication extraction through JWT Bearer tokens.
-// Intended to be used with the corresponding Auth0 tenant; but 
+// Intended to be used with the corresponding Auth0 tenant; but
 // technically be used with any Oauth2.0 compliant identity provider.
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
